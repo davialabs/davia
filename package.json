@@ -1,5 +1,5 @@
 {
-  "name": "my-turborepo",
+  "name": "davia",
   "private": true,
   "scripts": {
     "build": "turbo run build",
@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "prettier": "^3.6.2",
-    "turbo": "^2.5.4",
+    "turbo": "^2.6.0",
     "typescript": "5.9.2"
   },
   "packageManager": "pnpm@9.0.0",
