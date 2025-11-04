@@ -26,6 +26,8 @@
   },
   "dependencies": {
     "commander": "^14.0.2",
+    "dotenv": "^17.2.3",
+    "nanoid": "^5.1.6",
     "open": "^10.2.0"
   },
   "devDependencies": {
