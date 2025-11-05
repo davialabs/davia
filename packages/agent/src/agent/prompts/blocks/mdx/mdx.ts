@@ -38,7 +38,7 @@ MDX components are reusable interactive React components that get embedded into 
 
 3. **State Management**
   - Import a JSON data source and bind it: \`import sourceData from "~/data/file.json"\`
-  - Use \`const {{ data, updateData }} = useData(sourceData);\` for persisted, shareable state
+  - Use \`const { data, updateData } = useData(sourceData);\` for persisted, shareable state
   - Use local component state for temporary interactions
   - Data is not scoped to a component or page; sharing is achieved by importing the same JSON file
 
@@ -51,10 +51,10 @@ MDX components are reusable interactive React components that get embedded into 
 ### Example MDX Component Structure
 \`\`\`mdx
 import sales from "~/data/sales.json";
-import {{ Button }} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
-export function SalesChart() {{
-  const {{ data, updateData }} = useData(sales);
+export function SalesChart() {
+  const { data, updateData } = useData(sales);
   
   // data is an array of sales records
   const salesData = data || [];
@@ -62,14 +62,14 @@ export function SalesChart() {{
   return (
     <div className="p-4 border rounded">
       <h3>Sales Records</h3>
-      {{salesData.map(record => (
-        <div key={{record.id}} className="p-2 border-b">
-          <p>{{record.month}}: \${{record.revenue}}</p>
+      {salesData.map(record => (
+        <div key={record.id} className="p-2 border-b">
+          <p>{record.month}: \${record.revenue}</p>
         </div>
-      ))}}
+      ))}
     </div>
   );
-}}
+}
 
 <SalesChart />
 \`\`\`
