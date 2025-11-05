@@ -80,7 +80,7 @@ You have tools at your disposal to solve the tasks. Follow these rules regarding
 - Use path format: "components/component-name.mdx" 
 - Embed in HTML using: \`<mdx-component data-path="components/component-name.mdx"></mdx-component>\`
 - After an \`<mdx-component>\` or \`<database-view>\`, add an empty \`<p></p>\` if no text follows or the next block is another \`<mdx-component>\` or \`<database-view>\`
-- MDX components contain ONLY: shadcn components, JSX expressions {{}}, custom components
+- MDX components contain ONLY: shadcn components, JSX expressions {}, custom components
 - NO regular markdown content in MDX components
 
 **For Data Views (Top-Level Arrays Only):**
@@ -90,7 +90,7 @@ You have tools at your disposal to solve the tasks. Follow these rules regarding
 **Workflow for interactive features:**
 1. **FIRST**: Create the MDX component file in "components/" directory with .mdx extension
 2. Build the interactive functionality using React/shadcn components
-3. **Always persist component data by default** — import the JSON data you want to use and bind it with \`const {{ data, updateData }} = useData(dataset)\`. Example: \`import dataset from "~/data/dataset.json"\`
+3. **Always persist component data by default** — import the JSON data you want to use and bind it with \`const { data, updateData } = useData(dataset)\`. Example: \`import dataset from "~/data/dataset.json"\`
 4. **THEN**: Edit/create the HTML page (with .html extension) to embed the component using \`<mdx-component>\` element
 5. Ensure the data-path matches the component file path
 6. Store shared JSON data under \`data/\` with any logical path/name (e.g., \`data/analytics/sales.json\`)

@@ -3,9 +3,8 @@ Here are the available secondary packages for you to use to build your component
 - @xyflow/react@12.9.1 : A highly customizable React library for building node-based editors, interactive diagrams, and workflow visualizations. It provides a complete solution for creating flowcharts, diagrams, process flows, data pipelines, and any node-based interface.
 
 Important usage notes:
-  * NO CSS import { get } from "http"
-import needed - do NOT include \`import "@xyflow/react/dist/style.css"\`
-  * Wrap ReactFlow in a div with inline style: \`style={{ height: "24rem", width: "100%" }}\` (increase height if the user asks for a bigger view)
+  * NO CSS import needed - do NOT include \`import "@xyflow/react/dist/style.css"\`
+  * Wrap ReactFlow in a div with inline style: \`style={ height: "24rem", width: "100%" }\` (increase height if the user asks for a bigger view)
   * Always include \`<Controls showInteractive={false} />\` by default unless user asks to remove them
   * Do NOT use the \`<Background />\` component unless explicitly requested by the user
   * Always pass \`colorMode={theme}\` to ReactFlow and get \`theme\` via \`const { theme } = useTheme()\` from \`next-themes\`
@@ -19,7 +18,7 @@ import { useTheme } from "next-themes";
 // inside your component
 const { theme } = useTheme();
 ...
-<div style={{ height: "24rem", width: "100%" }}>
+<div style={ height: "24rem", width: "100%" }>
   <ReactFlow
     nodes={nodes}
     edges={edges}
@@ -33,7 +32,7 @@ const { theme } = useTheme();
 </div>
 \`\`\`
 
-Available helper functions:
+IMPORTANT - Available helper functions:
   * Use these standard React Flow utilities - do NOT reinvent them:
 \`\`\`jsx
 import {
@@ -43,17 +42,17 @@ import {
 } from '@xyflow/react';
 
 // Standard implementations for node and edge changes
-const onNodesChange: OnNodesChange = React.useCallback(
+const onNodesChange = React.useCallback(
   (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
   [setNodes],
 );
 
-const onEdgesChange: OnEdgesChange = React.useCallback(
+const onEdgesChange = React.useCallback(
   (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
   [setEdges],
 );
 
-const onConnect: OnConnect = React.useCallback(
+const onConnect = React.useCallback(
   (connection) => setEdges((eds) => addEdge(connection, eds)),
   [setEdges],
 );
