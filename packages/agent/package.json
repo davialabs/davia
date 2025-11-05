@@ -18,8 +18,12 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@langchain/anthropic": "^0.3.33",
     "@langchain/core": "^1.0.2",
-    "langchain": "^1.0.2"
+    "@langchain/google-genai": "^1.0.0",
+    "@langchain/openai": "^1.0.0",
+    "langchain": "^1.0.2",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
