@@ -3,8 +3,9 @@ Here are the available secondary packages for you to use to build your component
 - @xyflow/react@12.9.1 : A highly customizable React library for building node-based editors, interactive diagrams, and workflow visualizations. It provides a complete solution for creating flowcharts, diagrams, process flows, data pipelines, and any node-based interface.
 
 Important usage notes:
-  * NO CSS import needed - do NOT include \`import "@xyflow/react/dist/style.css"\`
-  * Always wrap ReactFlow in a div with \`className="w-full h-full"\`
+  * NO CSS import { get } from "http"
+import needed - do NOT include \`import "@xyflow/react/dist/style.css"\`
+  * Wrap ReactFlow in a div with inline style: \`style={{ height: "24rem", width: "100%" }}\` (increase height if the user asks for a bigger view)
   * Always include \`<Controls showInteractive={false} />\` by default unless user asks to remove them
   * Do NOT use the \`<Background />\` component unless explicitly requested by the user
   * Always pass \`colorMode={theme}\` to ReactFlow and get \`theme\` via \`const { theme } = useTheme()\` from \`next-themes\`
@@ -18,7 +19,7 @@ import { useTheme } from "next-themes";
 // inside your component
 const { theme } = useTheme();
 ...
-<div className="w-full h-full">
+<div style={{ height: "24rem", width: "100%" }}>
   <ReactFlow
     nodes={nodes}
     edges={edges}
@@ -30,6 +31,58 @@ const { theme } = useTheme();
     <Controls showInteractive={false} />
   </ReactFlow>
 </div>
+\`\`\`
+
+Available helper functions:
+  * Use these standard React Flow utilities - do NOT reinvent them:
+\`\`\`jsx
+import {
+  addEdge,
+  applyNodeChanges,
+  applyEdgeChanges,
+} from '@xyflow/react';
+
+// Standard implementations for node and edge changes
+const onNodesChange: OnNodesChange = React.useCallback(
+  (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+  [setNodes],
+);
+
+const onEdgesChange: OnEdgesChange = React.useCallback(
+  (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+  [setEdges],
+);
+
+const onConnect: OnConnect = React.useCallback(
+  (connection) => setEdges((eds) => addEdge(connection, eds)),
+  [setEdges],
+);
+\`\`\`
+
+Styling:
+  * Do NOT add custom styles unless explicitly asked by the user. The frontend already includes default React Flow styles.
+  * Reference (already present in the app):
+\`\`\`css
+/* Container */
+.react-flow {
+  @apply bg-background text-foreground;
+}
+
+/* Nodes */
+.react-flow__node {
+  @apply rounded-md border border-border shadow-sm bg-card text-card-foreground;
+}
+
+/* Background grid */
+.react-flow__background {
+  @apply fill-background;
+}
+
+/* Controls & Minimap */
+.react-flow__controls,
+.react-flow__minimap {
+  @apply border border-border bg-popover text-popover-foreground;
+}
 \`\`\`
 
 - maplibre-gl@5.7.3 : add the stylesheet to the head of your page:
