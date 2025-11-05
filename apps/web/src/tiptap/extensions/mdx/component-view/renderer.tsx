@@ -1,12 +1,17 @@
 "use client";
 
-import { use, useMemo } from "react";
+import { use, useMemo, useState } from "react";
 import { useErrorBoundary } from "react-error-boundary";
 import type { BundleMDXResult } from "@/lib/types";
 import { useDataDependencies } from "../use-mdx-data";
 import { useData } from "@/tiptap/hooks/use-data";
 import { getMDXComponent } from "mdx-bundler/client";
 import { MdxLoading } from "./fallback-views";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { DataView } from "../data-view";
+import { Badge } from "@/components/ui/badge";
+import { DatabaseIcon, LayoutTemplateIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 // Components
 import { MDXProvider, useMDXComponents } from "@mdx-js/react";
 // Scope
@@ -30,8 +35,11 @@ export function MdxRenderer({
   const bundleResult = use(bundlePromise);
 
   // Load all data dependencies (waits for bundle to be ready)
-  const { allSynced: dataAllSynced, errors: dataErrors } =
-    useDataDependencies(bundleResult);
+  const {
+    allSynced: dataAllSynced,
+    errors: dataErrors,
+    dataImports,
+  } = useDataDependencies(bundleResult);
 
   const FinalMDXComponent = useMemo(() => {
     if (!bundleResult.result.code) return null;
@@ -40,6 +48,8 @@ export function MdxRenderer({
       useData: useData,
     });
   }, [bundleResult.result.code]);
+
+  const [activeTab, setActiveTab] = useState("component");
 
   // Show errors if data loading failed
   if (dataErrors.length > 0) {
@@ -53,6 +63,39 @@ export function MdxRenderer({
   }
 
   return (
-    <MDXProvider>{FinalMDXComponent && <FinalMDXComponent />}</MDXProvider>
+    <Tabs value={activeTab} onValueChange={setActiveTab}>
+      {dataImports.length > 0 && (
+        <div className="flex items-center gap-2">
+          <Badge
+            variant="outline"
+            className={cn(
+              "cursor-pointer hover:bg-accent/90",
+              activeTab === "component" && "bg-accent text-accent-foreground"
+            )}
+            onClick={() => setActiveTab("component")}
+          >
+            <LayoutTemplateIcon />
+            View
+          </Badge>
+          <Badge
+            variant="outline"
+            className={cn(
+              "cursor-pointer hover:bg-accent/90",
+              activeTab === "data" && "bg-accent text-accent-foreground"
+            )}
+            onClick={() => setActiveTab("data")}
+          >
+            <DatabaseIcon />
+            Data
+          </Badge>
+        </div>
+      )}
+      <TabsContent value="component">
+        <MDXProvider>{FinalMDXComponent && <FinalMDXComponent />}</MDXProvider>
+      </TabsContent>
+      <TabsContent value="data">
+        <DataView dataImports={dataImports} />
+      </TabsContent>
+    </Tabs>
   );
 }
