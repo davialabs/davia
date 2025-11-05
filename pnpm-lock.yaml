@@ -20,6 +20,9 @@ importers:
 
   apps/cli:
     dependencies:
+      '@davia/agent':
+        specifier: workspace:*
+        version: link:../../packages/agent
       commander:
         specifier: ^14.0.2
         version: 14.0.2
@@ -235,6 +238,27 @@ importers:
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
+      typescript:
+        specifier: 5.9.2
+        version: 5.9.2
+
+  packages/agent:
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/node':
+        specifier: ^22.15.3
+        version: 22.15.3
+      eslint:
+        specifier: ^9.38.0
+        version: 9.38.0(jiti@2.6.1)
+      tsx:
+        specifier: ^4.19.2
+        version: 4.20.6
       typescript:
         specifier: 5.9.2
         version: 5.9.2
@@ -2936,6 +2960,7 @@ packages:
   typescript@5.9.2:
     resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}
     engines: {node: '>=14.17'}
+    hasBin: true
 
   unbox-primitive@1.1.0:
     resolution: {integrity: sha512-nWJ91DjeOkej/TA8pXQ3myruKpKEYgqvpw9lz4OPHj/NWFNluYrjbz9j01CJ8yKQd2g4jFoOkINCTW2I5LEEyw==}

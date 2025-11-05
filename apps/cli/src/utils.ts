@@ -24,21 +24,24 @@ export function findMonorepoRoot(startPath: string): string {
  * Check for AI API keys in .env files and set the first one found.
  * Priority: ANTHROPIC_API_KEY > OPENAI_API_KEY > GOOGLE_API_KEY
  * Checks monorepo root first, then the given path.
+ * Returns the model type found or null if none found.
  */
 export function checkAndSetAiEnv(
   monorepoRoot: string,
   projectPath: string
-): void {
+): "anthropic" | "openai" | "google" | null {
   const apiKeys = [
-    "ANTHROPIC_API_KEY",
-    "OPENAI_API_KEY",
-    "GOOGLE_API_KEY",
+    { key: "ANTHROPIC_API_KEY", model: "anthropic" as const },
+    { key: "OPENAI_API_KEY", model: "openai" as const },
+    { key: "GOOGLE_API_KEY", model: "google" as const },
   ] as const;
 
   // Helper to check and set env from a .env file path
-  const checkEnvFile = (envPath: string): boolean => {
+  const checkEnvFile = (
+    envPath: string
+  ): { found: boolean; model: "anthropic" | "openai" | "google" | null } => {
     if (!existsSync(envPath)) {
-      return false;
+      return { found: false, model: null };
     }
 
     try {
@@ -46,27 +49,40 @@ export function checkAndSetAiEnv(
       const parsed = parse(envContent);
 
       // Check keys in priority order
-      for (const key of apiKeys) {
+      for (const { key, model } of apiKeys) {
         const value = parsed[key];
         if (value && value.trim()) {
           process.env[key] = value;
-          return true;
+          return { found: true, model };
         }
       }
     } catch {
       // If file can't be read or parsed, continue
     }
 
-    return false;
+    return { found: false, model: null };
   };
 
   // First check monorepo root .env
   const monorepoEnvPath = join(monorepoRoot, ".env");
-  if (checkEnvFile(monorepoEnvPath)) {
-    return;
+  const monorepoResult = checkEnvFile(monorepoEnvPath);
+  if (monorepoResult.found && monorepoResult.model) {
+    console.log(`Using ${monorepoResult.model} API key in Davia settings`);
+    return monorepoResult.model;
   }
+
+  // Log that nothing was found in monorepo root
+  console.log(
+    `No environment variable found in Davia monorepo, looking in ${projectPath} for environment variables`
+  );
 
   // Then check project path .env
   const projectEnvPath = join(projectPath, ".env");
-  checkEnvFile(projectEnvPath);
+  const projectResult = checkEnvFile(projectEnvPath);
+  if (projectResult.found && projectResult.model) {
+    console.log(`Using ${projectResult.model} API key in ${projectEnvPath}`);
+    return projectResult.model;
+  }
+
+  return null;
 }

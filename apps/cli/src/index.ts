@@ -9,6 +9,7 @@ import { statSync, readFileSync, writeFileSync, mkdirSync } from "fs";
 import { nanoid } from "nanoid";
 import open from "open";
 import { findMonorepoRoot, checkAndSetAiEnv } from "./utils.js";
+import { runAgent } from "@davia/agent";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -61,14 +62,10 @@ program
     const monorepoRoot = findMonorepoRoot(__dirname);
 
     // Check and set AI API key from .env files
-    checkAndSetAiEnv(monorepoRoot, path);
+    const model = checkAndSetAiEnv(monorepoRoot, path);
 
-    // Verify that at least one API key is defined
-    if (
-      !process.env.ANTHROPIC_API_KEY &&
-      !process.env.OPENAI_API_KEY &&
-      !process.env.GOOGLE_API_KEY
-    ) {
+    // Exit if no API key found
+    if (!model) {
       console.error(
         "Error: No AI API key found. Please define one of the following in a .env file:\n" +
           "  - ANTHROPIC_API_KEY\n" +
@@ -109,10 +106,11 @@ program
       }
     }
 
-    // If path doesn't exist, create new entry
+    // Determine the project ID
+    let id: string;
     if (!existingId) {
       // Generate nanoid and add to projects
-      const id = nanoid();
+      id = nanoid();
       projects[id] = {
         path,
         running: false,
@@ -124,13 +122,37 @@ program
         JSON.stringify(projects, null, 2),
         "utf-8"
       );
-
-      // Create folder under assets with nanoid name
-      const assetFolderPath = join(assetsPath, id);
-      mkdirSync(assetFolderPath, { recursive: true });
+    } else {
+      id = existingId;
     }
 
-    console.log(path);
+    // Create folder under assets with nanoid name
+    const assetFolderPath = join(assetsPath, id);
+    mkdirSync(assetFolderPath, { recursive: true });
+
+    // Ensure project exists and get reference
+    const project = projects[id] ?? { path, running: false };
+    projects[id] = project;
+
+    // Set running to true before agent run
+    project.running = true;
+    writeFileSync(projectsJsonPath, JSON.stringify(projects, null, 2), "utf-8");
+
+    // Run the agent
+    try {
+      await runAgent(path, assetFolderPath, model);
+    } catch (error) {
+      console.error("Error running agent:", error);
+      throw error;
+    } finally {
+      // Set running to false after agent completes or fails
+      project.running = false;
+      writeFileSync(
+        projectsJsonPath,
+        JSON.stringify(projects, null, 2),
+        "utf-8"
+      );
+    }
   });
 
 program
