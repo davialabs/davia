@@ -16,6 +16,5 @@ export type AssetTrees = Record<string, FlatTree>;
 
 export type BundleMDXResult = {
   result: Awaited<ReturnType<typeof bundleMDX>>;
-  css: string;
   dataImports: string[];
 };

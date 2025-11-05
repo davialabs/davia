@@ -24,7 +24,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
 
-export function DatabaseErrorFallback({
+export function MdxErrorFallback({
   error,
   props,
   content,
@@ -58,7 +58,7 @@ export function DatabaseErrorFallback({
       <CardHeader>
         <CardTitle>An error occurred</CardTitle>
         <CardDescription>
-          We are having trouble with this database.
+          We are having trouble with this component.
         </CardDescription>
         <CardAction>
           <AlertCircle className="size-5 text-destructive" />
@@ -109,7 +109,7 @@ export function DatabaseErrorFallback({
   );
 }
 
-export function DatabaseLoading() {
+export function MdxLoading() {
   return (
     <div className="flex flex-col gap-2 p-2 items-center justify-center">
       <Skeleton className="h-12 w-1/3" />

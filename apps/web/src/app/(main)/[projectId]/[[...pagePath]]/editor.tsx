@@ -15,7 +15,7 @@ import { UiStateExtension } from "@/tiptap/ui-state-extension";
 
 // --- Custom extensions ---
 import { TitlePlaceholder } from "@/tiptap/extensions/title-placeholder";
-// import { MdxExtension } from "@/tiptap/extensions/mdx";
+import { MdxExtension } from "@/tiptap/extensions/mdx";
 import { DatabaseExtension } from "@/tiptap/extensions/database";
 
 // --- Tiptap hooks ---
@@ -67,7 +67,7 @@ export function Editor({
           return "";
         },
       }),
-      // MdxExtension,
+      MdxExtension,
       DatabaseExtension,
     ],
   });
