@@ -1,15 +1,8 @@
 {
-  "name": "davia",
+  "name": "@davia/cli",
   "version": "0.1.0",
+  "private": true,
   "type": "module",
-  "license": "MIT",
-  "description": "Documentation that writes itself",
-  "homepage": "https://davia.ai",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/davia-labs/davia.git",
-    "directory": "apps/cli"
-  },
   "main": "./dist/index.js",
   "bin": {
     "davia": "./dist/index.js"
@@ -40,8 +33,5 @@
   },
   "engines": {
     "node": ">=18"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

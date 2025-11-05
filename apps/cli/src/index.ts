@@ -81,28 +81,28 @@ program
     }
 
     const daviaPath = join(monorepoRoot, ".davia");
-    const stateJsonPath = join(daviaPath, "state.json");
+    const projectsJsonPath = join(daviaPath, "projects.json");
     const assetsPath = join(daviaPath, "assets");
 
-    // Read state.json
+    // Read projects.json
     type ProjectState = {
       path: string;
       running: boolean;
     };
-    let state: Record<string, ProjectState> = {};
+    let projects: Record<string, ProjectState> = {};
     try {
-      const stateContent = readFileSync(stateJsonPath, "utf-8");
-      if (stateContent.trim()) {
-        state = JSON.parse(stateContent);
+      const projectsContent = readFileSync(projectsJsonPath, "utf-8");
+      if (projectsContent.trim()) {
+        projects = JSON.parse(projectsContent);
       }
     } catch {
       // If file doesn't exist or is invalid, start with empty object
-      state = {};
+      projects = {};
     }
 
-    // Check if path already exists in state.json
+    // Check if path already exists in projects.json
     let existingId: string | undefined;
-    for (const [id, project] of Object.entries(state)) {
+    for (const [id, project] of Object.entries(projects)) {
       if (project.path === path) {
         existingId = id;
         break;
@@ -111,15 +111,19 @@ program
 
     // If path doesn't exist, create new entry
     if (!existingId) {
-      // Generate nanoid and add to state
+      // Generate nanoid and add to projects
       const id = nanoid();
-      state[id] = {
+      projects[id] = {
         path,
         running: false,
       };
 
-      // Write updated state.json
-      writeFileSync(stateJsonPath, JSON.stringify(state, null, 2), "utf-8");
+      // Write updated projects.json
+      writeFileSync(
+        projectsJsonPath,
+        JSON.stringify(projects, null, 2),
+        "utf-8"
+      );
 
       // Create folder under assets with nanoid name
       const assetFolderPath = join(assetsPath, id);
@@ -138,11 +142,15 @@ program
 
     console.log("Starting Davia web app...");
 
-    // Start the Next.js dev server
+    // Start the Next.js dev server with monorepo root as environment variable
     const devProcess = spawn("pnpm", ["dev"], {
       cwd: webAppPath,
       stdio: "inherit",
       shell: true,
+      env: {
+        ...process.env,
+        DAVIA_MONOREPO_ROOT: monorepoRoot,
+      },
     });
 
     // Wait a bit for the server to start, then open browser

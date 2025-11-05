@@ -1,13 +1,22 @@
 {
   "name": "davia",
+  "version": "0.1.0",
   "private": true,
+  "license": "MIT",
+  "description": "Documentation that writes itself",
+  "homepage": "https://davia.ai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/davia-labs/davia.git"
+  },
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "docs": "pnpm --filter davia start docs"
+    "docs": "pnpm --filter @davia/cli start docs",
+    "open": "pnpm --filter @davia/cli start open"
   },
   "devDependencies": {
     "prettier": "^3.6.2",

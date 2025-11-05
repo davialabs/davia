@@ -11,17 +11,9 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { ProjectSwitcher } from "./project-switcher";
-import { ProjectState } from "@/lib/types";
 import { RefreshCcwIcon } from "lucide-react";
 
-export function AppSidebar({
-  state,
-  assets,
-  ...props
-}: React.ComponentProps<typeof Sidebar> & {
-  state: Record<string, ProjectState>;
-  assets: string[];
-}) {
+export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
 
   return (
@@ -30,7 +22,7 @@ export function AppSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <div className="flex items-center justify-between gap-1">
-              <ProjectSwitcher projects={state} />
+              <ProjectSwitcher />
               <Button
                 variant="ghost"
                 size="icon-sm"

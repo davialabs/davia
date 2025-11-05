@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ChevronDownIcon, CheckIcon } from "lucide-react";
-import { ProjectState } from "@/lib/types";
+import { useProjects } from "@/providers/projects-provider";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -22,30 +22,22 @@ import {
   ItemDescription,
   ItemActions,
 } from "@/components/ui/item";
+import { Spinner } from "@/components/ui/spinner";
 
 function getBaseName(path: string): string {
   const parts = path.split("/").filter(Boolean);
   return parts[parts.length - 1] || path;
 }
 
-export function ProjectSwitcher({
-  projects,
-}: {
-  projects: Record<string, ProjectState>;
-}) {
+export function ProjectSwitcher() {
   const [mounted, setMounted] = useState(false);
   const { resolvedTheme } = useTheme();
-  const params = useParams<{ repoId?: string }>();
   const router = useRouter();
-  const repoId = params.repoId;
+  const { projects, currentProject, currentProjectId } = useProjects();
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  // Get current project only if repoId exists and is in projects
-  const currentProject =
-    repoId && projects[repoId] ? { id: repoId, ...projects[repoId] } : null;
 
   const handleSwitchProject = (projectId: string) => {
     router.push(`/${projectId}`);
@@ -96,18 +88,26 @@ export function ProjectSwitcher({
               onClick={() => handleSwitchProject(id)}
               className="p-0"
             >
-              <Item size="sm" className="w-full p-2">
-                <ItemContent className="gap-0.5 min-w-0 flex-1">
-                  <ItemTitle className="w-full min-w-0">
-                    <span className="truncate block">
+              <Item size="sm" className="w-full p-1">
+                <ItemContent className="gap-0.5 min-w-0">
+                  <ItemTitle className="w-full">
+                    <span
+                      className="truncate block"
+                      title={getBaseName(project.path)}
+                    >
                       {getBaseName(project.path)}
                     </span>
+                    {project.running && (
+                      <Spinner className="size-3 text-muted-foreground shrink-0" />
+                    )}
                   </ItemTitle>
-                  <ItemDescription className="w-full min-w-0">
-                    <span className="truncate block">{project.path}</span>
+                  <ItemDescription>
+                    <span className="truncate block" title={project.path}>
+                      {project.path}
+                    </span>
                   </ItemDescription>
                 </ItemContent>
-                {id === repoId && (
+                {id === currentProjectId && (
                   <ItemActions>
                     <CheckIcon className="size-4" />
                   </ItemActions>
