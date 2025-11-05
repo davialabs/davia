@@ -28,7 +28,7 @@ export const createDaviaAgent = (modelName: string) => {
       model = "openai:gpt-5";
       break;
     case "google":
-      model = "gemini-2.5-flash";
+      model = "google-genai:gemini-2.5-flash";
       break;
     default:
       throw new Error(`Unsupported model provider: ${modelName}`);
