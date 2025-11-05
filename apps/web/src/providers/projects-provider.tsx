@@ -1,12 +1,13 @@
 "use client";
 
-import { createContext, type ReactNode, use } from "react";
+import { createContext, type ReactNode, use, useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import type { ProjectState } from "@/lib/types";
+import type { ProjectState, AssetTrees } from "@/lib/types";
 
 type ProjectsContextValue = {
   projects: Record<string, ProjectState>;
-  assets: string[];
+  trees: AssetTrees;
+  setTrees: (trees: AssetTrees) => void;
   currentProjectId: string | null;
   currentProject: ({ id: string } & ProjectState) | null;
 };
@@ -15,16 +16,22 @@ const ProjectsContext = createContext<ProjectsContextValue | null>(null);
 
 type ProjectsProviderProps = {
   projects: Record<string, ProjectState>;
-  assets: string[];
+  initialTrees: AssetTrees;
   children: ReactNode;
 };
 
 export function ProjectsProvider({
   projects,
-  assets,
+  initialTrees,
   children,
 }: ProjectsProviderProps) {
   const { repoId } = useParams<{ repoId?: string }>();
+  const [trees, setTrees] = useState<AssetTrees>(initialTrees);
+
+  // Update trees when prop changes (e.g., on router.refresh)
+  useEffect(() => {
+    setTrees(initialTrees);
+  }, [initialTrees]);
 
   // Get current project only if repoId exists and is in projects
   const currentProject =
@@ -32,7 +39,8 @@ export function ProjectsProvider({
 
   const value: ProjectsContextValue = {
     projects,
-    assets,
+    trees,
+    setTrees,
     currentProjectId: repoId || null,
     currentProject,
   };

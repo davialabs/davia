@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync } from "fs";
+import { readFileSync } from "fs";
 import { join } from "path";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/sidebar";
 import { ProjectsProvider } from "@/providers/projects-provider";
 import { ProjectState } from "@/lib/types";
+import { buildAssetTrees } from "@/lib/tree/server";
 
 export default async function MainLayout({
   children,
@@ -36,17 +37,11 @@ export default async function MainLayout({
     console.error("Error reading projects.json:", error);
   }
 
-  // Read assets folder
-  const assetsPath = join(monorepoRoot, ".davia", "assets");
-  let assets: string[] = [];
-  try {
-    assets = readdirSync(assetsPath);
-  } catch (error) {
-    console.error("Error reading assets folder:", error);
-  }
+  // Build tree structures for all assets
+  const trees = buildAssetTrees(monorepoRoot);
 
   return (
-    <ProjectsProvider projects={projects} assets={assets}>
+    <ProjectsProvider projects={projects} initialTrees={trees}>
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>

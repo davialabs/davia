@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { NavTree, NavTreeFallback } from "./nav-tree";
+import { ErrorBoundary } from "react-error-boundary";
 import {
   Sidebar,
   SidebarContent,
@@ -37,7 +39,11 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
 
-      <SidebarContent></SidebarContent>
+      <SidebarContent>
+        <ErrorBoundary FallbackComponent={NavTreeFallback}>
+          <NavTree />
+        </ErrorBoundary>
+      </SidebarContent>
 
       <SidebarRail />
     </Sidebar>
