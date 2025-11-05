@@ -19,7 +19,11 @@ const program = new Command();
 program
   .name("davia")
   .description("Documentation that writes itself")
-  .version("0.1.0");
+  .version("0.1.0")
+  .action(async () => {
+    // Show help by default when no command is provided
+    program.help();
+  });
 
 program
   .command("docs")

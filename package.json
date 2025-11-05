@@ -15,8 +15,8 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "docs": "pnpm --filter @davia/cli start docs",
-    "open": "pnpm --filter @davia/cli start open"
+    "docs": "pnpm --filter @davia/cli docs",
+    "open": "pnpm --filter @davia/cli open"
   },
   "devDependencies": {
     "prettier": "^3.6.2",
