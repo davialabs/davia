@@ -12,7 +12,7 @@ import {
 import { ChevronRight } from "lucide-react";
 
 type NavTreeItemProps = React.ComponentProps<"li"> & {
-  currentProjectId: string;
+  projectId: string;
   id: string;
   title: string;
   hasChildren: boolean;
@@ -23,7 +23,7 @@ type NavTreeItemProps = React.ComponentProps<"li"> & {
 };
 
 function NavTreeItem({
-  currentProjectId,
+  projectId,
   id,
   title,
   hasChildren,
@@ -36,7 +36,7 @@ function NavTreeItem({
   return (
     <SidebarMenuItem style={{ paddingLeft: `${level * 20}px` }} {...props}>
       <SidebarMenuButton isActive={isSelected} asChild>
-        <Link href={`/${currentProjectId}/${id}`}>
+        <Link href={`/${projectId}/${id}`}>
           <span>{title}</span>
         </Link>
       </SidebarMenuButton>

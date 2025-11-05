@@ -85,6 +85,9 @@ program
     const projectsJsonPath = join(daviaPath, "projects.json");
     const assetsPath = join(daviaPath, "assets");
 
+    // Ensure .davia directory exists
+    mkdirSync(daviaPath, { recursive: true });
+
     // Read projects.json
     type ProjectState = {
       path: string;

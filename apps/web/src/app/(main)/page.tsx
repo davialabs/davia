@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/empty";
 import { FolderCodeIcon } from "lucide-react";
 
-export default function NoRepoIdPage() {
+export default function NoProjectIdPage() {
   // Get monorepo root from environment variable
   const monorepoRoot = process.env.DAVIA_MONOREPO_ROOT!;
 

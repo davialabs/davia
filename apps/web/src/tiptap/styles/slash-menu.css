@@ -1,0 +1,12 @@
+/* Slash Menu Styles - Tailwind-based */
+span.slash-decoration {
+  @apply bg-muted rounded-sm p-1 -m-1;
+
+  &::after {
+    @apply text-muted-foreground;
+  }
+
+  &.is-empty::after {
+    content: attr(data-decoration-content);
+  }
+}

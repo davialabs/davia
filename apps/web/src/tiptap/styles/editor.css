@@ -1,0 +1,343 @@
+@import "./safelist.css";
+@plugin "@tailwindcss/typography";
+
+@import "./image-node.css";
+@import "./slash-menu.css";
+@import "@xyflow/react/dist/style.css";
+
+/* =====================
+   PROSE TYPOGRAPHY
+   ===================== */
+
+@utility prose-main {
+  --tw-prose-body: var(--color-foreground);
+  --tw-prose-headings: var(--color-foreground);
+  --tw-prose-lead: var(--color-muted-foreground);
+  --tw-prose-links: var(--color-primary);
+  --tw-prose-bold: var(--color-foreground);
+  --tw-prose-counters: var(--color-foreground);
+  --tw-prose-bullets: var(--color-foreground);
+  --tw-prose-hr: var(--color-border);
+  --tw-prose-quotes: var(--color-foreground);
+  --tw-prose-quote-borders: var(--color-border);
+  --tw-prose-captions: var(--color-muted-foreground);
+  --tw-prose-code: var(--color-foreground);
+  --tw-prose-pre-code: var(--color-background);
+  --tw-prose-pre-bg: var(--color-muted);
+  --tw-prose-th-borders: var(--color-border);
+  --tw-prose-td-borders: var(--color-border);
+  --tw-prose-invert-body: var(--color-foreground);
+  --tw-prose-invert-headings: var(--color-foreground);
+  --tw-prose-invert-lead: var(--color-muted-foreground);
+  --tw-prose-invert-links: var(--color-primary);
+  --tw-prose-invert-bold: var(--color-foreground);
+  --tw-prose-invert-counters: var(--color-foreground);
+  --tw-prose-invert-bullets: var(--color-foreground);
+  --tw-prose-invert-hr: var(--color-border);
+  --tw-prose-invert-quotes: var(--color-foreground);
+  --tw-prose-invert-quote-borders: var(--color-border);
+  --tw-prose-invert-captions: var(--color-muted-foreground);
+  --tw-prose-invert-code: var(--color-foreground);
+  --tw-prose-invert-pre-code: var(--color-background);
+  --tw-prose-invert-pre-bg: var(--color-muted);
+  --tw-prose-invert-th-borders: var(--color-border);
+  --tw-prose-invert-td-borders: var(--color-border);
+}
+
+/* Custom prose spacing */
+.prose-main {
+  & p {
+    @apply my-1.5;
+  }
+
+  & h1 {
+    @apply mt-6 mb-2;
+  }
+
+  & h2 {
+    @apply mt-5 mb-2;
+  }
+
+  & h3 {
+    @apply mt-4 mb-2;
+  }
+
+  & ol {
+    @apply my-2;
+  }
+
+  & ul {
+    @apply my-2;
+  }
+
+  & li {
+    @apply my-0;
+  }
+
+  & hr {
+    @apply my-2;
+  }
+
+  & blockquote {
+    @apply my-2;
+  }
+
+  & ul[data-type="taskList"] {
+    @apply pl-1 list-none;
+  }
+
+  & ul[data-type="taskList"] li {
+    @apply flex flex-row items-start;
+  }
+
+  & ul[data-type="taskList"] li label {
+    @apply relative mr-3 mt-1.5;
+  }
+
+  & ul[data-type="taskList"] li label input[type="checkbox"] {
+    @apply cursor-pointer;
+  }
+
+  /* Custom blockquote styles - remove italic and quotes */
+  & blockquote {
+    font-style: normal !important;
+    quotes: none !important;
+  }
+
+  & blockquote p:first-of-type::before {
+    content: none !important;
+  }
+
+  & blockquote p:last-of-type::after {
+    content: none !important;
+  }
+
+  /* Link styles */
+  & a {
+    @apply cursor-pointer;
+  }
+
+  /* Custom code styles for lowlight syntax highlighting */
+  & pre:not(.not-prose pre) {
+    @apply bg-muted rounded-md p-4 my-3 text-sm overflow-y-auto;
+
+    & code {
+      @apply bg-transparent text-foreground text-xs p-0;
+    }
+
+    /* Keywords, doctags, template variables, types */
+    & .hljs-doctag,
+    & .hljs-keyword,
+    & .hljs-meta .hljs-keyword,
+    & .hljs-template-tag,
+    & .hljs-template-variable,
+    & .hljs-type,
+    & .hljs-variable.language_ {
+      @apply text-red-600 dark:text-red-400;
+    }
+
+    /* Function titles, class names */
+    & .hljs-title,
+    & .hljs-title.class_,
+    & .hljs-title.class_.inherited__,
+    & .hljs-title.function_ {
+      @apply text-purple-600 dark:text-purple-400;
+    }
+
+    /* Attributes, literals, numbers, operators, selectors, variables */
+    & .hljs-attr,
+    & .hljs-attribute,
+    & .hljs-literal,
+    & .hljs-meta,
+    & .hljs-number,
+    & .hljs-operator,
+    & .hljs-selector-attr,
+    & .hljs-selector-class,
+    & .hljs-selector-id,
+    & .hljs-variable {
+      @apply text-blue-600 dark:text-blue-400;
+    }
+
+    /* Strings, regex, meta strings */
+    & .hljs-meta .hljs-string,
+    & .hljs-regexp,
+    & .hljs-string {
+      @apply text-blue-900 dark:text-blue-300;
+    }
+
+    /* Built-ins, symbols */
+    & .hljs-built_in,
+    & .hljs-symbol {
+      @apply text-orange-600 dark:text-orange-400;
+    }
+
+    /* Comments, code, formulas */
+    & .hljs-code,
+    & .hljs-comment,
+    & .hljs-formula {
+      @apply text-gray-500 dark:text-gray-400;
+    }
+
+    /* Names, quotes, selector pseudo, selector tags */
+    & .hljs-name,
+    & .hljs-quote,
+    & .hljs-selector-pseudo,
+    & .hljs-selector-tag {
+      @apply text-green-600 dark:text-green-400;
+    }
+
+    /* Substitutions */
+    & .hljs-subst {
+      @apply text-slate-800 dark:text-gray-300;
+    }
+
+    /* Sections */
+    & .hljs-section {
+      @apply text-blue-600 dark:text-blue-500 font-bold;
+    }
+
+    /* Bullets */
+    & .hljs-bullet {
+      @apply text-yellow-600 dark:text-yellow-400;
+    }
+
+    /* Text formatting */
+    & .hljs-emphasis {
+      @apply text-slate-800 dark:text-gray-300 italic;
+    }
+
+    & .hljs-strong {
+      @apply text-slate-800 dark:text-gray-300 font-bold;
+    }
+
+    /* Additions and deletions */
+    & .hljs-addition {
+      @apply text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30;
+    }
+
+    & .hljs-deletion {
+      @apply text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30;
+    }
+  }
+
+  & code:not(pre code):not(.not-prose code) {
+    @apply rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-xs font-semibold;
+  }
+
+  /* Override typography code pseudo-elements */
+  & code::before,
+  & code::after {
+    content: none;
+  }
+}
+
+/* Remove default margins for media inside the Tiptap editor */
+.prose-main.tiptap.ProseMirror {
+  & img,
+  & picture,
+  & video,
+  & picture > img {
+    @apply my-0;
+  }
+}
+
+/* =====================
+   PLACEHOLDER
+   ===================== */
+
+/* Paragraph placeholder (use default Placeholder behavior: current empty node) */
+.tiptap
+  p.is-empty[data-placeholder]:has(
+    > .ProseMirror-trailingBreak:only-child
+  )::before {
+  @apply text-muted-foreground absolute pointer-events-none;
+  content: attr(data-placeholder);
+}
+
+/* Title placeholder (always visible on first empty h1) */
+.tiptap
+  h1.is-empty-title[data-placeholder]:has(
+    > .ProseMirror-trailingBreak:only-child
+  )::before {
+  @apply text-muted-foreground absolute pointer-events-none;
+  content: attr(data-placeholder);
+}
+
+/* =====================
+   SELECTION
+   ===================== */
+
+/* Selection highlight (editable only and when selection is visible) */
+.tiptap:not(.readonly):not(.ProseMirror-hideselection) ::selection {
+  @apply bg-cyan-500/20;
+}
+
+/* Avoid nested selection highlight inside custom .selection wrapper */
+.tiptap .selection::selection {
+  @apply bg-transparent;
+}
+
+/* Custom selection wrapper */
+.tiptap .selection {
+  @apply inline bg-cyan-500/20;
+}
+
+/* Apply selection padding only for paragraphs and headings */
+.tiptap p .selection,
+.tiptap h1 .selection,
+.tiptap h2 .selection,
+.tiptap h3 .selection,
+.tiptap h4 .selection,
+.tiptap h5 .selection,
+.tiptap h6 .selection {
+  @apply px-0.5 -mx-0.5;
+}
+
+/* Selected node styles */
+.tiptap .ProseMirror-selectednode:not(img):not(pre):not(.react-renderer) {
+  @apply rounded-md bg-cyan-500/20;
+}
+
+/* Apply node-selection padding only for paragraph and heading nodes */
+.tiptap p.ProseMirror-selectednode,
+.tiptap h1.ProseMirror-selectednode,
+.tiptap h2.ProseMirror-selectednode,
+.tiptap h3.ProseMirror-selectednode,
+.tiptap h4.ProseMirror-selectednode,
+.tiptap h5.ProseMirror-selectednode,
+.tiptap h6.ProseMirror-selectednode {
+  @apply px-0.5 -mx-0.5;
+}
+
+/* =====================
+   DROPCURSOR
+   ===================== */
+.prosemirror-dropcursor-block,
+.prosemirror-dropcursor-inline {
+  @apply !bg-cyan-500/50 rounded -ml-px -mr-px w-full h-0.5 cursor-grabbing;
+}
+
+/* =====================
+   REACT FLOW
+   ===================== */
+
+/* Container */
+.react-flow {
+  @apply bg-background text-foreground;
+}
+
+/* Nodes */
+.react-flow__node {
+  @apply rounded-md border border-border shadow-sm bg-card text-card-foreground;
+}
+
+/* Background grid */
+.react-flow__background {
+  @apply fill-background;
+}
+
+/* Controls & Minimap */
+.react-flow__controls,
+.react-flow__minimap {
+  @apply border border-border bg-popover text-popover-foreground;
+}
