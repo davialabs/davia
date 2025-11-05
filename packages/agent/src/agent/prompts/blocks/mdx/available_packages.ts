@@ -64,7 +64,7 @@ IMPORTANT - Data persistence:
     - Use \`updateData\` when you need persistence (saving changes)
   * Example:
 \`\`\`jsx
-const { data, updateData } = useData();
+const { data, updateData } = useData(importedSource);
 \`\`\`
 
 Styling:
