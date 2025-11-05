@@ -253,6 +253,9 @@ importers:
       '@langchain/google-genai':
         specifier: ^1.0.0
         version: 1.0.0(@langchain/core@1.0.2(openai@6.8.1(zod@4.1.12)))
+      '@langchain/langgraph':
+        specifier: ^1.0.1
+        version: 1.0.1(@langchain/core@1.0.2(openai@6.8.1(zod@4.1.12)))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(zod@4.1.12)
       '@langchain/openai':
         specifier: ^1.0.0
         version: 1.0.0(@langchain/core@1.0.2(openai@6.8.1(zod@4.1.12)))

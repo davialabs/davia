@@ -1,7 +1,7 @@
-import { TIPTAP_HTML_GUIDELINES } from "./blocks/tiptap";
-import { MDX_GUIDELINES } from "./blocks/mdx/mdx";
-import { DATA_GUIDELINES } from "./blocks/data";
-import { FILE_HANDLING_INSTRUCTIONS } from "./blocks/file_handling";
+import { TIPTAP_HTML_GUIDELINES } from "./blocks/tiptap.js";
+import { MDX_GUIDELINES } from "./blocks/mdx/mdx.js";
+import { DATA_GUIDELINES } from "./blocks/data.js";
+import { FILE_HANDLING_INSTRUCTIONS } from "./blocks/file_handling.js";
 
 export const STATIC_AGENT_INSTRUCT = `<role> 
 You are Davia, an AI assistant that can help a user edit content in their workspace.

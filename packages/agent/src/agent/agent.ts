@@ -5,6 +5,7 @@ import {
   searchReplaceTool,
   readFileTool,
   deleteTool,
+  multiEditTool,
 } from "./tools.js";
 import { repositoryInitializationMiddleware } from "./middleware.js";
 
@@ -18,7 +19,13 @@ const contextSchema = z.object({
 export const createDaviaAgent = (modelName: string) => {
   return createAgent({
     model: modelName,
-    tools: [writeTool, searchReplaceTool, readFileTool, deleteTool],
+    tools: [
+      writeTool,
+      searchReplaceTool,
+      readFileTool,
+      deleteTool,
+      multiEditTool,
+    ],
     middleware: [repositoryInitializationMiddleware],
     contextSchema,
   });

@@ -1,7 +1,7 @@
-import { MDX_IMPLEMENTATION_INSTRUCTIONS } from "./davia_specific";
-import { MDX_SHADCN_INSTRUCTIONS } from "./shadcn";
-import { CUSTOM_COMPONENTS } from "./custom_components";
-import { AVAILABLE_PACKAGES } from "./available_packages";
+import { MDX_IMPLEMENTATION_INSTRUCTIONS } from "./davia_specific.js";
+import { MDX_SHADCN_INSTRUCTIONS } from "./shadcn.js";
+import { CUSTOM_COMPONENTS } from "./custom_components.js";
+import { AVAILABLE_PACKAGES } from "./available_packages.js";
 
 export const MDX_GUIDELINES = `<mdx_guidelines>
 
