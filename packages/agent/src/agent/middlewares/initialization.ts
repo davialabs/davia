@@ -1,5 +1,5 @@
-import { createMiddleware, AIMessage, HumanMessage } from "langchain";
-import { readRepositoryContent } from "./initialization.js";
+import { createMiddleware, SystemMessage, HumanMessage } from "langchain";
+import { readRepositoryContent } from "../helpers/initialization.js";
 import { STATIC_AGENT_INSTRUCT } from "../prompts/agent.js";
 import {
   GIT_EXPLO_INSTRUCTIONS,
@@ -41,6 +41,9 @@ export const repositoryInitializationMiddleware = createMiddleware({
     // Get source path from context
     const { sourcePath } = runtime.context;
 
+    // Get existing messages from state
+    const messages = state.messages || [];
+
     // Read repository content
     const repositoryContent = await readRepositoryContent(sourcePath);
 
@@ -50,14 +53,41 @@ export const repositoryInitializationMiddleware = createMiddleware({
     // Create git exploration instructions with repository content
     const gitExploInstructions = GIT_EXPLO_INSTRUCTIONS(formattedContent);
 
-    // Create the message array to inject
-    const messages = [
-      new AIMessage(STATIC_AGENT_INSTRUCT),
-      new AIMessage(gitExploInstructions),
-      new HumanMessage(HUMAN_MESSAGE),
-    ];
+    // Only insert if there's no existing system message
+    if (!messages.some((msg) => msg instanceof SystemMessage)) {
+      // Create a single SystemMessage with content blocks
+      const systemMessage = new SystemMessage({
+        content: [
+          {
+            text: STATIC_AGENT_INSTRUCT,
+            type: "text",
+          },
+          {
+            text: gitExploInstructions,
+            type: "text",
+          },
+        ],
+      });
 
-    // Return messages to inject into conversation
+      // Insert at position 0
+      messages.unshift(systemMessage);
+
+      // Add human message after system message with cache control
+      const humanMessage = new HumanMessage({
+        content: [
+          {
+            text: HUMAN_MESSAGE,
+            type: "text",
+            cache_control: { type: "ephemeral", ttl: "5m" },
+          },
+        ],
+      });
+
+      // Insert at position 1 (after system message)
+      messages.splice(1, 0, humanMessage);
+    }
+
+    // Return updated messages
     return { messages };
   },
 });

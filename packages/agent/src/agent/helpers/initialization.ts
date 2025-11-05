@@ -1,7 +1,11 @@
 import { promises as fs } from "fs";
 import * as path from "path";
 import ignore from "ignore";
-import { EXCLUDED_FILE_EXTENSIONS, MAX_FILES, MAX_TOKENS } from "../config.js";
+import {
+  EXCLUDED_FILE_EXTENSIONS,
+  MAX_FILES,
+  MAX_TOKENS,
+} from "../../config.js";
 
 /**
  * Check if a file should be excluded from content analysis.

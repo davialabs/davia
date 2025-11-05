@@ -85,34 +85,6 @@ Styling:
 }
 \`\`\`
 
-- maplibre-gl@5.7.3 : add the stylesheet to the head of your page:
-<link href="https://unpkg.com/maplibre-gl@<YOUR_MAPLIBRE_VERSION>/dist/maplibre-gl.css" rel="stylesheet" />
-You MUST load it via UNPKG (\`<script src="https://unpkg.com/maplibre-gl@5.7.3/dist/maplibre-gl.js"></script>\`).
-
-example of how to load it:
-React.useEffect(() => {
-    const loadMapLibre = () => {
-      if (window.maplibregl) {
-        setIsLoaded(true);
-        return;
-      }
-
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'https://unpkg.com/maplibre-gl@5.7.3/dist/maplibre-gl.css';
-      document.head.appendChild(link);
-
-      const script = document.createElement('script');
-      script.src = 'https://unpkg.com/maplibre-gl@5.7.3/dist/maplibre-gl.js';
-      script.onload = () => setIsLoaded(true);
-      document.head.appendChild(script);
-    };
-
-    loadMapLibre();
-  }, []);
-When wanted to use maplibre-gl, you MUST use the search web tool prior to search on https://maplibre.org/maplibre-gl-js/docs/examples (indicate the url in the search tool) to see different examples and use cases (typically how to use geojson data) that would be a match for the user's request.
-This is important to write the correct code and have the map displayed correctly - ask the search web tool for the code example given so you can draw inspiration from it.
-
 - react-simple-maps@3.0.0 : ideal for lightweight, SVG-based map visualizations (choropleths, small geo overlays).
 (careful to set the geoUrl constant inside the component function)
 

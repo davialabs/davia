@@ -3,7 +3,7 @@ import { createDaviaAgent } from "./agent/agent.js";
 export async function runAgent(
   sourcePath: string,
   destinationPath: string,
-  model: "anthropic" | "openai" | "google"
+  model: "anthropic" | "openai"
 ): Promise<void> {
   console.log(`\n🚀 Starting Davia Agent`);
   console.log(`   Source Path: ${sourcePath}`);
@@ -15,15 +15,24 @@ export async function runAgent(
     const agent = createDaviaAgent(model);
 
     // Invoke the agent with the initial task
-    const response = await agent.invoke({
-      messages: [
-        {
-          role: "user",
-          content: `I need you to convert documentation from ${sourcePath} to ${destinationPath}. 
+    const response = await agent.invoke(
+      {
+        messages: [
+          {
+            role: "user",
+            content: `I need you to convert documentation from ${sourcePath} to ${destinationPath}. 
 Please analyze the source files, perform any necessary transformations, and write the results to the destination.`,
+          },
+        ],
+      },
+      {
+        context: {
+          modelName: model,
+          sourcePath,
+          destinationPath,
         },
-      ],
-    });
+      }
+    );
 
     console.log("\n✅ Agent completed successfully!");
     console.log("\n📋 Response:");

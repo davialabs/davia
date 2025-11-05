@@ -6,7 +6,7 @@ import {
   WRITE_TOOL_DESCRIPTION,
   SEARCH_REPLACE_TOOL_DESCRIPTION,
   MULTI_EDIT_TOOL_DESCRIPTION,
-} from "../prompts/tool_descriptions.js";
+} from "./prompts/tool_descriptions.js";
 
 // Context schema type - matches the contextSchema in agent.ts
 type ContextType = {
