@@ -15,14 +15,21 @@ export function ThemeSwitcher() {
   const mounted = useHasMounted();
   const { resolvedTheme, theme, setTheme } = useTheme();
 
+  const triggerButton = (
+    <Button variant="ghost" size="icon-sm">
+      {!mounted ? null : resolvedTheme === "light" ? <Sun /> : <Moon />}
+      <span className="sr-only">Toggle theme</span>
+    </Button>
+  );
+
+  // Only render DropdownMenu after mount to avoid hydration mismatches with Radix UI IDs
+  if (!mounted) {
+    return triggerButton;
+  }
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon-sm">
-          {!mounted ? null : resolvedTheme === "light" ? <Sun /> : <Moon />}
-          <span className="sr-only">Toggle theme</span>
-        </Button>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>{triggerButton}</DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => setTheme("light")}>
           <Sun />

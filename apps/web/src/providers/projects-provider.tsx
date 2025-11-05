@@ -8,7 +8,6 @@ type ProjectsContextValue = {
   projects: Record<string, ProjectState>;
   trees: AssetTrees;
   setTrees: (trees: AssetTrees) => void;
-  currentProjectId: string | null;
   currentProject: ({ id: string } & ProjectState) | null;
 };
 
@@ -25,7 +24,7 @@ export function ProjectsProvider({
   initialTrees,
   children,
 }: ProjectsProviderProps) {
-  const { repoId } = useParams<{ repoId?: string }>();
+  const { projectId } = useParams<{ projectId?: string }>();
   const [trees, setTrees] = useState<AssetTrees>(initialTrees);
 
   // Update trees when prop changes (e.g., on router.refresh)
@@ -33,15 +32,16 @@ export function ProjectsProvider({
     setTrees(initialTrees);
   }, [initialTrees]);
 
-  // Get current project only if repoId exists and is in projects
+  // Get current project only if projectId exists and is in projects
   const currentProject =
-    repoId && projects[repoId] ? { id: repoId, ...projects[repoId] } : null;
+    projectId && projects[projectId]
+      ? { id: projectId, ...projects[projectId] }
+      : null;
 
   const value: ProjectsContextValue = {
     projects,
     trees,
     setTrees,
-    currentProjectId: repoId || null,
     currentProject,
   };
 

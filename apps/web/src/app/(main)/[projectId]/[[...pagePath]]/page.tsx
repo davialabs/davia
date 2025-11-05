@@ -13,13 +13,14 @@ import { findHtmlFiles, extractTitle } from "@/lib/tree/server";
 import { getBaseName } from "@/lib/utils";
 import { ProjectState } from "@/lib/types";
 import type { Metadata } from "next";
+import { Editor } from "./editor";
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ repoId: string; pagePath?: string[] }>;
+  params: Promise<{ projectId: string; pagePath?: string[] }>;
 }): Promise<Metadata> {
-  const { repoId, pagePath } = await params;
+  const { projectId, pagePath } = await params;
 
   // Get monorepo root from environment variable
   const monorepoRoot = process.env.DAVIA_MONOREPO_ROOT!;
@@ -36,8 +37,8 @@ export async function generateMetadata({
     console.error("Error reading projects.json:", error);
   }
 
-  // Check if repoId exists in projects
-  const project = projects[repoId];
+  // Check if projectId exists in projects
+  const project = projects[projectId];
   if (!project) {
     return {
       title: "Project not found",
@@ -55,7 +56,7 @@ export async function generateMetadata({
   }
 
   // Construct the file path from pagePath array
-  const assetPath = join(monorepoRoot, ".davia", "assets", repoId);
+  const assetPath = join(monorepoRoot, ".davia", "assets", projectId);
   const filePath = join(assetPath, ...pagePath) + ".html";
 
   // Check if the file exists
@@ -83,15 +84,15 @@ export async function generateMetadata({
 export default async function PagePathPage({
   params,
 }: {
-  params: Promise<{ repoId: string; pagePath?: string[] }>;
+  params: Promise<{ projectId: string; pagePath?: string[] }>;
 }) {
-  const { repoId, pagePath } = await params;
+  const { projectId, pagePath } = await params;
 
   // Get monorepo root from environment variable
   const monorepoRoot = process.env.DAVIA_MONOREPO_ROOT!;
 
   // Check if the asset folder exists
-  const assetPath = join(monorepoRoot, ".davia", "assets", repoId);
+  const assetPath = join(monorepoRoot, ".davia", "assets", projectId);
   if (!existsSync(assetPath)) {
     return <EmptyDocumentation />;
   }
@@ -124,8 +125,8 @@ export default async function PagePathPage({
     // Get the first root HTML file alphabetically
     const pathWithoutExtension = rootHtmlFiles[0]!.relativePath;
 
-    // Redirect to /repoId/[path]
-    redirect(`/${repoId}/${pathWithoutExtension}`);
+    // Redirect to /projectId/[path]
+    redirect(`/${projectId}/${pathWithoutExtension}`);
   }
 
   // Construct the file path from pagePath array
@@ -146,12 +147,7 @@ export default async function PagePathPage({
   }
 
   // Render the HTML content
-  return (
-    <div
-      className="prose prose-slate dark:prose-invert max-w-none"
-      dangerouslySetInnerHTML={{ __html: htmlContent }}
-    />
-  );
+  return <Editor projectId={projectId} initialContent={htmlContent} />;
 }
 
 function EmptyDocumentation() {

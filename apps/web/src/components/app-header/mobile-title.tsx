@@ -11,14 +11,14 @@ import {
 
 export function MobileTitle() {
   const { trees } = useProjects();
-  const { repoId, pagePath: pagePathParams } = useParams<{
-    repoId?: string;
+  const { projectId, pagePath: pagePathParams } = useParams<{
+    projectId?: string;
     pagePath?: string[];
   }>();
   const pagePath = pagePathParams?.join("/");
 
   // Get the tree for the current project, default to null if it doesn't exist
-  const tree = repoId && trees[repoId] ? trees[repoId] : null;
+  const tree = projectId && trees[projectId] ? trees[projectId] : null;
 
   const page = pagePath && tree ? tree[pagePath] : undefined;
   const pageTitle = page?.title;

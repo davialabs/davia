@@ -23,14 +23,14 @@ import {
 
 export function NavigationBreadcrumb() {
   const { trees } = useProjects();
-  const { repoId, pagePath: pagePathParams } = useParams<{
-    repoId?: string;
+  const { projectId, pagePath: pagePathParams } = useParams<{
+    projectId?: string;
     pagePath?: string[];
   }>();
   const pagePath = pagePathParams?.join("/");
 
   // Get the tree for the current project, default to null if it doesn't exist
-  const tree = repoId && trees[repoId] ? trees[repoId] : null;
+  const tree = projectId && trees[projectId] ? trees[projectId] : null;
 
   const [breadcrumbItems, setBreadcrumbItems] = useState<
     { id: string; title: string }[]
@@ -75,7 +75,10 @@ export function NavigationBreadcrumb() {
                 ) : (
                   // Parent pages - clickable
                   <BreadcrumbLink asChild>
-                    <Link href={`/${repoId}/${item.id}`} className="truncate">
+                    <Link
+                      href={`/${projectId}/${item.id}`}
+                      className="truncate"
+                    >
                       {item.title}
                     </Link>
                   </BreadcrumbLink>
@@ -93,7 +96,7 @@ export function NavigationBreadcrumb() {
                 <BreadcrumbItem className="max-w-xs">
                   <BreadcrumbLink asChild>
                     <Link
-                      href={`/${repoId}/${breadcrumbItems[0].id}`}
+                      href={`/${projectId}/${breadcrumbItems[0].id}`}
                       className="truncate"
                     >
                       {breadcrumbItems[0].title}
@@ -114,7 +117,10 @@ export function NavigationBreadcrumb() {
                 <DropdownMenuContent align="start">
                   {breadcrumbItems.slice(1, -2).map((item) => (
                     <DropdownMenuItem key={item.id} asChild>
-                      <Link href={`/${repoId}/${item.id}`} className="truncate">
+                      <Link
+                        href={`/${projectId}/${item.id}`}
+                        className="truncate"
+                      >
                         {item.title}
                       </Link>
                     </DropdownMenuItem>
@@ -136,7 +142,10 @@ export function NavigationBreadcrumb() {
                   ) : (
                     // Second to last item - clickable
                     <BreadcrumbLink asChild>
-                      <Link href={`/${repoId}/${item.id}`} className="truncate">
+                      <Link
+                        href={`/${projectId}/${item.id}`}
+                        className="truncate"
+                      >
                         {item.title}
                       </Link>
                     </BreadcrumbLink>

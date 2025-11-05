@@ -32,19 +32,20 @@ import {
 import type { FallbackProps } from "react-error-boundary";
 
 export function NavTree() {
-  const { currentProjectId, trees } = useProjects();
-  const { pagePath: pagePathParams } = useParams<{ pagePath?: string[] }>();
+  const { trees } = useProjects();
+  const { projectId, pagePath: pagePathParams } = useParams<{
+    projectId?: string;
+    pagePath?: string[];
+  }>();
   const pagePath = pagePathParams?.join("/");
 
   // Get the tree for the current project, default to null if it doesn't exist
   const treeState: FlatTree | null =
-    currentProjectId && trees[currentProjectId]
-      ? trees[currentProjectId]
-      : null;
+    projectId && trees[projectId] ? trees[projectId] : null;
 
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const [localStorageExpandedItems, setLocalStorageExpandedItems] =
-    useLocalStorage<string[]>(`expanded-items-${currentProjectId}`, []);
+    useLocalStorage<string[]>(`expanded-items-${projectId}`, []);
 
   // Load expanded items from localStorage when component mounts
   useEffect(() => {
@@ -92,7 +93,7 @@ export function NavTree() {
     }
   }, [treeState, tree]);
 
-  if (!currentProjectId || !treeState) {
+  if (!projectId || !treeState) {
     return null;
   }
 
@@ -112,7 +113,7 @@ export function NavTree() {
               <MemoizedNavTreeItem
                 {...item.getProps()}
                 key={itemId}
-                currentProjectId={currentProjectId}
+                projectId={projectId}
                 id={itemId}
                 title={title}
                 hasChildren={hasChildren}

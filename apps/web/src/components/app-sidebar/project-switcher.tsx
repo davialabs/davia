@@ -1,7 +1,7 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { ChevronDownIcon, CheckIcon } from "lucide-react";
 import { useProjects } from "@/providers/projects-provider";
@@ -29,41 +29,49 @@ export function ProjectSwitcher() {
   const mounted = useHasMounted();
   const { resolvedTheme } = useTheme();
   const router = useRouter();
-  const { projects, currentProject, currentProjectId } = useProjects();
+  const { projectId } = useParams<{ projectId?: string }>();
+  const { projects, currentProject } = useProjects();
 
   const handleSwitchProject = (projectId: string) => {
     router.push(`/${projectId}`);
   };
 
+  const triggerContent = (
+    <SidebarMenuButton className="w-fit">
+      <Image
+        src={
+          !mounted
+            ? "/logo-light.svg"
+            : resolvedTheme === "light"
+              ? "/logo-light.svg"
+              : "/logo-dark.svg"
+        }
+        alt="Davia"
+        width={20}
+        height={20}
+        priority
+      />
+      {currentProject?.path ? (
+        <span className="truncate text-sm font-medium">
+          {getBaseName(currentProject.path)}
+        </span>
+      ) : (
+        <span className="truncate text-sm font-medium text-muted-foreground">
+          Select a project
+        </span>
+      )}
+      <ChevronDownIcon className="opacity-50" />
+    </SidebarMenuButton>
+  );
+
+  // Only render DropdownMenu after mount to avoid hydration mismatches with Radix UI IDs
+  if (!mounted) {
+    return triggerContent;
+  }
+
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <SidebarMenuButton className="w-fit">
-          <Image
-            src={
-              !mounted
-                ? "/logo-light.svg"
-                : resolvedTheme === "light"
-                  ? "/logo-light.svg"
-                  : "/logo-dark.svg"
-            }
-            alt="Davia"
-            width={20}
-            height={20}
-            priority
-          />
-          {currentProject?.path ? (
-            <span className="truncate text-sm font-medium">
-              {getBaseName(currentProject.path)}
-            </span>
-          ) : (
-            <span className="truncate text-sm font-medium text-muted-foreground">
-              Select a project
-            </span>
-          )}
-          <ChevronDownIcon className="opacity-50" />
-        </SidebarMenuButton>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>{triggerContent}</DropdownMenuTrigger>
       <DropdownMenuContent
         className="w-64 rounded-lg"
         align="start"
@@ -99,7 +107,7 @@ export function ProjectSwitcher() {
                     </span>
                   </ItemDescription>
                 </ItemContent>
-                {id === currentProjectId && (
+                {id === projectId && (
                   <ItemActions>
                     <CheckIcon className="size-4" />
                   </ItemActions>
