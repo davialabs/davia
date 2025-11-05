@@ -1,4 +1,5 @@
 import { createDaviaAgent } from "./agent/agent.js";
+import { GRAPH_RECURSION_LIMIT } from "./config.js";
 
 export async function runAgent(
   sourcePath: string,
@@ -26,6 +27,7 @@ Please analyze the source files, perform any necessary transformations, and writ
         ],
       },
       {
+        recursionLimit: GRAPH_RECURSION_LIMIT,
         context: {
           modelName: model,
           sourcePath,

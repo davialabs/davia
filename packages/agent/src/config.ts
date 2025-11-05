@@ -9,6 +9,12 @@ export const MAX_FILES = 1_000;
  */
 export const MAX_TOKENS = 130_000;
 
+/**
+ * Maximum number of graph recursion steps for LangGraph agent
+ * Default is 25, we increase it for complex documentation generation tasks
+ */
+export const GRAPH_RECURSION_LIMIT = 1000;
+
 export const EXCLUDED_FILE_EXTENSIONS = [
   ".jpg",
   ".jpeg",
