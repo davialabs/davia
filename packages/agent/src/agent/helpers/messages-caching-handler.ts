@@ -1,6 +1,19 @@
 import { AIMessage, ToolMessage, BaseMessage } from "langchain";
 
 /**
+ * Type for content blocks with optional cache control
+ */
+interface ContentBlockWithCacheControl {
+  type?: string;
+  text?: string;
+  cache_control?: {
+    type: "ephemeral";
+    ttl: string;
+  };
+  [key: string]: unknown;
+}
+
+/**
  * Deep clone a message to avoid mutating the original
  * @param message - Message to clone
  * @returns Cloned message
@@ -34,44 +47,60 @@ export function handleAIMessageCaching(messages: BaseMessage[]): void {
   // Remove cache control from all AI messages first
   for (const idx of aiIndices) {
     const aiMsg = messages[idx];
-    if (Array.isArray(aiMsg.content)) {
+    if (aiMsg && Array.isArray(aiMsg.content)) {
       // Create a deep copy to avoid modifying the original
       const aiMsgCopy = cloneMessage(aiMsg);
-      
+
       for (const block of aiMsgCopy.content) {
-        if (typeof block === "object" && block !== null && "cache_control" in block) {
-          delete (block as any).cache_control;
+        if (
+          typeof block === "object" &&
+          block !== null &&
+          "cache_control" in block
+        ) {
+          const blockWithCache = block as ContentBlockWithCacheControl;
+          delete blockWithCache.cache_control;
         }
       }
-      
+
       messages[idx] = aiMsgCopy;
     }
   }
 
   // Add cache control only to the last AI message
   const lastAiIdx = aiIndices[aiIndices.length - 1];
+  if (lastAiIdx === undefined) {
+    return;
+  }
   const lastAiMsg = messages[lastAiIdx];
+  if (!lastAiMsg) {
+    return;
+  }
 
   if (Array.isArray(lastAiMsg.content) && lastAiMsg.content.length > 0) {
     // Ensure we have a copy to modify
     const lastAiMsgCopy = cloneMessage(lastAiMsg);
-    const lastBlock = lastAiMsgCopy.content[lastAiMsgCopy.content.length - 1];
+    const contentArray = [...lastAiMsgCopy.content];
+    const lastBlock = contentArray[contentArray.length - 1];
 
     // Add cache control to the last content block
     if (typeof lastBlock === "object" && lastBlock !== null) {
-      (lastBlock as any).cache_control = {
+      const blockWithCache = { ...lastBlock } as ContentBlockWithCacheControl;
+      blockWithCache.cache_control = {
         type: "ephemeral",
         ttl: "5m",
       };
+      contentArray[contentArray.length - 1] =
+        blockWithCache as typeof lastBlock;
     } else {
       // If last block is not a dict, wrap it
-      lastAiMsgCopy.content[lastAiMsgCopy.content.length - 1] = {
+      contentArray[contentArray.length - 1] = {
         type: "text",
         text: lastBlock as string,
         cache_control: { type: "ephemeral", ttl: "5m" },
       };
     }
 
+    (lastAiMsgCopy as { content: unknown }).content = contentArray;
     messages[lastAiIdx] = lastAiMsgCopy;
   }
 }
@@ -97,23 +126,34 @@ export function handleToolMessageCaching(messages: BaseMessage[]): void {
   // Remove cache control from all ToolMessages first
   for (const idx of toolIndices) {
     const toolMsg = messages[idx];
-    if (Array.isArray(toolMsg.content)) {
+    if (toolMsg && Array.isArray(toolMsg.content)) {
       // Create a copy to avoid modifying the original
       const toolMsgCopy = cloneMessage(toolMsg);
-      
+
       for (const block of toolMsgCopy.content) {
-        if (typeof block === "object" && block !== null && "cache_control" in block) {
-          delete (block as any).cache_control;
+        if (
+          typeof block === "object" &&
+          block !== null &&
+          "cache_control" in block
+        ) {
+          const blockWithCache = block as ContentBlockWithCacheControl;
+          delete blockWithCache.cache_control;
         }
       }
-      
+
       messages[idx] = toolMsgCopy;
     }
   }
 
   // Add cache control only to the last ToolMessage
   const lastToolIdx = toolIndices[toolIndices.length - 1];
+  if (lastToolIdx === undefined) {
+    return;
+  }
   const lastToolMsg = messages[lastToolIdx];
+  if (!lastToolMsg) {
+    return;
+  }
 
   // Convert string content to list format with cache control
   if (typeof lastToolMsg.content === "string") {
@@ -126,26 +166,32 @@ export function handleToolMessageCaching(messages: BaseMessage[]): void {
       },
     ];
     messages[lastToolIdx] = lastToolMsgCopy;
-  } else if (Array.isArray(lastToolMsg.content) && lastToolMsg.content.length > 0) {
+  } else if (
+    Array.isArray(lastToolMsg.content) &&
+    lastToolMsg.content.length > 0
+  ) {
     // If already a list, add cache control to the first element
     const lastToolMsgCopy = cloneMessage(lastToolMsg);
-    const firstBlock = lastToolMsgCopy.content[0];
+    const contentArray = [...lastToolMsgCopy.content];
+    const firstBlock = contentArray[0];
 
     if (typeof firstBlock === "object" && firstBlock !== null) {
-      (firstBlock as any).cache_control = {
+      const blockWithCache = { ...firstBlock } as ContentBlockWithCacheControl;
+      blockWithCache.cache_control = {
         type: "ephemeral",
         ttl: "5m",
       };
+      contentArray[0] = blockWithCache as typeof firstBlock;
     } else {
       // Wrap non-dict content
-      lastToolMsgCopy.content[0] = {
+      contentArray[0] = {
         type: "text",
         text: firstBlock as string,
         cache_control: { type: "ephemeral", ttl: "5m" },
       };
     }
 
+    (lastToolMsgCopy as { content: unknown }).content = contentArray;
     messages[lastToolIdx] = lastToolMsgCopy;
   }
 }
-

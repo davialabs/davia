@@ -32,6 +32,8 @@ export function useKeyboardNavigation<TData>({
       const totalRows = rows.length;
 
       const currentRow = rows[rowIndex];
+      if (!currentRow) return;
+
       const visibleCells = currentRow
         .getVisibleCells()
         .filter((c) => !c.column.columnDef.meta?.excludeFromNav);
@@ -76,22 +78,30 @@ export function useKeyboardNavigation<TData>({
           e.preventDefault();
           if (currentColIndex > 0) {
             const prevCell = visibleCells[currentColIndex - 1];
-            const nextId = prevCell.column.id;
-            cellState.setFocusedCell({ rowIndex, columnId: nextId });
-            requestAnimationFrame(() => cellState.scrollCellIntoView(nextId));
+            if (prevCell) {
+              const nextId = prevCell.column.id;
+              cellState.setFocusedCell({ rowIndex, columnId: nextId });
+              requestAnimationFrame(() => cellState.scrollCellIntoView(nextId));
+            }
           } else if (rowIndex > 0) {
             const prevRow = rows[rowIndex - 1];
-            const prevRowVisibleCells = prevRow
-              .getVisibleCells()
-              .filter((c) => !c.column.columnDef.meta?.excludeFromNav);
-            const lastCell =
-              prevRowVisibleCells[prevRowVisibleCells.length - 1];
-            const nextId = lastCell.column.id;
-            cellState.setFocusedCell({
-              rowIndex: rowIndex - 1,
-              columnId: nextId,
-            });
-            requestAnimationFrame(() => cellState.scrollCellIntoView(nextId));
+            if (prevRow) {
+              const prevRowVisibleCells = prevRow
+                .getVisibleCells()
+                .filter((c) => !c.column.columnDef.meta?.excludeFromNav);
+              const lastCell =
+                prevRowVisibleCells[prevRowVisibleCells.length - 1];
+              if (lastCell) {
+                const nextId = lastCell.column.id;
+                cellState.setFocusedCell({
+                  rowIndex: rowIndex - 1,
+                  columnId: nextId,
+                });
+                requestAnimationFrame(() =>
+                  cellState.scrollCellIntoView(nextId)
+                );
+              }
+            }
           }
           break;
 
@@ -99,21 +109,29 @@ export function useKeyboardNavigation<TData>({
           e.preventDefault();
           if (currentColIndex < totalCols - 1) {
             const nextCell = visibleCells[currentColIndex + 1];
-            const nextId = nextCell.column.id;
-            cellState.setFocusedCell({ rowIndex, columnId: nextId });
-            requestAnimationFrame(() => cellState.scrollCellIntoView(nextId));
+            if (nextCell) {
+              const nextId = nextCell.column.id;
+              cellState.setFocusedCell({ rowIndex, columnId: nextId });
+              requestAnimationFrame(() => cellState.scrollCellIntoView(nextId));
+            }
           } else if (rowIndex < totalRows - 1) {
             const nextRow = rows[rowIndex + 1];
-            const nextRowVisibleCells = nextRow
-              .getVisibleCells()
-              .filter((c) => !c.column.columnDef.meta?.excludeFromNav);
-            const firstCell = nextRowVisibleCells[0];
-            const nextId = firstCell.column.id;
-            cellState.setFocusedCell({
-              rowIndex: rowIndex + 1,
-              columnId: nextId,
-            });
-            requestAnimationFrame(() => cellState.scrollCellIntoView(nextId));
+            if (nextRow) {
+              const nextRowVisibleCells = nextRow
+                .getVisibleCells()
+                .filter((c) => !c.column.columnDef.meta?.excludeFromNav);
+              const firstCell = nextRowVisibleCells[0];
+              if (firstCell) {
+                const nextId = firstCell.column.id;
+                cellState.setFocusedCell({
+                  rowIndex: rowIndex + 1,
+                  columnId: nextId,
+                });
+                requestAnimationFrame(() =>
+                  cellState.scrollCellIntoView(nextId)
+                );
+              }
+            }
           }
           break;
 
@@ -122,41 +140,61 @@ export function useKeyboardNavigation<TData>({
           if (e.shiftKey) {
             if (currentColIndex > 0) {
               const prevCell = visibleCells[currentColIndex - 1];
-              const nextId = prevCell.column.id;
-              cellState.setFocusedCell({ rowIndex, columnId: nextId });
-              requestAnimationFrame(() => cellState.scrollCellIntoView(nextId));
+              if (prevCell) {
+                const nextId = prevCell.column.id;
+                cellState.setFocusedCell({ rowIndex, columnId: nextId });
+                requestAnimationFrame(() =>
+                  cellState.scrollCellIntoView(nextId)
+                );
+              }
             } else if (rowIndex > 0) {
               const prevRow = rows[rowIndex - 1];
-              const prevRowVisibleCells = prevRow
-                .getVisibleCells()
-                .filter((c) => !c.column.columnDef.meta?.excludeFromNav);
-              const lastCell =
-                prevRowVisibleCells[prevRowVisibleCells.length - 1];
-              const nextId = lastCell.column.id;
-              cellState.setFocusedCell({
-                rowIndex: rowIndex - 1,
-                columnId: nextId,
-              });
-              requestAnimationFrame(() => cellState.scrollCellIntoView(nextId));
+              if (prevRow) {
+                const prevRowVisibleCells = prevRow
+                  .getVisibleCells()
+                  .filter((c) => !c.column.columnDef.meta?.excludeFromNav);
+                const lastCell =
+                  prevRowVisibleCells[prevRowVisibleCells.length - 1];
+                if (lastCell) {
+                  const nextId = lastCell.column.id;
+                  cellState.setFocusedCell({
+                    rowIndex: rowIndex - 1,
+                    columnId: nextId,
+                  });
+                  requestAnimationFrame(() =>
+                    cellState.scrollCellIntoView(nextId)
+                  );
+                }
+              }
             }
           } else {
             if (currentColIndex < totalCols - 1) {
               const nextCell = visibleCells[currentColIndex + 1];
-              const nextId = nextCell.column.id;
-              cellState.setFocusedCell({ rowIndex, columnId: nextId });
-              requestAnimationFrame(() => cellState.scrollCellIntoView(nextId));
+              if (nextCell) {
+                const nextId = nextCell.column.id;
+                cellState.setFocusedCell({ rowIndex, columnId: nextId });
+                requestAnimationFrame(() =>
+                  cellState.scrollCellIntoView(nextId)
+                );
+              }
             } else if (rowIndex < totalRows - 1) {
               const nextRow = rows[rowIndex + 1];
-              const nextRowVisibleCells = nextRow
-                .getVisibleCells()
-                .filter((c) => !c.column.columnDef.meta?.excludeFromNav);
-              const firstCell = nextRowVisibleCells[0];
-              const nextId = firstCell.column.id;
-              cellState.setFocusedCell({
-                rowIndex: rowIndex + 1,
-                columnId: nextId,
-              });
-              requestAnimationFrame(() => cellState.scrollCellIntoView(nextId));
+              if (nextRow) {
+                const nextRowVisibleCells = nextRow
+                  .getVisibleCells()
+                  .filter((c) => !c.column.columnDef.meta?.excludeFromNav);
+                const firstCell = nextRowVisibleCells[0];
+                if (firstCell) {
+                  const nextId = firstCell.column.id;
+                  cellState.setFocusedCell({
+                    rowIndex: rowIndex + 1,
+                    columnId: nextId,
+                  });
+                  requestAnimationFrame(() =>
+                    cellState.scrollCellIntoView(nextId)
+                  );
+                }
+              }
             }
           }
           break;
