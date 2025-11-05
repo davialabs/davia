@@ -1,6 +1,12 @@
+<img src="https://storage.googleapis.com/davia-public-assets/open-package/davia_open_repo_banner.png" alt="Davia Banner" style="border-radius: 20px; width: 100%;" />
+
+<div align="center">
+
 # Davia
 
 Interactive documentation that writes itself. Point Davia at any codebase and watch as it:
+
+</div>
 
 - **Understands your code structure** — Analyzes files, dependencies, and architecture automatically
 - **Generates comprehensive documentation** — Creates clear, detailed explanations of how everything works
