@@ -101,7 +101,7 @@ repositories/ecommerce-platform/deployment.html
    - Use database views for lists (API endpoints, processes with parameters) instead of MDX components
    - Add 1 separator per page maximum (\`<hr />\`) for visual breaks
    - Add blank lines before major sections (use \`<br />\` or paragraph spacing)
-   - Include GitHub links throughout
+   - Include relative file paths throughout
    - **Let components do ALL the teaching** - don't write text explanations
 5. **Track progress** - mark todos as completed as you work through them
 
@@ -283,9 +283,9 @@ Avoid duplicating what GitHub already provides:
 - Commit history (GitHub shows this better)
 - **Instead:** Provide EXPLANATIONS, visual diagrams, interactive learning tools, and insights
 
-**CRITICAL ORIENTATION - Always Link to GitHub Files:**
-Throughout ALL documentation pages, include frequent GitHub links to source files.
-In data/*.json files, add \`github_url\` or \`github_file\` fields for each item (dependency, endpoint, table, etc.) so components can link to source code. Every technical concept should reference where users can see the actual implementation on GitHub. 
+**CRITICAL ORIENTATION - Always Reference File Paths:**
+Throughout ALL documentation pages, include frequent references to source files using relative paths.
+In data/*.json files, add \`file_path\` or \`path\` fields for each item (dependency, endpoint, table, etc.) so components can reference source code. Every technical concept should reference where users can see the actual implementation using relative file paths. 
 This connects documentation to code and reduces duplication.
 
 ## INTERACTIVE COMPONENTS FOR TEACHING & EXPLAINING
@@ -417,7 +417,7 @@ This connects documentation to code and reduces duplication.
 **CONCISENESS - CRITICAL:**
 - **Maximum 5K characters per HTML page** - be EXTREMELY concise
 - **1-2 short paragraphs maximum** - let the visual component do ALL the teaching
-- **No explanations** - minimal context + visual component + GitHub links
+- **No explanations** - minimal context + visual component + file path references
 - **If you need more content**, split into child pages or use a visual component instead
 - **Add visual spacing** - use blank lines (\`<br />\`) before major sections
 - **Add 1 separator max per page** - use \`<hr />\` to break up sections visually (maximum 1 per page)
@@ -447,9 +447,9 @@ This connects documentation to code and reduces duplication.
   - **DO NOT use emojis** in \`<h1>\` page titles - keep them clean (e.g., \`<h1>Backend API</h1>\`)
 
 **Content quality:**
-- **Include GitHub URLs** - provide clickable links to actual code files for reference (e.g., "See [auth.py](https://github.com/...)")
+- **Include relative file paths** - reference actual code files using relative paths (e.g., "See \`src/auth.py\`")
 - **Keep pages focused** - one main concept per page; use child pages for subtopics
-- **Link to GitHub for code details** - don't copy/paste large code blocks, link to files instead
+- **Reference file paths for code details** - don't copy/paste large code blocks, reference file paths instead
 - **Provide context and insights** - explain WHY, not just WHAT (architecture decisions, trade-offs, patterns)
 
 **BAD EXAMPLE (descriptive, too much text, invented metrics):**
@@ -464,7 +464,7 @@ The backend API repository uses FastAPI as its web framework. It was chosen beca
 
 <mdx-component path="components/architecture-diagram.mdx" />
 
-<p>See <a href="https://github.com/.../main.py">main.py</a> for setup and <a href="https://github.com/.../models.py">models.py</a> for models.</p>
+<p>See <code>src/main.py</code> for setup and <code>src/models.py</code> for models.</p>
 
 <hr />
 
@@ -472,7 +472,7 @@ The backend API repository uses FastAPI as its web framework. It was chosen beca
 
 <mdx-component path="components/auth-flow.mdx" />
 
-<p>OAuth2 with JWT tokens. See <a href="https://github.com/.../auth.py">auth.py</a> for implementation.</p>
+<p>OAuth2 with JWT tokens. See <code>src/auth.py</code> for implementation.</p>
 \`\`\`
 
 ## EXAMPLE: Complete Repository Documentation (6 Pages)
@@ -541,7 +541,7 @@ Database View: API endpoints
 - **Frontend flows** - shows user journeys (onboarding → share → etc.) (uses drag and drop)
 - **Database views for lists** - API endpoints in database view, not MDX component
 - **Visual learning** - diagrams teach, not text explanations
-- **Always includes GitHub links** - connects teaching to actual code
+- **Always references file paths** - connects teaching to actual code using relative paths
 - **NO INVENTED DATA** - only documents what actually exists in the repo
 
 ---
@@ -602,7 +602,7 @@ Database View: API endpoints
 - This is OUR internal documentation BY the team FOR the team
 - Never write "they", "the team", "this repo"
 - Write as if teaching a new team member
-- Always include GitHub links to actual code
+- Always reference actual code using relative file paths
 </github_exploration_instructions>
 
 <github_repository>
@@ -632,4 +632,4 @@ CRITICAL REQUIREMENTS:
 - BE EXTREMELY CONCISE - minimal text (1-2 short paragraphs), let flow diagrams do the teaching
 - Add 1 separator (\`<hr />\`) per page maximum for visual breaks
 - Add blank lines before major sections for visual spacing
-- Always include GitHub links throughout documentation`;
+- Always reference files using relative paths throughout documentation`;
