@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { ChevronDownIcon, CheckIcon } from "lucide-react";
 import { useProjects } from "@/providers/projects-provider";
+import { useHasMounted } from "@/hooks/use-has-mounted";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -23,21 +23,13 @@ import {
   ItemActions,
 } from "@/components/ui/item";
 import { Spinner } from "@/components/ui/spinner";
-
-function getBaseName(path: string): string {
-  const parts = path.split("/").filter(Boolean);
-  return parts[parts.length - 1] || path;
-}
+import { getBaseName } from "@/lib/utils";
 
 export function ProjectSwitcher() {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useHasMounted();
   const { resolvedTheme } = useTheme();
   const router = useRouter();
   const { projects, currentProject, currentProjectId } = useProjects();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleSwitchProject = (projectId: string) => {
     router.push(`/${projectId}`);

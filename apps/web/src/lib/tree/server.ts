@@ -5,7 +5,7 @@ import { AssetTrees, FlatTree } from "@/lib/types";
 /**
  * Recursively finds all HTML files in a directory
  */
-function findHtmlFiles(
+export function findHtmlFiles(
   dir: string,
   baseDir: string,
   htmlFiles: string[] = []
@@ -29,7 +29,7 @@ function findHtmlFiles(
 /**
  * Extracts the first <h1> tag's text content from an HTML file
  */
-function extractTitle(htmlContent: string): string {
+export function extractTitle(htmlContent: string): string {
   const h1Match = htmlContent.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i);
 
   if (!h1Match || !h1Match[1]) {
