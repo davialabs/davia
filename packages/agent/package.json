@@ -17,6 +17,10 @@
     "lint": "eslint --max-warnings 0",
     "check-types": "tsc --noEmit"
   },
+  "dependencies": {
+    "@langchain/core": "^1.0.2",
+    "langchain": "^1.0.2"
+  },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
