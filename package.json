@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
-  "description": "Documentation that writes itself",
+  "description": "Interactive documentation that writes itself",
   "homepage": "https://davia.ai",
   "repository": {
     "type": "git",
