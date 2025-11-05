@@ -12,23 +12,27 @@ Interactive documentation that writes itself. Point Davia at any codebase and wa
 
 ## Quick Start
 
+### 1. Clone and Install
+
 ```bash
 git clone https://github.com/davialabs/davia.git
-
 cd davia
-
 pnpm i
-
-pnpm run docs
 ```
 
-### Configuration (Optional)
+### 2. Configuration (Optional)
 
 By default, Davia looks for a `.env` file in the root of the project path you provide. To configure API keys in the Davia monorepo instead:
 
-1. Copy `.env.example` to `.env`
+1. Rename `.env.example` to `.env`
 2. Add your AI provider API key (we recommend **Anthropic** for best results)
 3. Davia will use the first available key in this order: Anthropic → OpenAI → Google
+
+### 3. Run Docs
+
+```bash
+pnpm run docs
+```
 
 ### Viewing Results
 
