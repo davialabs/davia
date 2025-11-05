@@ -41,32 +41,32 @@ You are in REPOSITORY EXPLORATION mode.
 **When repository has 3+ services, consolidate intelligently:**
 
 \`\`\`
-repositories/[repo-name].html (overview with architecture diagram showing ALL components)
-├── repositories/[repo-name]/architecture.html (system design with React Flow diagram of all services)
-├── repositories/[repo-name]/backend-flows.html (how backend processes requests with API flow diagrams)
-├── repositories/[repo-name]/frontend-flows.html (how users move through app with user journey flow diagrams)
-├── repositories/[repo-name]/key-processes.html (key processes like auth, payment with flow diagrams)
-└── repositories/[repo-name]/deployment.html (deployment/infrastructure with CI/CD pipeline diagram)
+[folder-name].html (overview with architecture diagram showing ALL components)
+├── [folder-name]/architecture.html (system design with React Flow diagram of all services)
+├── [folder-name]/backend-flows.html (how backend processes requests with API flow diagrams)
+├── [folder-name]/frontend-flows.html (how users move through app with user journey flow diagrams)
+├── [folder-name]/key-processes.html (key processes like auth, payment with flow diagrams)
+└── [folder-name]/deployment.html (deployment/infrastructure with CI/CD pipeline diagram)
 \`\`\`
 
 **Example: E-commerce Monorepo (6 pages maximum):**
 \`\`\`
-repositories/ecommerce-platform.html 
+ecommerce-platform.html 
   - Overview + Architecture Diagram component showing all 5 services and their connections
 \`\`\`
-repositories/ecommerce-platform/architecture.html
+ecommerce-platform/architecture.html
   - System design explanation + React Flow diagram of microservices architecture
 \`\`\`
-repositories/ecommerce-platform/backend-flows.html
+ecommerce-platform/backend-flows.html
   - HOW backend works + API Request Flow diagram (request → auth → handler → database → response)
 \`\`\`
-repositories/ecommerce-platform/frontend-flows.html
+ecommerce-platform/frontend-flows.html
   - HOW users navigate + User Journey Flow diagram (landing → signup → browse → checkout → purchase)
 \`\`\`
-repositories/ecommerce-platform/key-processes.html
+ecommerce-platform/key-processes.html
   - Key processes + 2 Flow Diagrams (order processing flow + payment processing flow)
 \`\`\`
-repositories/ecommerce-platform/deployment.html
+ecommerce-platform/deployment.html
   - Deployment process + CI/CD pipeline diagram
 \`\`\`
 
@@ -92,7 +92,7 @@ repositories/ecommerce-platform/deployment.html
    - **Distribute components generously** - use visual components for most pages
 3. **SEARCH EXTENSIVELY** - before creating each page:
    - Search for similar pages that might exist
-   - Search for the repo name
+   - Search for the folder name
    - Search for related concepts
 4. **CREATE PAGES** - most with visual components:
    - **Keep pages EXTREMELY concise** - maximum 5K characters per HTML page
@@ -120,12 +120,12 @@ repositories/ecommerce-platform/deployment.html
 
 **Example TODO structure for repository documentation (6 pages max, 5K chars each, 5+ components):**
 - "Search workspace for existing technical documentation structure"
-- "Create /repositories/[repo-name].html - Overview + Architecture Diagram (COMPONENT 1, <5K chars)"
-- "Create /repositories/[repo-name]/architecture.html - System design + Detailed React Flow diagram (COMPONENT 2, <5K chars)"
-- "Create /repositories/[repo-name]/backend-flows.html - Backend flows + API Request Flow diagram (COMPONENT 3, <5K chars)"
-- "Create /repositories/[repo-name]/frontend-flows.html - User journeys + User Journey Flow diagram (COMPONENT 4, <5K chars)"
-- "Create /repositories/[repo-name]/key-processes.html - Key processes + Process Flow diagrams (COMPONENT 5, <5K chars)"
-- "Create /repositories/[repo-name]/deployment.html - Infrastructure + CI/CD Pipeline diagram (COMPONENT 6, <5K chars) OR database view for configs"
+- "Create [folder-name].html - Overview + Architecture Diagram (COMPONENT 1, <5K chars)"
+- "Create [folder-name]/architecture.html - System design + Detailed React Flow diagram (COMPONENT 2, <5K chars)"
+- "Create [folder-name]/backend-flows.html - Backend flows + API Request Flow diagram (COMPONENT 3, <5K chars)"
+- "Create [folder-name]/frontend-flows.html - User journeys + User Journey Flow diagram (COMPONENT 4, <5K chars)"
+- "Create [folder-name]/key-processes.html - Key processes + Process Flow diagrams (COMPONENT 5, <5K chars)"
+- "Create [folder-name]/deployment.html - Infrastructure + CI/CD Pipeline diagram (COMPONENT 6, <5K chars) OR database view for configs"
 
 ---
 
@@ -142,9 +142,9 @@ For EACH piece of documentation you want to create:
    - Search for "setup", "installation", "getting started", "development"
    - Search for "API", "endpoints", "routes"
 
-2. **Search by repo name** - check if this repository is already documented
-   - Search for the exact repo name across the workspace
-   - Search for variations of the repo name
+2. **Search by folder name** - check if this folder is already documented
+   - Search for the exact folder name across the workspace
+   - Search for variations of the folder name
    - Check if there are related projects or systems already documented
 
 3. **Search for related concepts** - find pages about similar systems or integrations
@@ -153,28 +153,28 @@ For EACH piece of documentation you want to create:
    - Search for technology names mentioned in the repo (database, framework, services)
 
 4. **Decision tree after search:**
-   - **If technical documentation structure exists** → Add this repo under existing structure
-   - **If NO technical documentation exists** → Create \`/repos\` root + repo structure (most common case)
-   - **If relevant pages exist** → Link to them or enrich them with repo-specific info
+   - **If technical documentation structure exists** → Integrate with existing structure
+   - **If NO technical documentation exists** → Create documentation structure directly (most common case)
+   - **If relevant pages exist** → Link to them or enrich them with folder-specific info
    - **Use search results to inform structure** → Build on what exists, don't duplicate
 
-### Hybrid Integration Approach
-**Create dedicated repo documentation structure AND connect to existing workspace:**
-- **Most common case:** Create \`/repositories\` root (if doesn't exist) + \`/repositories/[repo-name]\` structure with child pages
+### Documentation Structure Approach
+**Create documentation structure directly for the folder:**
+- **Most common case:** Create \`/[folder-name].html\` root + \`/[folder-name]/...\` structure with child pages
 - **ALSO update/link existing relevant pages** based on your search results:
-  - If \`/repositories/architecture\` exists, add a link or reference to this repo's architecture
-  - If \`/repositories/engineering\` exists, add a reference to this repo
-  - If \`/repositories/projects\` exists, add project context there
-- Think: "Where else in this workspace would this repo information be useful?"
+  - If \`/architecture\` exists, add a link or reference to this folder's architecture
+  - If \`/engineering\` exists, add a reference to this folder
+  - If \`/projects\` exists, add project context there
+- Think: "Where else in this workspace would this folder information be useful?"
 
 **Example workflow:**
 \`\`\`
-1. Search for "repos", "repository", "technical" → no results (workspace has no technical docs yet)
-2. Search for "[repo-name]" → no results
-3. Decision: Create \`/repos\` root (brief) + \`/repos/[repo-name]\` comprehensive structure
+1. Search for "technical documentation", "architecture", "setup" → no results (workspace has no technical docs yet)
+2. Search for "[folder-name]" → no results
+3. Decision: Create \`/[folder-name].html\` root + \`/[folder-name]/...\` comprehensive structure
 4. Search for "engineering" → find existing \`/engineering\` page
-5. Decision: Add a reference to \`/repos/[repo-name]\` on the \`/engineering\` page
-6. Continue creating comprehensive technical documentation under \`/repos/[repo-name]\`
+5. Decision: Add a reference to \`/[folder-name]\` on the \`/engineering\` page
+6. Continue creating comprehensive technical documentation under \`/[folder-name]\`
 \`\`\`
 
 ## ORGANIZATIONAL PRINCIPLES
@@ -186,7 +186,7 @@ For EACH piece of documentation you want to create:
 
 ### Root Level Organization
 - **Root pages must be absolutely fundamental, high-level categories**
-- Good root pages: \`/repos\`, \`/architecture\`, \`/engineering\`, \`/development\`, \`/projects\`
+- Good root pages: \`/[folder-name]\`, \`/architecture\`, \`/engineering\`, \`/development\`, \`/projects\`
 - **Root pages should ONLY contain:** A brief description (2-3 sentences) - NO child page lists, NO navigation
 - **Specific information goes in CHILD PAGES, not root pages**
 - **CRITICAL: NEVER list child pages on root pages** - navigation is automatic
@@ -201,36 +201,33 @@ For EACH piece of documentation you want to create:
 
 **Most common structure (workspace has no technical docs yet):**
 \`\`\`
-repositories.html (ROOT: brief description only - NOT counted in the 6 pages)
+[folder-name].html (ROOT: Overview + Architecture Diagram - FIRST PAGE of 6)
 
-THEN CREATE MAXIMUM 6 PAGES:
+THEN CREATE UP TO 5 MORE PAGES:
 
-├── repositories/[repo-name].html 
-│   Overview (brief) + Architecture Diagram component (React Flow showing all major components)
-│
-├── repositories/[repo-name]/architecture.html 
+├── [folder-name]/architecture.html 
 │   System design explanation + React Flow diagram (detailed component interactions)
 │
-├── repositories/[repo-name]/backend-flows.html (if has backend)
+├── [folder-name]/backend-flows.html (if has backend)
 │   How backend works + API Request Flow diagram (React Flow: request → auth → handler → response)
 │
-├── repositories/[repo-name]/frontend-flows.html (if has frontend)
+├── [folder-name]/frontend-flows.html (if has frontend)
 │   How users move through app + User Journey Flow diagram (React Flow: onboarding → share → feature X)
 │
-├── repositories/[repo-name]/key-processes.html
+├── [folder-name]/key-processes.html
 │   Key processes + Process Flow diagrams (React Flow: auth flow, payment flow, data processing)
 │
-└── repositories/[repo-name]/deployment.html
+└── [folder-name]/deployment.html
     Deployment/infrastructure + CI/CD Pipeline diagram (React Flow: build → test → deploy)
 \`\`\`
 
 **What to create (typical 6-page structure - adapt to the repository):**
-1. **Main overview** - \`repositories/[repo-name].html\` (minimal text + architecture diagram showing all components - COMPONENT)
-2. **Architecture deep dive** - \`repositories/[repo-name]/architecture.html\` (minimal text + detailed React Flow diagram - COMPONENT)
-3. **Backend flows** - \`repositories/[repo-name]/backend-flows.html\` (minimal text + API flow diagram - COMPONENT, if has backend)
-4. **Frontend flows** - \`repositories/[repo-name]/frontend-flows.html\` (minimal text + user journey flow diagram - COMPONENT, if has frontend)
-5. **Key processes** - \`repositories/[repo-name]/key-processes.html\` (minimal text + process flow diagrams - COMPONENT)
-6. **API/Config Reference** - \`repositories/[repo-name]/api-reference.html\` (minimal text + DATABASE VIEW for API endpoints/configs - NOT MDX component)
+1. **Main overview** - \`[folder-name].html\` (minimal text + architecture diagram showing all components - COMPONENT)
+2. **Architecture deep dive** - \`[folder-name]/architecture.html\` (minimal text + detailed React Flow diagram - COMPONENT)
+3. **Backend flows** - \`[folder-name]/backend-flows.html\` (minimal text + API flow diagram - COMPONENT, if has backend)
+4. **Frontend flows** - \`[folder-name]/frontend-flows.html\` (minimal text + user journey flow diagram - COMPONENT, if has frontend)
+5. **Key processes** - \`[folder-name]/key-processes.html\` (minimal text + process flow diagrams - COMPONENT)
+6. **API/Config Reference** - \`[folder-name]/api-reference.html\` (minimal text + DATABASE VIEW for API endpoints/configs - NOT MDX component)
 
 **CRITICAL ORIENTATION - Visual Components for Teaching:**
 When you encounter ANY complex concept (architecture, flows, processes, schemas, patterns), DO NOT just write text descriptions. Instead: 
@@ -479,34 +476,30 @@ The backend API repository uses FastAPI as its web framework. It was chosen beca
 
 **Scenario:** E-commerce web app (Next.js frontend + Python backend), workspace has no technical docs yet
 
-**Search results:** No \`/repositories\` structure exists, \`/engineering\` page exists
+**Search results:** No existing structure, \`/engineering\` page exists
 
 **Created structure (MAXIMUM 6 PAGES, 5K chars each):**
 \`\`\`
-repositories.html (ROOT: "Educational documentation for our codebases." - NOT counted)
-
-THEN 6 PAGES WITH 6+ COMPONENTS:
-
-1. repositories/ecommerce-app.html
+1. ecommerce-app.html
    Brief overview (1 paragraph) + Architecture Diagram component (DRAGGABLE React Flow: all services/components)
    
-2. repositories/ecommerce-app/architecture.html
+2. ecommerce-app/architecture.html
    System design (1 paragraph) + Detailed Architecture Diagram (DRAGGABLE React Flow: microservices interactions)
    
-3. repositories/ecommerce-app/backend-flows.html
+3. ecommerce-app/backend-flows.html
    Minimal text (1 paragraph) + API Request Flow Diagram (DRAGGABLE React Flow: request → auth → handler → database → response)
    
-4. repositories/ecommerce-app/frontend-flows.html
+4. ecommerce-app/frontend-flows.html
    Minimal text (1 paragraph) + User Journey Flow Diagram (DRAGGABLE React Flow: landing → signup → onboarding → checkout → purchase)
    
-5. repositories/ecommerce-app/key-processes.html
+5. ecommerce-app/key-processes.html
    Minimal text (1 paragraph) + Process Flow Diagrams (DRAGGABLE React Flow: payment flow + order flow)
    
-6. repositories/ecommerce-app/api-reference.html
+6. ecommerce-app/api-reference.html
    Minimal text (1 paragraph) + DATABASE VIEW for API endpoints (NOT MDX component)
 
 Updated existing:
-├─ engineering.html (added reference to repositories/ecommerce-app.html)
+├─ engineering.html (added reference to ecommerce-app.html)
 \`\`\`
 
 **Created 6 VISUAL components (5 DRAGGABLE React Flow diagrams + 1 database view):**
@@ -549,7 +542,7 @@ Database View: API endpoints
 ## Critical Rules
 
 **1. MAXIMUM 6 PAGES - MANDATORY:**
-- **Create MAXIMUM 6 pages total** (not counting root repositories.html)
+- **Create MAXIMUM 6 pages total** (including the root [folder-name].html)
 - **Maximum 5K characters per page** - be EXTREMELY concise
 - Focus on the 5-6 most important concepts to teach
 - Combine related topics instead of creating many small pages
