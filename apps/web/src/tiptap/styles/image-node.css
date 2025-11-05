@@ -1,0 +1,33 @@
+/* Image Node Styles - Converted from SCSS to Tailwind CSS */
+
+/* Base Tiptap Editor Image Styles */
+.tiptap.ProseMirror {
+  /* Base image styles */
+  & img {
+    @apply max-w-full h-auto block;
+  }
+
+  /* Direct child images (not emoji) */
+  & > img:not([data-type="emoji"] img) {
+    @apply my-8 outline-2 outline-transparent rounded-sm;
+
+    &.ProseMirror-selectednode {
+      @apply outline-cyan-500;
+    }
+  }
+
+  /* Thread image handling */
+  & .tiptap-thread {
+    &:has(> img) {
+      @apply my-8;
+
+      & img {
+        @apply outline-2 outline-transparent rounded-sm;
+      }
+    }
+
+    & img {
+      @apply m-0;
+    }
+  }
+}
