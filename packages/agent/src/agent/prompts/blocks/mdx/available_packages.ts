@@ -58,6 +58,15 @@ const onConnect = React.useCallback(
 );
 \`\`\`
 
+IMPORTANT - Data persistence:
+  * When you need to load or save JSON data, YOU MUST use the \`useData\` hook:
+    - Use \`data\` for visual-only purposes (read-only data display)
+    - Use \`updateData\` when you need persistence (saving changes)
+  * Example:
+\`\`\`jsx
+const { data, updateData } = useData();
+\`\`\`
+
 Styling:
   * Do NOT add custom styles unless explicitly asked by the user. The frontend already includes default React Flow styles.
   * Reference (already present in the app):
