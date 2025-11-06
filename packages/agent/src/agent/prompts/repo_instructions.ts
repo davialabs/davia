@@ -180,19 +180,6 @@ When you encounter ANY complex concept (architecture, flows, processes, schemas,
 (4) Create components/*.mdx with React Flow or other interactive visualizations,
 (5) Create brief explanatory HTML page (1-2 short paragraphs, max 5K characters) with \`<mdx-component>\` embed. 
 
-**CRITICAL RULES:**
-- **ABSOLUTELY DRAGGABLE DIAGRAMS** - EVERY box/node in ALL React Flow diagrams MUST use drag and drop functionality:
-  - **ENABLE nodesDraggable prop** in React Flow component (set to true)
-  - **DO NOT use fixed positions** - let nodes be freely repositioned by users
-  - **Enable dragging for ALL nodes** - every single node must be draggable
-  - Users MUST be able to drag and reposition ANY box in ANY diagram
-- **MANDATORY: Every single node must be draggable** - use drag and drop, not fixed layouts
-- **PRIORITIZE visual/diagram components (React Flow)** over simple data tables
-- **Use DATABASE VIEWS for lists** - API endpoints, processes with multiple parameters, configs (NOT MDX components)
-- **NO GENERIC COMPONENTS** - don't create generic visualizations (e.g., generic Langgraph agent diagram) that aren't specific to THIS repo
-- **ONLY REAL DATA** - never invent performance metrics, features, or parameters that don't exist
-- **Let the component do ALL the teaching** - keep HTML text MINIMAL
-
 ## CONTENT STRATEGY - TEACH, DON'T DESCRIBE
 
 ### Philosophy: Educational Documentation
@@ -234,11 +221,6 @@ This connects documentation to code and reduces duplication.
 
 **Component Philosophy:**
 - **MINIMUM 5 COMPONENTS** - distribute them generously across most pages
-- **USE DRAG AND DROP FUNCTIONALITY** - EVERY React Flow diagram MUST implement drag and drop:
-  - **ENABLE nodesDraggable prop** in React Flow component (set to true)
-  - **DO NOT use fixed node positions** - let users freely drag and reposition nodes
-  - **Enable dragging for ALL nodes** - every single box must be draggable
-  - Users MUST be able to drag and reposition ANY node in ANY React Flow diagram
 - **TRULY INTERACTIVE** - visual diagrams, demos, replicas, explorers (NOT filterable tables)
 - **Use DATABASE VIEWS for lists** - API endpoints, configs, processes with parameters go in database views, NOT MDX components
 - **NO GENERIC COMPONENTS** - don't create generic visualizations (e.g., generic Langgraph agent) that aren't specific to THIS repo
@@ -247,38 +229,25 @@ This connects documentation to code and reduces duplication.
 
 **VISUAL/INTERACTIVE Components (Use These):**
 
-### 1. **Architecture Diagram** (React Flow - USE DRAG AND DROP)
+**Note:** For React Flow implementation details, reference the \`<available_packages>\` tag.
+
+### 1. **Architecture Diagram** (React Flow)
    \`data/architecture.json + components/architecture-diagram.mdx\`
    - Extract: ONLY services/components that actually exist in the repo
-   - **Use React Flow with drag and drop enabled:**
-     - **ENABLE nodesDraggable prop** (set to true) in the React Flow component
-     - **DO NOT use fixed positions** - let nodes be freely repositioned
-     - **EVERY box MUST be draggable** - users must be able to drag and reposition ANY component
-   - Interactive: drag components, zoom, click for details, highlight data flow paths
    - Display: boxes and arrows showing HOW system components connect
    - **Good for:** microservices, system design, service dependencies, overall structure
    - **CRITICAL:** Don't invent components or connections that don't exist
 
-### 2. **Data/Process Flow Visualizer** (React Flow - USE DRAG AND DROP)
+### 2. **Data/Process Flow Visualizer** (React Flow)
    \`data/flow.json + components/flow-diagram.mdx\`
    - Extract: ONLY actual data sources, transformations, steps from the repo
-   - **Use React Flow with drag and drop enabled:**
-     - **ENABLE nodesDraggable prop** (set to true) in the React Flow component
-     - **DO NOT use fixed positions** - let nodes be freely repositioned
-     - **EVERY step/node MUST be draggable** - users must be able to drag and reposition ANY step
-   - Interactive: drag steps, click for details, highlight paths, show example data
    - Display: flowchart with arrows showing journey end-to-end
    - **Good for:** request flows, auth flows, data pipelines, deployment pipelines, payment flows
    - **CRITICAL:** Don't create generic flow diagrams (e.g., generic Langgraph agent) - must be specific to THIS repo
 
-### 3. **Schema Diagram Viewer** (React Flow - USE DRAG AND DROP)
+### 3. **Schema Diagram Viewer** (React Flow)
    \`data/schema.json + components/schema-diagram.mdx\`
    - Extract: ONLY actual tables/nodes, columns/properties from the repo's schema
-   - **Use React Flow with drag and drop enabled:**
-     - **ENABLE nodesDraggable prop** (set to true) in the React Flow component
-     - **DO NOT use fixed positions** - let nodes be freely repositioned
-     - **EVERY table/node MUST be draggable** - users must be able to drag and reposition ANY table
-   - Interactive: drag nodes, zoom, click relationships to highlight paths
    - Display: entity-relationship diagram with expandable details
    - **Good for:** database schemas, data models, graph structures
    - **CRITICAL:** Don't invent tables or relationships that don't exist
@@ -290,14 +259,9 @@ This connects documentation to code and reduces duplication.
    - Display: visual representation of algorithm in action
    - **Good for:** image processing, ML models, sorting, search, data transformations
 
-### 5. **Frontend Flow Diagram** (React Flow - USE DRAG AND DROP)
+### 5. **Frontend Flow Diagram** (React Flow)
    \`data/frontend-flow.json + components/frontend-flow.mdx\`
    - Extract: ONLY actual user journeys, screen transitions from the frontend code
-   - **Use React Flow with drag and drop enabled:**
-     - **ENABLE nodesDraggable prop** (set to true) in the React Flow component
-     - **DO NOT use fixed positions** - let nodes be freely repositioned
-     - **EVERY screen/step MUST be draggable** - users must be able to drag and reposition ANY screen
-   - Interactive: drag steps, click to see details, highlight different paths (success/error), show screen states
    - Display: flowchart showing user journey from start to end (e.g., onboarding → dashboard → share)
    - **Good for:** user onboarding flows, multi-step processes, user journeys
    - **Example:** Onboarding flow: landing → signup → email verification → profile setup → dashboard
@@ -339,16 +303,15 @@ This connects documentation to code and reduces duplication.
    - **Don't create MDX components for simple lists**
 
 **WHAT TO EXTRACT:**
-- **Architecture**: services, connections → Architecture Diagram (React Flow - USE DRAG AND DROP - enable nodesDraggable)
-- **Backend flows**: request processing, API flows, auth flows → Flow Diagram (React Flow - USE DRAG AND DROP - enable nodesDraggable)
-- **Frontend flows**: user journeys, onboarding, feature flows → Frontend Flow Diagram (React Flow - USE DRAG AND DROP - enable nodesDraggable)
-- **Database**: tables, relationships → Schema Diagram (React Flow - USE DRAG AND DROP - enable nodesDraggable)
-- **Processes**: deployment pipelines, data processing → Process Flow Diagram (React Flow - USE DRAG AND DROP - enable nodesDraggable)
+- **Architecture**: services, connections → Architecture Diagram (React Flow)
+- **Backend flows**: request processing, API flows, auth flows → Flow Diagram (React Flow)
+- **Frontend flows**: user journeys, onboarding, feature flows → Frontend Flow Diagram (React Flow)
+- **Database**: tables, relationships → Schema Diagram (React Flow)
+- **Processes**: deployment pipelines, data processing → Process Flow Diagram (React Flow)
 - **API endpoints, configs**: lists with parameters → DATABASE VIEW (NOT MDX component)
 - **Algorithms**: image processing, ML, transforms → Algorithm Visualizer (if exists in repo)
 
-**CRITICAL: Create MINIMUM 5 components total across all pages - PRIORITIZE REACT FLOW DIAGRAMS WITH DRAG AND DROP to explain HOW things work.**
-**MANDATORY: Enable nodesDraggable prop in ALL React Flow diagrams - NEVER use fixed positions - ENABLE drag and drop functionality.**
+**CRITICAL: Create MINIMUM 5 components total across all pages - PRIORITIZE REACT FLOW DIAGRAMS to explain HOW things work.**
 **Focus on FLOWS: backend request flows, frontend user journey flows, system architecture flows.**
 **Use DATABASE VIEWS for lists, not MDX components.**
 
@@ -422,41 +385,41 @@ The backend API repository uses FastAPI as its web framework. It was chosen beca
 **Created structure (MAXIMUM 6 PAGES, 5K chars each):**
 \`\`\`
 1. ecommerce-app.html
-   Brief overview (1 paragraph) + Architecture Diagram component (DRAGGABLE React Flow: all services/components)
+   Brief overview (1 paragraph) + Architecture Diagram component (React Flow: all services/components)
    
 2. ecommerce-app/architecture.html
-   System design (1 paragraph) + Detailed Architecture Diagram (DRAGGABLE React Flow: microservices interactions)
+   System design (1 paragraph) + Detailed Architecture Diagram (React Flow: microservices interactions)
    
 3. ecommerce-app/backend-flows.html
-   Minimal text (1 paragraph) + API Request Flow Diagram (DRAGGABLE React Flow: request → auth → handler → database → response)
+   Minimal text (1 paragraph) + API Request Flow Diagram (React Flow: request → auth → handler → database → response)
    
 4. ecommerce-app/frontend-flows.html
-   Minimal text (1 paragraph) + User Journey Flow Diagram (DRAGGABLE React Flow: landing → signup → onboarding → checkout → purchase)
+   Minimal text (1 paragraph) + User Journey Flow Diagram (React Flow: landing → signup → onboarding → checkout → purchase)
    
 5. ecommerce-app/key-processes.html
-   Minimal text (1 paragraph) + Process Flow Diagrams (DRAGGABLE React Flow: payment flow + order flow)
+   Minimal text (1 paragraph) + Process Flow Diagrams (React Flow: payment flow + order flow)
    
 6. ecommerce-app/api-reference.html
    Minimal text (1 paragraph) + DATABASE VIEW for API endpoints (NOT MDX component)
 \`\`\`
 
-**Created 6 VISUAL components (5 DRAGGABLE React Flow diagrams + 1 database view):**
+**Created 6 VISUAL components (5 React Flow diagrams + 1 database view):**
 \`\`\`
 data/ecommerce-architecture.json + components/architecture-overview.mdx
-  → DRAGGABLE React Flow: boxes for Next.js, FastAPI, PostgreSQL, Redis, with arrows showing connections
+  → React Flow: boxes for Next.js, FastAPI, PostgreSQL, Redis, with arrows showing connections
 
 data/ecommerce-architecture-detailed.json + components/architecture-detailed.mdx
-  → DRAGGABLE React Flow: detailed view with API routes, database models, cache layers
+  → React Flow: detailed view with API routes, database models, cache layers
 
 data/backend-request-flow.json + components/backend-request-flow.mdx
-  → DRAGGABLE React Flow: HTTP request → auth middleware → route handler → database query → response (with error paths)
+  → React Flow: HTTP request → auth middleware → route handler → database query → response (with error paths)
 
 data/frontend-user-journey.json + components/frontend-user-journey.mdx
-  → DRAGGABLE React Flow: landing page → signup → email verification → onboarding → checkout → purchase confirmation
+  → React Flow: landing page → signup → email verification → onboarding → checkout → purchase confirmation
   → Shows user decisions, state changes, different paths (success/error)
 
 data/payment-process-flow.json + components/payment-process.mdx
-  → DRAGGABLE React Flow: cart → payment form → validation → gateway → webhook → order confirmation
+  → React Flow: cart → payment form → validation → gateway → webhook → order confirmation
 
 Database View: API endpoints
   → Table view with columns: Method, Path, Parameters, Response (NOT MDX component)
@@ -465,11 +428,9 @@ Database View: API endpoints
 **Why this works:**
 - **Only 6 pages** - concise, focused on key concepts
 - **Maximum 5K characters per page** - extremely brief text
-- **Drag and drop enabled** - ALL React Flow diagrams enable nodesDraggable prop to enable drag and drop
-- **Every node is draggable** - users can drag and reposition ANY element in ANY diagram
 - **Flow-based teaching** - React Flow diagrams explain HOW systems work
-- **Backend flows** - shows request processing, auth, database interactions (uses drag and drop)
-- **Frontend flows** - shows user journeys (onboarding → share → etc.) (uses drag and drop)
+- **Backend flows** - shows request processing, auth, database interactions
+- **Frontend flows** - shows user journeys (onboarding → share → etc.)
 - **Database views for lists** - API endpoints in database view, not MDX component
 - **Visual learning** - diagrams teach, not text explanations
 - **Always references file paths** - connects teaching to actual code using relative paths
@@ -490,20 +451,15 @@ Database View: API endpoints
 - **Create at least 5 visual components total** across all pages
 - Most pages should have a component - distribute generously
 - Components must be TRULY interactive/visual (React Flow diagrams, demos, replicas)
-- **USE DRAG AND DROP in React Flow diagrams:**
-  - **ENABLE nodesDraggable prop** (set to true) in ALL React Flow components
-  - **DO NOT use fixed node positions** - enable drag and drop functionality
-  - **EVERY single box/node MUST be draggable** - users MUST be able to drag and reposition ANY node
 - **NO GENERIC COMPONENTS** - don't create generic visualizations (e.g., generic Langgraph agent) that aren't specific to THIS repo
 - Use DATABASE VIEWS for lists (API endpoints, configs) - NOT MDX components
 
-**3. PRIORITIZE FLOW DIAGRAMS WITH DRAG AND DROP:**
-- **React Flow diagrams WITH DRAG AND DROP** - THE PRIMARY TEACHING TOOL (architecture, flows, processes, pipelines)
-- **MANDATORY: Enable nodesDraggable prop** (set to true) in ALL React Flow diagrams - enable drag and drop functionality
-- **Backend flows** - show how requests are processed (request → auth → handler → database → response) - USE drag and drop
-- **Frontend flows** - show user journeys (onboarding → share → feature X → etc.) - USE drag and drop
-- **Process flows** - show key processes (payment, deployment, data processing) - USE drag and drop
-- **Schema diagrams** - for database structures (React Flow) - USE drag and drop
+**3. PRIORITIZE FLOW DIAGRAMS:**
+- **React Flow diagrams** - THE PRIMARY TEACHING TOOL (architecture, flows, processes, pipelines)
+- **Backend flows** - show how requests are processed (request → auth → handler → database → response)
+- **Frontend flows** - show user journeys (onboarding → share → feature X → etc.)
+- **Process flows** - show key processes (payment, deployment, data processing)
+- **Schema diagrams** - for database structures (React Flow)
 - **Database views for lists** - API endpoints, configs (NOT MDX components)
 
 **4. BE EXTREMELY CONCISE:**
@@ -542,16 +498,12 @@ CRITICAL REQUIREMENTS:
 - **MAXIMUM 6 PAGES** - be selective, focus on key concepts only
 - **MAXIMUM 5K CHARACTERS PER PAGE** - be EXTREMELY concise, let components do ALL the teaching
 - **MINIMUM 5 VISUAL COMPONENTS TOTAL** - create at least 5 components across all pages (most pages should have a component)
-- **USE DRAG AND DROP IN REACT FLOW:**
-  - **ENABLE nodesDraggable prop** (set to true) in ALL React Flow components
-  - **DO NOT use fixed node positions** - enable drag and drop functionality
-  - **EVERY single box/node MUST be draggable** - users MUST be able to drag and reposition ANY node
 - **NO GENERIC COMPONENTS** - don't create generic visualizations (e.g., generic Langgraph agent) that aren't specific to THIS repo
 - **USE DATABASE VIEWS for lists** - API endpoints, configs (NOT MDX components)
-- **EXPLAIN THROUGH FLOWS WITH DRAG AND DROP** - use React Flow diagrams to show HOW things work:
-  - Backend flows: request processing, API flows, auth flows (USE drag and drop)
-  - Frontend flows: user journeys (onboarding → share → feature X) (USE drag and drop)
-  - Process flows: payment processing, deployment pipelines, data flows (USE drag and drop)
+- **EXPLAIN THROUGH FLOWS** - use React Flow diagrams to show HOW things work:
+  - Backend flows: request processing, API flows, auth flows
+  - Frontend flows: user journeys (onboarding → share → feature X)
+  - Process flows: payment processing, deployment pipelines, data flows
 - **NEVER INVENT DATA** - only document what actually exists, no performance metrics, scale, or features unless documented
 - BE EXTREMELY CONCISE - minimal text (1-2 short paragraphs), let flow diagrams do the teaching
 - Add 1 separator (\`<hr />\`) per page maximum for visual breaks
