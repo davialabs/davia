@@ -1,11 +1,3 @@
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
-import { FileCodeIcon } from "lucide-react";
 import { existsSync, readFileSync } from "fs";
 import { join, relative } from "path";
 import { redirect } from "next/navigation";
@@ -14,6 +6,7 @@ import { getBaseName } from "@/lib/utils";
 import { ProjectState } from "@/lib/types";
 import type { Metadata } from "next";
 import { Editor } from "./editor";
+import { EmptyDocumentation, PageNotFound } from "./fallback-views";
 
 export async function generateMetadata({
   params,
@@ -148,45 +141,4 @@ export default async function PagePathPage({
 
   // Render the HTML content
   return <Editor projectId={projectId} initialContent={htmlContent} />;
-}
-
-function EmptyDocumentation() {
-  return (
-    <div className="flex flex-1 items-center justify-center h-full p-4">
-      <Empty>
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <FileCodeIcon />
-          </EmptyMedia>
-          <EmptyTitle>Empty Documentation</EmptyTitle>
-          <EmptyDescription>
-            No pages found for this repository. Please generate documentation
-            first by running{" "}
-            <code className="bg-muted p-1 text-xs rounded-md">
-              pnpm run docs
-            </code>{" "}
-            in the terminal.
-          </EmptyDescription>
-        </EmptyHeader>
-      </Empty>
-    </div>
-  );
-}
-
-function PageNotFound() {
-  return (
-    <div className="flex flex-1 items-center justify-center h-full p-4">
-      <Empty>
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <FileCodeIcon />
-          </EmptyMedia>
-          <EmptyTitle>Page Not Found</EmptyTitle>
-          <EmptyDescription>
-            The page you are looking for does not exist.
-          </EmptyDescription>
-        </EmptyHeader>
-      </Empty>
-    </div>
-  );
 }

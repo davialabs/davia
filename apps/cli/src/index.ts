@@ -1,14 +1,16 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
-import { spawn } from "child_process";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { createInterface } from "readline";
 import { statSync, readFileSync, writeFileSync, mkdirSync } from "fs";
 import { nanoid } from "nanoid";
-import open from "open";
-import { findMonorepoRoot, checkAndSetAiEnv } from "./utils.js";
+import {
+  findMonorepoRoot,
+  checkAndSetAiEnv,
+  startNextJsDevServer,
+} from "./utils.js";
 import { runAgent } from "@davia/agent";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -145,20 +147,43 @@ program
     project.running = true;
     writeFileSync(projectsJsonPath, JSON.stringify(projects, null, 2), "utf-8");
 
-    // Run the agent
-    try {
-      await runAgent(path, assetFolderPath, model);
-    } catch (error) {
-      console.error("Error running agent:", error);
-      throw error;
-    } finally {
-      // Set running to false after agent completes or fails
+    // Helper function to set running to false
+    const setRunningFalse = () => {
       project.running = false;
       writeFileSync(
         projectsJsonPath,
         JSON.stringify(projects, null, 2),
         "utf-8"
       );
+    };
+
+    // Start the Next.js dev server
+    const devServer = startNextJsDevServer({
+      monorepoRoot,
+      openBrowserOnStart: false, // We'll open manually after agent starts
+      onSignal: setRunningFalse,
+    });
+
+    // Run the agent (start it, then open browser, then await)
+    try {
+      const agentPromise = runAgent(path, assetFolderPath, model);
+
+      // Open browser after agent starts (give it a moment to initialize)
+      setTimeout(async () => {
+        await devServer.openBrowser();
+      }, 2000);
+
+      // Await agent completion
+      await agentPromise;
+    } catch (error) {
+      console.error("Error running agent:", error);
+      throw error;
+    } finally {
+      // Cleanup signal handlers
+      devServer.cleanup();
+      // Set running to false after agent completes or fails
+      setRunningFalse();
+      // Note: dev server continues running in background
     }
   });
 
@@ -167,40 +192,12 @@ program
   .description("Open the Davia web app")
   .action(async () => {
     const monorepoRoot = findMonorepoRoot(__dirname);
-    const webAppPath = join(monorepoRoot, "apps/web");
 
-    console.log("Starting Davia web app...");
-
-    // Start the Next.js dev server with monorepo root as environment variable
-    const devProcess = spawn("pnpm", ["dev"], {
-      cwd: webAppPath,
-      stdio: "inherit",
-      shell: true,
-      env: {
-        ...process.env,
-        DAVIA_MONOREPO_ROOT: monorepoRoot,
-      },
-    });
-
-    // Wait a bit for the server to start, then open browser
-    setTimeout(async () => {
-      try {
-        await open("http://localhost:3000");
-        console.log("Opened browser at http://localhost:3000");
-      } catch (error) {
-        console.error("Failed to open browser:", error);
-      }
-    }, 3000);
-
-    // Handle process termination
-    process.on("SIGINT", () => {
-      devProcess.kill();
-      process.exit(0);
-    });
-
-    process.on("SIGTERM", () => {
-      devProcess.kill();
-      process.exit(0);
+    // Start the Next.js dev server with automatic browser opening
+    startNextJsDevServer({
+      monorepoRoot,
+      openBrowserOnStart: true, // Open browser after delay
+      openBrowserDelay: 5000,
     });
   });
 

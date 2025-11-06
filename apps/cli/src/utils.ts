@@ -1,6 +1,8 @@
 import { dirname, join } from "path";
 import { existsSync, readFileSync } from "fs";
 import { parse } from "dotenv";
+import { spawn, ChildProcess } from "child_process";
+import open from "open";
 
 /**
  * Find monorepo root (where pnpm-workspace.yaml or turbo.json exists)
@@ -85,4 +87,112 @@ export function checkAndSetAiEnv(
   }
 
   return null;
+}
+
+/**
+ * Open browser at the given URL
+ */
+export async function openBrowser(url: string): Promise<void> {
+  try {
+    await open(url);
+    console.log(`Opened browser at ${url}`);
+  } catch (error) {
+    console.error("Failed to open browser:", error);
+  }
+}
+
+/**
+ * Options for starting the Next.js dev server
+ */
+export interface StartNextJsDevServerOptions {
+  /** Monorepo root path */
+  monorepoRoot: string;
+  /** Whether to open browser automatically after delay */
+  openBrowserOnStart?: boolean;
+  /** Delay in ms before opening browser */
+  openBrowserDelay?: number;
+  /** Callback for cleanup on process termination */
+  onSignal?: () => void;
+}
+
+/**
+ * Result of starting the Next.js dev server
+ */
+export interface NextJsDevServerResult {
+  /** The spawned child process */
+  process: ChildProcess;
+  /** Function to manually open browser */
+  openBrowser: () => Promise<void>;
+  /** Function to cleanup signal handlers */
+  cleanup: () => void;
+}
+
+/**
+ * Start the Next.js dev server with optional browser opening.
+ * Returns the process and utility functions.
+ */
+export function startNextJsDevServer(
+  options: StartNextJsDevServerOptions
+): NextJsDevServerResult {
+  const {
+    monorepoRoot,
+    openBrowserOnStart = false,
+    openBrowserDelay = 5000,
+    onSignal,
+  } = options;
+
+  const webAppPath = join(monorepoRoot, "apps/web");
+  const localhostUrl = "http://localhost:3000";
+  let hasOpenedBrowser = false;
+
+  console.log("Starting Davia web app...");
+
+  // Start the Next.js dev server
+  const devProcess = spawn("pnpm", ["dev"], {
+    cwd: webAppPath,
+    stdio: "inherit",
+    shell: true,
+    env: {
+      ...process.env,
+      DAVIA_MONOREPO_ROOT: monorepoRoot,
+    },
+  });
+
+  // Helper to open browser (prevents multiple opens)
+  const openBrowserOnce = async () => {
+    if (!hasOpenedBrowser) {
+      hasOpenedBrowser = true;
+      await openBrowser(localhostUrl);
+    }
+  };
+
+  // Open browser after delay if requested
+  let browserTimeout: NodeJS.Timeout | null = null;
+  if (openBrowserOnStart) {
+    browserTimeout = setTimeout(openBrowserOnce, openBrowserDelay);
+  }
+
+  // Handle process termination
+  const handleSignal = () => {
+    onSignal?.();
+    devProcess.kill();
+    process.exit(0);
+  };
+  process.on("SIGINT", handleSignal);
+  process.on("SIGTERM", handleSignal);
+
+  // Cleanup function
+  const cleanup = () => {
+    if (browserTimeout) {
+      clearTimeout(browserTimeout);
+    }
+    process.removeListener("SIGINT", handleSignal);
+    process.removeListener("SIGTERM", handleSignal);
+  };
+
+  return {
+    process: devProcess,
+    openBrowser: openBrowserOnce,
+    cleanup,
+  };
 }
