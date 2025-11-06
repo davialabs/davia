@@ -10,6 +10,7 @@ Important usage notes:
   * Always pass \`colorMode={theme}\` to ReactFlow and get \`theme\` via \`const { theme } = useTheme()\` from \`next-themes\`
   * Do NOT add a \`ThemeProvider\` from \`next-themes\` (it's already configured)
   * ALWAYS include \`position\` property for each node in the data (e.g., \`"position": { "x": 0, "y": 0 }\`)
+  * ALWAYS make nodes draggable by default - nodes are draggable by default in ReactFlow, so do NOT set \`nodesDraggable={false}\` or \`draggable: false\` on nodes unless the user explicitly asks for non-draggable nodes
 
 Example:
 \`\`\`json
