@@ -4,7 +4,7 @@
 
 # Davia
 
-Interactive documentation that writes itself. Point Davia at any codebase and watch as it:
+Interactive internal documentation that writes itself. Point Davia at any codebase and watch as it:
 
 </div>
 
