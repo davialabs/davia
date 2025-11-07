@@ -49,7 +49,7 @@ When prompted, enter the **absolute path** of your project:
 Enter absolute path of the project to document: [path of the local codebase you want to document]
 ```
 
-Davia will **automatically open a window** with the documentation that will **start building itself** as it analyzes and generates documentation.
+Davia spins up a docs window that populates in real time, and you can edit the pages as they appear.
 
 ### 4. View Results (Optional)
 
@@ -59,7 +59,7 @@ If you stopped the process and want to view the results later, you can **launch 
 pnpm run open
 ```
 
-Here's an example of how the documentation could look like:
+This is the Davia workspace view of your generated docs:
 
 <img src="https://storage.googleapis.com/davia-public-assets/landing-gif/agent-example.png" alt="Design Agent Example" style="border-radius: 20px; width: 100%; max-width: 1200px; display: block; margin: 20px auto;" />
 
