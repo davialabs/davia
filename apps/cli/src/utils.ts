@@ -90,12 +90,31 @@ export function checkAndSetAiEnv(
 }
 
 /**
+ * Create a clickable terminal hyperlink using OSC 8 escape sequence
+ */
+export function createTerminalLink(url: string, text: string): string {
+  // OSC 8 escape sequence for hyperlinks: \x1b]8;;URL\x1b\\TEXT\x1b]8;;\x1b\\
+  return `\x1b]8;;${url}\x1b\\${text}\x1b]8;;\x1b\\`;
+}
+
+/**
  * Open browser at the given URL
  */
-export async function openBrowser(url: string): Promise<void> {
+export async function openBrowser(
+  url: string,
+  projectId?: string
+): Promise<void> {
   try {
     await open(url);
-    console.log(`Opened browser at ${url}`);
+    if (projectId) {
+      // Create clickable link to the project page
+      const projectUrl = `http://localhost:3000/${projectId}`;
+      const link = createTerminalLink(projectUrl, projectUrl);
+      console.log(`\n🌐 Browser opened at ${url}`);
+      console.log(`   Project: ${link}\n`);
+    } else {
+      console.log(`\n🌐 Browser opened at ${url}\n`);
+    }
   } catch (error) {
     console.error("Failed to open browser:", error);
   }
@@ -113,6 +132,8 @@ export interface StartNextJsDevServerOptions {
   openBrowserDelay?: number;
   /** Callback for cleanup on process termination */
   onSignal?: () => void;
+  /** Whether to filter out HTTP request logs (GET, POST, etc.) */
+  filterRequestLogs?: boolean;
 }
 
 /**
@@ -122,7 +143,7 @@ export interface NextJsDevServerResult {
   /** The spawned child process */
   process: ChildProcess;
   /** Function to manually open browser */
-  openBrowser: () => Promise<void>;
+  openBrowser: (projectId?: string) => Promise<void>;
   /** Function to cleanup signal handlers */
   cleanup: () => void;
 }
@@ -139,6 +160,7 @@ export function startNextJsDevServer(
     openBrowserOnStart = false,
     openBrowserDelay = 5000,
     onSignal,
+    filterRequestLogs = false,
   } = options;
 
   const webAppPath = join(monorepoRoot, "apps/web");
@@ -148,9 +170,10 @@ export function startNextJsDevServer(
   console.log("Starting Davia web app...");
 
   // Start the Next.js dev server
+  // Use pipe for stdout/stderr if we need to filter logs, otherwise inherit
   const devProcess = spawn("pnpm", ["dev"], {
     cwd: webAppPath,
-    stdio: "inherit",
+    stdio: filterRequestLogs ? ["inherit", "pipe", "pipe"] : "inherit",
     shell: true,
     env: {
       ...process.env,
@@ -158,18 +181,42 @@ export function startNextJsDevServer(
     },
   });
 
+  // Filter stdout to hide HTTP request logs if requested
+  if (filterRequestLogs && devProcess.stdout) {
+    devProcess.stdout.on("data", (data: Buffer) => {
+      const output = data.toString();
+      // Only show lines that are not HTTP request logs (e.g., "GET / 307 in 1974ms")
+      const lines = output.split("\n");
+      for (const line of lines) {
+        const trimmed = line.trim();
+        // Skip HTTP method logs (GET, POST, PUT, DELETE, PATCH followed by path and status)
+        if (
+          trimmed &&
+          !trimmed.match(/^(GET|POST|PUT|DELETE|PATCH)\s+\S+\s+\d+\s+in/)
+        ) {
+          process.stdout.write(line + "\n");
+        }
+      }
+    });
+  }
+
+  // Pass through stderr (always show errors)
+  if (filterRequestLogs && devProcess.stderr) {
+    devProcess.stderr.pipe(process.stderr);
+  }
+
   // Helper to open browser (prevents multiple opens)
-  const openBrowserOnce = async () => {
+  const openBrowserOnce = async (projectId?: string) => {
     if (!hasOpenedBrowser) {
       hasOpenedBrowser = true;
-      await openBrowser(localhostUrl);
+      await openBrowser(localhostUrl, projectId);
     }
   };
 
   // Open browser after delay if requested
   let browserTimeout: NodeJS.Timeout | null = null;
   if (openBrowserOnStart) {
-    browserTimeout = setTimeout(openBrowserOnce, openBrowserDelay);
+    browserTimeout = setTimeout(() => openBrowserOnce(), openBrowserDelay);
   }
 
   // Handle process termination

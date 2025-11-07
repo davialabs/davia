@@ -4,7 +4,8 @@ import { GRAPH_RECURSION_LIMIT } from "./config.js";
 export async function runAgent(
   sourcePath: string,
   destinationPath: string,
-  model: "anthropic" | "openai" | "google"
+  model: "anthropic" | "openai" | "google",
+  projectId?: string
 ): Promise<void> {
   console.log(`\n🚀 Starting Davia Agent`);
   console.log(`   Source Path: ${sourcePath}`);
@@ -16,7 +17,7 @@ export async function runAgent(
     const agent = createDaviaAgent(model);
 
     // Invoke the agent with the initial task
-    const response = await agent.invoke(
+    await agent.invoke(
       {
         messages: [
           {
@@ -32,13 +33,12 @@ Please analyze the source files, perform any necessary transformations, and writ
           modelName: model,
           sourcePath,
           destinationPath,
+          projectId,
         },
       }
     );
 
     console.log("\n✅ Agent completed successfully!");
-    console.log("\n📋 Response:");
-    console.log(JSON.stringify(response, null, 2));
   } catch (error) {
     console.error("\n❌ Agent failed with error:");
     console.error(error);

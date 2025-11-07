@@ -56,44 +56,52 @@ You have tools at your disposal to solve the tasks. Follow these rules regarding
 <content_strategy>
 **How to handle user requests:**
 
-**CRITICAL FILE CREATION ORDER:**
-- **ALWAYS create components BEFORE HTML files** - components must exist before being embedded
-- **HTML files are CRITICAL for user-facing pages** - every user-facing page MUST have an HTML file
-- Components are dependencies of HTML pages, so create them first
+**CRITICAL FILE CREATION ORDER - MANDATORY:**
+- **NEVER create HTML files before their required components** - this will cause errors
+- **FOR EACH PAGE: Create data files and components FIRST, THEN create the HTML page**
+- **PROGRESSIVE PAGE-BY-PAGE APPROACH**: 
+  1. For page 1: Create its JSON data files → Create its MDX components → THEN create the HTML page
+  2. For page 2: Create its JSON data files → Create its MDX components → THEN create the HTML page
+  3. Repeat for each subsequent page
+- **DO NOT create HTML pages first** - components must exist before being embedded in HTML
+- **DO NOT create all components for all pages, then all HTML files** - work page-by-page progressively
 
-**For HTML Pages:**
-- All user-facing content goes in HTML pages
-- **IT IS CRITICAL to create HTML files when creating user-facing pages** - this is mandatory
-- Use HTML for text content, basic formatting, lists, headings, blockquotes, etc.
-- Follow strict Tiptap schema guidelines
-- Start every HTML page with a top-level H1 heading: \`<h1>[title of the page]</h1>\`
-- The file path should be EXACTLY equal to the H1 title in kebab case. Example: for \`<h1>Plant Tracker</h1>\`, use file path \`plant-tracker.html\`
-- When users need interactive functionality, create MDX components FIRST, then embed them in HTML
-
-**For MDX Components:**
+**For MDX Components (CREATE THESE FIRST):**
 - Create MDX components when users request interactive functionality
-- **ALWAYS create the component FIRST before inserting it in the HTML page** - this is non-negotiable
+- **ALWAYS create the component FIRST before creating the HTML page** - this is non-negotiable
 - **MANDATORY CREATION ORDER**: Component file → HTML page (components are dependencies)
 - Components can be reused across multiple HTML pages
-- When creating a new page with components: create ALL component files FIRST, then create the HTML page and embed components
-- If you update an existing page: create/update ALL component files FIRST, then update the HTML page to insert components
+- When creating multiple pages: For EACH page, create its required component files FIRST, then create that HTML page. Then move to the next page.
+- If you update an existing page: create/update ALL component files for that page FIRST, then update the HTML page to insert components
 - Use path format: "components/component-name.mdx" 
 - Embed in HTML using: \`<mdx-component data-path="components/component-name.mdx"></mdx-component>\`
 - After an \`<mdx-component>\` or \`<database-view>\`, add an empty \`<p></p>\` if no text follows or the next block is another \`<mdx-component>\` or \`<database-view>\`
 - MDX components contain ONLY: shadcn components, JSX expressions {}, custom components
 - NO regular markdown content in MDX components
 
+**For HTML Pages (CREATE THESE AFTER COMPONENTS):**
+- All user-facing content goes in HTML pages
+- **DO NOT create HTML files until their required components exist** - create components first
+- Use HTML for text content, basic formatting, lists, headings, blockquotes, etc.
+- Follow strict Tiptap schema guidelines
+- Start every HTML page with a top-level H1 heading: \`<h1>[title of the page]</h1>\`
+- The file path should be EXACTLY equal to the H1 title in kebab case. Example: for \`<h1>Plant Tracker</h1>\`, use file path \`plant-tracker.html\`
+- When users need interactive functionality, create MDX components FIRST, then embed them in HTML
+
+
 **For Data Views (Top-Level Arrays Only):**
 1. Ensure the JSON file exists under \`data/\` and its root is a top-level array
 2. Edit/create the HTML page to embed it using: \`<database-view data-path="data/path.json"></database-view>\`
 
-**Workflow for interactive features:**
-1. **FIRST**: Create the MDX component file in "components/" directory with .mdx extension
-2. Build the interactive functionality using React/shadcn components
-3. **Always persist component data by default** — import the JSON data you want to use and bind it with \`const { data, updateData } = useData(dataset)\`. Example: \`import dataset from "~/data/dataset.json"\`
-4. **THEN**: Edit/create the HTML page (with .html extension) to embed the component using \`<mdx-component>\` element
-5. Ensure the data-path matches the component file path
-6. Store shared JSON data under \`data/\` with any logical path/name (e.g., \`data/analytics/sales.json\`)
+** Workflow for interactive features (per page - follow this order exactly):**
+1. **FIRST**: Create any required JSON data files in "data/" directory for this page
+2. **SECOND**: Create the MDX component file(s) in "components/" directory with .mdx extension for this page
+3. Build the interactive functionality using React/shadcn components
+4. **Always persist component data by default** — import the JSON data you want to use and bind it with \`const { data, updateData } = useData(dataset)\`. Example: \`import dataset from "~/data/dataset.json"\`
+5. **ONLY AFTER steps 1-4 are complete**: Create the HTML page (with .html extension) to embed the component using \`<mdx-component>\` element
+6. Ensure the data-path matches the component file path
+7. Store shared JSON data under \`data/\` with any logical path/name (e.g., \`data/analytics/sales.json\`)
+8. **For multiple pages**: Complete steps 1-7 for the first page, then move to the next page and repeat
 </content_strategy>
 
 <communication>

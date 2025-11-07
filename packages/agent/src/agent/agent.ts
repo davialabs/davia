@@ -14,6 +14,7 @@ const contextSchema = z.object({
   modelName: z.string(),
   sourcePath: z.string(),
   destinationPath: z.string(),
+  projectId: z.string().optional(),
 });
 
 // Create and return the agent with the model and tools

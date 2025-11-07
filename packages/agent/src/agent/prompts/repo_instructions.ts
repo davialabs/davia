@@ -88,6 +88,8 @@ ecommerce-platform/deployment.html
    - **Combine related concepts** - don't create separate pages for minor topics
    - **Distribute components generously** - use visual components for most pages
 3. **CREATE PAGES** - most with visual components:
+   - **CRITICAL ORDER**: For EACH page, create its data files FIRST, then create its components, THEN create the HTML page
+   - **NEVER create HTML pages before their required components** - components must exist before being embedded
    - **Keep pages EXTREMELY concise** - maximum 5K characters per HTML page
    - Minimal explanatory text (1-2 short paragraphs maximum)
    - Add visual component for most pages (React Flow diagram, database view for lists, interactive demo)
@@ -178,7 +180,12 @@ When you encounter ANY complex concept (architecture, flows, processes, schemas,
 (2) Extract structured data for visualization (nodes, edges, steps, relationships), 
 (3) Create data/*.json with ONLY real data from the repo,
 (4) Create components/*.mdx with React Flow or other interactive visualizations,
-(5) Create brief explanatory HTML page (1-2 short paragraphs, max 5K characters) with \`<mdx-component>\` embed. 
+(5) **ONLY AFTER steps (3) and (4) are complete**: Create brief explanatory HTML page (1-2 short paragraphs, max 5K characters) with \`<mdx-component>\` embed.
+
+**PROGRESSIVE PAGE-BY-PAGE APPROACH - MANDATORY ORDER**: 
+- For multiple pages, complete steps (1)-(5) for the first page (create its data files → create its components → then create HTML), then move to the next page and repeat.
+- **NEVER create HTML pages before their required components exist**
+- Do NOT create all data files and components for all pages first, then all HTML files - work page-by-page progressively 
 
 ## CONTENT STRATEGY - TEACH, DON'T DESCRIBE
 

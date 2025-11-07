@@ -13,7 +13,53 @@ type ContextType = {
   modelName: string;
   sourcePath: string;
   destinationPath: string;
+  projectId?: string;
 };
+
+/**
+ * Create a clickable terminal hyperlink using OSC 8 escape sequence
+ */
+function createTerminalLink(url: string, text: string): string {
+  // OSC 8 escape sequence for hyperlinks: \x1b]8;;URL\x1b\\TEXT\x1b]8;;\x1b\\
+  return `\x1b]8;;${url}\x1b\\${text}\x1b]8;;\x1b\\`;
+}
+
+/**
+ * Generate a log message for file creation based on file type
+ */
+function getFileCreationMessage(
+  filePath: string,
+  context: ContextType
+): string {
+  const ext = path.extname(filePath).toLowerCase();
+  const fileName = path.basename(filePath);
+  const dirPath = path.dirname(filePath);
+
+  if (ext === ".html") {
+    // For HTML files, create a clickable link
+    if (context.projectId) {
+      // Convert file path to URL path (remove .html extension, use forward slashes)
+      const urlPath = filePath.replace(/\.html$/, "").replace(/\\/g, "/");
+      const url = `http://localhost:3000/${context.projectId}/${urlPath}`;
+      // Get display name without .html extension
+      const nameWithoutExt = fileName.replace(/\.html$/, "");
+      const displayName =
+        dirPath === "." ? nameWithoutExt : filePath.replace(/\.html$/, "");
+      const clickableName = createTerminalLink(url, displayName);
+      return `✓ Created ${clickableName} page`;
+    }
+    const displayName = filePath.replace(/\.html$/, "");
+    return `✓ Created: ${displayName}`;
+  } else if (ext === ".mdx") {
+    const displayPath = dirPath === "." ? fileName : filePath;
+    return `  -> Creating component: ${displayPath}\n`;
+  } else if (ext === ".json") {
+    const displayPath = dirPath === "." ? fileName : filePath;
+    return `  -> Creating data structure: ${displayPath}`;
+  } else {
+    return `✓ Created: ${filePath}`;
+  }
+}
 
 /**
  * Helper function to resolve file path using runtime context
@@ -121,6 +167,8 @@ export const writeTool = tool(
 
       // Write the file
       await fs.writeFile(absolutePath, content, "utf-8");
+
+      console.log(getFileCreationMessage(filePath, context));
 
       return `Successfully wrote content to ${filePath}`;
     } catch (error) {

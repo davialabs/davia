@@ -162,15 +162,19 @@ program
       monorepoRoot,
       openBrowserOnStart: false, // We'll open manually after agent starts
       onSignal: setRunningFalse,
+      filterRequestLogs: true, // Filter out GET/POST logs when running docs
     });
+
+    // Wait a moment for Next.js server to show startup messages before starting agent
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // Run the agent (start it, then open browser, then await)
     try {
-      const agentPromise = runAgent(path, assetFolderPath, model);
+      const agentPromise = runAgent(path, assetFolderPath, model, id);
 
       // Open browser after agent starts (give it a moment to initialize)
       setTimeout(async () => {
-        await devServer.openBrowser();
+        await devServer.openBrowser(id);
       }, 2000);
 
       // Await agent completion
