@@ -64,14 +64,7 @@ Contributions are welcome! We'd love your help to make Davia better:
 
 ## Example
 
-<div align="center">
-
-<video width="100%" max-width="1200px" controls style="border-radius: 20px; display: block; margin: 20px auto;">
-  <source src="https://storage.googleapis.com/davia-public-assets/landing-gif/davia-docs.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
-
-</div>
+https://storage.googleapis.com/davia-public-assets/landing-gif/davia-docs.mp4
 
 ---
 
