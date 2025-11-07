@@ -64,7 +64,7 @@ Contributions are welcome! We'd love your help to make Davia better:
 
 ## Example
 
-https://storage.googleapis.com/davia-public-assets/landing-gif/davia-docs.mp4
+<video src="https://storage.googleapis.com/davia-public-assets/landing-gif/davia-docs.mp4" controls style="width: 100%; border-radius: 20px;"></video>
 
 ---
 
