@@ -33,7 +33,7 @@ pnpm run docs
 When prompted, enter the absolute path of your project:
 
 ```
-Enter absolute path of the project to document: [path of the codebase you want to document]
+Enter absolute path of the project to document: [path of the local codebase you want to document]
 ```
 
 Davia will automatically open a window with the documentation that will start building itself as it analyzes and generates documentation.
@@ -64,7 +64,14 @@ Contributions are welcome! We'd love your help to make Davia better:
 
 ## Example
 
-<video src="https://storage.googleapis.com/davia-public-assets/landing-gif/davia-docs.mp4" controls style="border-radius: 20px; width: 100%; max-width: 1200px; display: block; margin: 20px auto;"></video>
+<div align="center">
+
+<video width="100%" max-width="1200px" controls style="border-radius: 20px; display: block; margin: 20px auto;">
+  <source src="https://storage.googleapis.com/davia-public-assets/landing-gif/davia-docs.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+</div>
 
 ---
 
