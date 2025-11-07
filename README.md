@@ -1,8 +1,21 @@
 <img src="https://storage.googleapis.com/davia-public-assets/open-package/davia_open_repo_banner.png" alt="Davia Banner" style="border-radius: 20px; width: 100%;" />
 
+<p align="center">
+    <a href="https://github.com/davialabs/davia/stargazers" alt="GitHub stars">
+        <img src="https://img.shields.io/github/stars/davialabs/davia?style=social" /></a>
+    <a href="https://github.com/davialabs/davia/blob/main/LICENSE" alt="License">
+        <img src="https://img.shields.io/github/license/davialabs/davia" /></a>
+    <a href="https://github.com/davialabs/davia/issues" alt="GitHub Issues">
+        <img src="https://img.shields.io/github/issues/davialabs/davia" /></a>
+    <a href="https://x.com/DaviaLabs" alt="X follow DaviaLabs">
+        <img src="https://img.shields.io/twitter/follow/DaviaLabs?style=social" /></a>
+    <a href="https://discord.gg/A79mEzP8me" alt="Discord">
+        <img src="https://dcbadge.limes.pink/api/server/A79mEzP8me?style=flat" /></a>
+</p>
+
 ## What is Davia?
 
-Davia is an open-source tool that generates interactive internal documentation for your local codebase. Point it at a project path and it writes documentation files locally with interactive visualizations that you can edit in a Notion-like platform or locally in your IDE.
+Davia is an **open-source tool** that generates **interactive internal documentation** for your local codebase. Point it at a project path and it writes documentation files locally with **interactive visualizations** that you can edit in a **Notion-like platform** or locally in your **IDE**.
 
 ---
 
@@ -18,7 +31,7 @@ pnpm i
 
 ### 2. Configuration
 
-By default, Davia looks for a `.env` file in the root of the project path you provide. Configuration is only optional if there are already API keys in the project path you're generating docs from. To configure API keys in the Davia monorepo instead:
+By default, Davia looks for a **`.env` file** in the root of the project path you provide. Configuration is **only optional** if there are already API keys in the project path you're generating docs from. To configure API keys in the **Davia monorepo** instead:
 
 1. Rename `.env.example` to `.env`
 2. Add your AI provider API key (we recommend **Anthropic** for best results)
@@ -30,17 +43,17 @@ By default, Davia looks for a `.env` file in the root of the project path you pr
 pnpm run docs
 ```
 
-When prompted, enter the absolute path of your project:
+When prompted, enter the **absolute path** of your project:
 
 ```
 Enter absolute path of the project to document: [path of the local codebase you want to document]
 ```
 
-Davia will automatically open a window with the documentation that will start building itself as it analyzes and generates documentation.
+Davia will **automatically open a window** with the documentation that will **start building itself** as it analyzes and generates documentation.
 
 ### 4. View Results (Optional)
 
-If you stopped the process and want to view the results later, you can launch the visualization app manually:
+If you stopped the process and want to view the results later, you can **launch the visualization app** manually:
 
 ```bash
 pnpm run open
@@ -64,10 +77,10 @@ Contributions are welcome! We'd love your help to make Davia better:
 
 ## Example
 
-<video src="https://storage.googleapis.com/davia-public-assets/landing-gif/davia-docs.mp4" controls style="width: 100%; border-radius: 20px;"></video>
+<video src="https://storage.googleapis.com/davia-public-assets/landing-gif/davia-docs-demo-github.mp4" controls style="width: 100%; border-radius: 20px;"></video>
 
 ---
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
