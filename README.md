@@ -4,7 +4,7 @@
     <a href="https://github.com/davialabs/davia/stargazers" alt="GitHub stars">
         <img src="https://img.shields.io/github/stars/davialabs/davia?style=social" /></a>
     <a href="https://github.com/davialabs/davia/blob/main/LICENSE" alt="License">
-        <img src="https://img.shields.io/github/license/davialabs/davia" /></a>
+        <img src="https://img.shields.io/github/license/davialabs/davia?style=flat&cacheSeconds=0" /></a>
     <a href="https://github.com/davialabs/davia/issues" alt="GitHub Issues">
         <img src="https://img.shields.io/github/issues/davialabs/davia" /></a>
     <a href="https://x.com/DaviaLabs" alt="X follow DaviaLabs">
