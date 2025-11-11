@@ -64,6 +64,22 @@ program
       process.exit(1);
     }
 
+    // Ask for optional documentation goal
+    const rl = createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+
+    const documentationGoal = await new Promise<string>((resolve) => {
+      rl.question(
+        "What do you want to document? [Optional - press Enter to skip]: ",
+        (answer) => {
+          rl.close();
+          resolve(answer.trim());
+        }
+      );
+    });
+
     // Get monorepo root and .davia path
     const monorepoRoot = findMonorepoRoot(__dirname);
 
@@ -170,7 +186,13 @@ program
 
     // Run the agent (start it, then open browser, then await)
     try {
-      const agentPromise = runAgent(path, assetFolderPath, model, id);
+      const agentPromise = runAgent(
+        path,
+        assetFolderPath,
+        model,
+        id,
+        documentationGoal || undefined
+      );
 
       // Open browser after agent starts (give it a moment to initialize)
       setTimeout(async () => {
