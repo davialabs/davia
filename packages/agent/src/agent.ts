@@ -14,7 +14,7 @@ export async function runAgent(
 
   try {
     // Create the agent with the specified model
-    const agent = createDaviaAgent(model);
+    const agent = await createDaviaAgent(model);
 
     // Invoke the agent with the initial task
     await agent.invoke(

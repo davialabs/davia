@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { createAgent } from "langchain";
+import { createAgent, initChatModel } from "langchain";
 import {
   writeTool,
   searchReplaceTool,
@@ -18,22 +18,24 @@ const contextSchema = z.object({
 });
 
 // Create and return the agent with the model and tools
-export const createDaviaAgent = (modelName: string) => {
+export const createDaviaAgent = async (modelName: string) => {
   // Select the appropriate model based on the provider
-  let model: string;
+  let modelString: string;
   switch (modelName) {
     case "anthropic":
-      model = "claude-sonnet-4-5";
+      modelString = "claude-sonnet-4-5";
       break;
     case "openai":
-      model = "openai:gpt-5";
+      modelString = "openai:gpt-5";
       break;
     case "google":
-      model = "google-genai:gemini-2.5-flash";
+      modelString = "google-genai:gemini-2.5-flash";
       break;
     default:
       throw new Error(`Unsupported model provider: ${modelName}`);
   }
+
+  const model = await initChatModel(modelString);
 
   return createAgent({
     model,
