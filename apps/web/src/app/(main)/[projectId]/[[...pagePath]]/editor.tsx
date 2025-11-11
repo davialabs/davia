@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { PageRegistryStoreProvider } from "@/providers/page-registry";
 import { useProjects } from "@/providers/projects-provider";
 import { extractTitle } from "@/lib/utils";
@@ -7,7 +8,12 @@ import { useDebounceCallback } from "usehooks-ts";
 
 // --- Tiptap core ---
 import "@/tiptap/styles/editor.css";
-import { EditorContent, EditorContext, useEditor } from "@tiptap/react";
+import {
+  EditorContent,
+  EditorContext,
+  useEditor,
+  type Editor as TiptapEditor,
+} from "@tiptap/react";
 import { baseExtensions, editorProps } from "@/tiptap/config";
 
 // --- Tiptap extensions ---
@@ -104,7 +110,6 @@ export function Editor({
     // Don't render immediately on the server to avoid SSR issues
     immediatelyRender: false,
     editorProps,
-    content: initialContent,
     extensions: [
       Document.extend({
         content: "heading block*",
@@ -136,11 +141,31 @@ export function Editor({
       MdxExtension,
       DatabaseExtension,
     ],
-    onUpdate: async ({ editor }) => {
+  });
+
+  // Effect 1: Set initial content when editor is ready or initialContent changes
+  useEffect(() => {
+    if (!editor) return;
+    editor.commands.setContent(initialContent, { emitUpdate: false });
+  }, [editor, initialContent]);
+
+  // Effect 2: Subscribe to update event
+  useEffect(() => {
+    if (!editor) return;
+
+    const handleUpdateEvent = async ({ editor }: { editor: TiptapEditor }) => {
       const htmlContent = editor.getHTML();
       await handleUpdate(htmlContent);
-    },
-  });
+    };
+
+    editor.on("update", handleUpdateEvent);
+
+    // Cleanup: unsubscribe from update event
+    return () => {
+      editor.off("update", handleUpdateEvent);
+    };
+  }, [editor, handleUpdate]);
+
   const { isDragging } = useUiEditorState(editor);
 
   if (!editor)
