@@ -1,8 +1,8 @@
 import { existsSync, readFileSync } from "fs";
 import { join, relative } from "path";
 import { redirect } from "next/navigation";
-import { findHtmlFiles, extractTitle } from "@/lib/tree/server";
-import { getBaseName } from "@/lib/utils";
+import { findHtmlFiles } from "@/lib/tree/server";
+import { extractTitle, getBaseName } from "@/lib/utils";
 import { ProjectState } from "@/lib/types";
 import type { Metadata } from "next";
 import { Editor } from "./editor";
@@ -140,5 +140,11 @@ export default async function PagePathPage({
   }
 
   // Render the HTML content
-  return <Editor projectId={projectId} initialContent={htmlContent} />;
+  return (
+    <Editor
+      projectId={projectId}
+      pagePath={pagePath.join("/")}
+      initialContent={htmlContent}
+    />
+  );
 }

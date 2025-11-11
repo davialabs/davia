@@ -7,7 +7,7 @@ import type { ProjectState, AssetTrees } from "@/lib/types";
 type ProjectsContextValue = {
   projects: Record<string, ProjectState>;
   trees: AssetTrees;
-  setTrees: (trees: AssetTrees) => void;
+  setTrees: React.Dispatch<React.SetStateAction<AssetTrees>>;
   currentProject: ({ id: string } & ProjectState) | null;
 };
 

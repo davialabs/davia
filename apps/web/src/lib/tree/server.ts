@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync, statSync } from "fs";
 import { join, relative } from "path";
-import { AssetTrees, FlatTree } from "@/lib/types";
+import { extractTitle } from "@/lib/utils";
+import type { AssetTrees, FlatTree } from "@/lib/types";
 
 /**
  * Recursively finds all HTML files in a directory
@@ -24,22 +25,6 @@ export function findHtmlFiles(
   }
 
   return htmlFiles;
-}
-
-/**
- * Extracts the first <h1> tag's text content from an HTML file
- */
-export function extractTitle(htmlContent: string): string {
-  const h1Match = htmlContent.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i);
-
-  if (!h1Match || !h1Match[1]) {
-    return "Untitled";
-  }
-
-  // Strip all HTML tags from the captured content
-  const textOnly = h1Match[1].replace(/<[^>]+>/g, "").trim();
-
-  return textOnly || "Untitled";
 }
 
 /**

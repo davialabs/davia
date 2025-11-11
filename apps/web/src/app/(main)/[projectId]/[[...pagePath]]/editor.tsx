@@ -1,6 +1,9 @@
 "use client";
 
 import { PageRegistryStoreProvider } from "@/providers/page-registry";
+import { useProjects } from "@/providers/projects-provider";
+import { extractTitle } from "@/lib/utils";
+import { useDebounceCallback } from "usehooks-ts";
 
 // --- Tiptap core ---
 import "@/tiptap/styles/editor.css";
@@ -29,11 +32,74 @@ import { Spinner } from "@/components/ui/spinner";
 
 export function Editor({
   projectId,
+  pagePath,
   initialContent,
 }: {
   projectId: string;
+  pagePath: string;
   initialContent: string;
 }) {
+  const { setTrees } = useProjects();
+
+  const handleUpdate = useDebounceCallback(
+    async (htmlContent: string) => {
+      const filePath = pagePath + ".html";
+
+      // POST to /api/content
+      try {
+        const response = await fetch("/api/content", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            projectId,
+            path: filePath,
+            content: htmlContent,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          console.error("Failed to update content:", errorData.error);
+          return;
+        }
+
+        // Extract title from HTML content
+        const title = extractTitle(htmlContent);
+
+        // Update the tree for the current projectId and pagePath
+        setTrees((prev) => {
+          if (!prev[projectId]) {
+            return prev;
+          }
+
+          const updatedTrees = { ...prev };
+          const projectTree = { ...updatedTrees[projectId] };
+
+          if (projectTree[pagePath]) {
+            projectTree[pagePath] = {
+              ...projectTree[pagePath],
+              title,
+            };
+          } else {
+            // If the pagePath doesn't exist in the tree, create it
+            projectTree[pagePath] = {
+              title,
+              children: [],
+            };
+          }
+
+          updatedTrees[projectId] = projectTree;
+          return updatedTrees;
+        });
+      } catch (error) {
+        console.error("Error updating content:", error);
+      }
+    },
+    300 // 300ms debounce delay
+  );
+
   const editor = useEditor({
     // Don't render immediately on the server to avoid SSR issues
     immediatelyRender: false,
@@ -70,6 +136,10 @@ export function Editor({
       MdxExtension,
       DatabaseExtension,
     ],
+    onUpdate: async ({ editor }) => {
+      const htmlContent = editor.getHTML();
+      await handleUpdate(htmlContent);
+    },
   });
   const { isDragging } = useUiEditorState(editor);
 
