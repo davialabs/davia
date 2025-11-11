@@ -4,15 +4,13 @@
     <a href="https://github.com/davialabs/davia/stargazers" alt="GitHub stars">
         <img src="https://img.shields.io/github/stars/davialabs/davia?style=social" /></a>
     <a href="https://github.com/davialabs/davia/blob/main/LICENSE" alt="License">
-        <img src="https://img.shields.io/github/license/davialabs/davia?style=flat&cacheSeconds=0" /></a>
+        <img src="https://img.shields.io/github/license/davialabs/davia" /></a>
     <a href="https://github.com/davialabs/davia/issues" alt="GitHub Issues">
         <img src="https://img.shields.io/github/issues/davialabs/davia" /></a>
     <a href="https://x.com/DaviaLabs" alt="X follow DaviaLabs">
         <img src="https://img.shields.io/twitter/follow/DaviaLabs?style=social" /></a>
     <a href="https://discord.gg/A79mEzP8me" alt="Discord">
         <img src="https://dcbadge.limes.pink/api/server/A79mEzP8me?style=flat" /></a>
-    <a href="https://www.reddit.com/r/davia_ai/" alt="Reddit">
-        <img src="https://img.shields.io/reddit/subreddit-subscribers/davia_ai?style=social&label=r/davia_ai" /></a>
 </p>
 
 ## What is Davia?
@@ -51,7 +49,7 @@ When prompted, enter the **absolute path** of your project:
 Enter absolute path of the project to document: [path of the local codebase you want to document]
 ```
 
-Davia spins up a docs window that populates in real time, and you can edit the pages as they appear.
+Davia will **automatically open a window** with the documentation that will **start building itself** as it analyzes and generates documentation.
 
 ### 4. View Results (Optional)
 
@@ -61,7 +59,7 @@ If you stopped the process and want to view the results later, you can **launch 
 pnpm run open
 ```
 
-This is the Davia workspace view of your generated docs:
+Here's an example of how the documentation could look like:
 
 <img src="https://storage.googleapis.com/davia-public-assets/landing-gif/agent-example.png" alt="Design Agent Example" style="border-radius: 20px; width: 100%; max-width: 1200px; display: block; margin: 20px auto;" />
 
