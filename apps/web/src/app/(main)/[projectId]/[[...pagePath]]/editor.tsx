@@ -26,6 +26,7 @@ import { UiStateExtension } from "@/tiptap/ui-state-extension";
 import { TitlePlaceholder } from "@/tiptap/extensions/title-placeholder";
 import { MdxExtension } from "@/tiptap/extensions/mdx";
 import { DatabaseExtension } from "@/tiptap/extensions/database";
+import { ExcalidrawExtension } from "@/tiptap/extensions/excalidraw";
 
 // --- Tiptap hooks ---
 import { useUiEditorState } from "@/tiptap/hooks/use-ui-editor-state";
@@ -140,6 +141,7 @@ export function Editor({
       }),
       MdxExtension,
       DatabaseExtension,
+      ExcalidrawExtension,
     ],
   });
 

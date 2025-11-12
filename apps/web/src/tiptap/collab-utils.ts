@@ -15,6 +15,7 @@ const NODE_TYPE_LABELS: Record<string, string> = {
   horizontalRule: "Horizontal Rule",
   mdxComponent: "Component",
   databaseView: "Database",
+  excalidraw: "Excalidraw",
 };
 export type OverflowPosition = "none" | "top" | "bottom" | "both";
 

@@ -22,12 +22,16 @@ export function FloatingToolbar() {
   const isImageNodeSelected = isNodeTypeSelected(editor, ["image"]);
   const isMdxNodeSelected = isNodeTypeSelected(editor, ["mdxComponent"]);
   const isDatabaseNodeSelected = isNodeTypeSelected(editor, ["databaseView"]);
+  const isExcalidrawNodeSelected = isNodeTypeSelected(editor, ["excalidraw"]);
   const { lockDragHandle } = useUiEditorState(editor);
   const { shouldShow } = useFloatingToolbarVisibility({
     editor,
     isSelectionValid,
     extraHideWhen:
-      isImageNodeSelected || isMdxNodeSelected || isDatabaseNodeSelected, // TODO: Add extra hide when AI space menu is visible
+      isImageNodeSelected ||
+      isMdxNodeSelected ||
+      isDatabaseNodeSelected ||
+      isExcalidrawNodeSelected,
   });
 
   if (lockDragHandle || isMobile) return null;
