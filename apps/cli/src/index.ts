@@ -6,6 +6,7 @@ import { dirname, join } from "path";
 import { createInterface } from "readline";
 import { statSync, readFileSync, writeFileSync, mkdirSync } from "fs";
 import { nanoid } from "nanoid";
+import inquirer from "inquirer";
 import {
   findMonorepoRoot,
   checkAndSetAiEnv,
@@ -225,6 +226,69 @@ program
       openBrowserOnStart: true, // Open browser after delay
       openBrowserDelay: 5000,
     });
+  });
+
+program
+  .command("update-docs")
+  .description("Update documentation for a specific project")
+  .action(async () => {
+    const monorepoRoot = findMonorepoRoot(__dirname);
+    const daviaPath = join(monorepoRoot, ".davia");
+    const projectsJsonPath = join(daviaPath, "projects.json");
+
+    // Read projects.json
+    type ProjectState = {
+      path: string;
+      running: boolean;
+    };
+    let projects: Record<string, ProjectState> = {};
+    try {
+      const projectsContent = readFileSync(projectsJsonPath, "utf-8");
+      if (projectsContent.trim()) {
+        projects = JSON.parse(projectsContent);
+      }
+    } catch {
+      // If file doesn't exist or is invalid, start with empty object
+      projects = {};
+    }
+
+    // Check if there are any projects
+    const projectEntries = Object.entries(projects);
+    if (projectEntries.length === 0) {
+      console.log("No repo has already been analyzed.");
+      process.exit(0);
+    }
+
+    // Create choices for inquirer
+    const choices = projectEntries.map(([id, project]) => ({
+      name: project.path,
+      value: { id, path: project.path },
+    }));
+
+    // Prompt user to select a project
+    const { selectedProject } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "selectedProject",
+        message: "Select a project to update:",
+        choices,
+      },
+    ]);
+
+    // Ask what the user would like to update
+    const { updatePrompt } = await inquirer.prompt([
+      {
+        type: "input",
+        name: "updatePrompt",
+        message: "What would you like to update?",
+      },
+    ]);
+
+    // Display the selected path and prompt
+    console.log("\n---");
+    console.log("Selected path:", selectedProject.path);
+    console.log("Update prompt:", updatePrompt);
+    console.log("---\n");
   });
 
 program.parse();
