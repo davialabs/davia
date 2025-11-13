@@ -19,6 +19,8 @@
 
 Davia is an **open-source tool** that generates **interactive internal documentation** for your local codebase. Point it at a project path and it writes documentation files locally with **interactive visualizations** and **editable whiteboards** that you can edit in a **Notion-like platform** or locally in your **IDE**.
 
+<img src="https://storage.googleapis.com/davia-public-assets/landing-gif/excalidraw.png" alt="Excalidraw Example" style="border-radius: 20px; width: 100%; max-width: 400px; display: block; margin: 20px auto;" />
+
 ---
 
 ## Quick Start
@@ -87,7 +89,7 @@ https://github.com/user-attachments/assets/1b9ed809-81e5-474b-995f-e38eb5a672e7
 
 Another example with flows:
 
-https://github.com/user-attachments/assets/6eecb62f-3c13-434a-9aa0-a8dd3840bf49 (with visual whiteboard flow)
+https://github.com/user-attachments/assets/6eecb62f-3c13-434a-9aa0-a8dd3840bf49
 
 ---
 
