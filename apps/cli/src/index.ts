@@ -4,7 +4,13 @@ import { Command } from "commander";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { createInterface } from "readline";
-import { statSync, readFileSync, writeFileSync, mkdirSync } from "fs";
+import {
+  statSync,
+  readFileSync,
+  writeFileSync,
+  mkdirSync,
+  existsSync,
+} from "fs";
 import { nanoid } from "nanoid";
 import {
   findMonorepoRoot,
@@ -12,6 +18,46 @@ import {
   startNextJsDevServer,
 } from "./utils.js";
 import { runAgent } from "@davia/agent";
+
+// ANSI color codes for terminal output
+const colors = {
+  reset: "\x1b[0m",
+  red: "\x1b[31m",
+  yellow: "\x1b[33m",
+  green: "\x1b[32m",
+  blue: "\x1b[34m",
+  bold: "\x1b[1m",
+  dim: "\x1b[2m",
+} as const;
+
+/**
+ * Format error message with colors
+ */
+function errorMessage(message: string): string {
+  return `${colors.red}${colors.bold}✗ Error:${colors.reset} ${colors.red}${message}${colors.reset}`;
+}
+
+/**
+ * Format warning message with colors
+ */
+function warningMessage(message: string): string {
+  return `${colors.yellow}${colors.bold}⚠ Warning:${colors.reset} ${colors.yellow}${message}${colors.reset}`;
+}
+
+/**
+ * Display error and exit with code 1
+ */
+function exitWithError(message: string, suggestions?: string[]): never {
+  console.error(`\n${errorMessage(message)}\n`);
+  if (suggestions && suggestions.length > 0) {
+    console.error(`${colors.dim}Possible solutions:${colors.reset}`);
+    suggestions.forEach((suggestion) => {
+      console.error(`${colors.dim}  • ${suggestion}${colors.reset}`);
+    });
+    console.error();
+  }
+  process.exit(1);
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -52,16 +98,64 @@ program
       });
     }
 
-    // Check if path is a folder
+    // Validate and check if path exists and is a folder
+    if (!path || path.trim() === "") {
+      exitWithError("No path provided. The path cannot be empty.", [
+        "Provide a valid absolute path to the project directory",
+        "Example: /Users/username/my-project",
+        "Or use the --path option: davia docs --path /path/to/project",
+      ]);
+    }
+
+    // Check if path exists and is accessible
+    let stats;
     try {
-      const stats = statSync(path);
-      if (!stats.isDirectory()) {
-        console.error(`Error: "${path}" is not a folder`);
-        process.exit(1);
+      stats = statSync(path);
+    } catch (error) {
+      const err = error as NodeJS.ErrnoException;
+      let errorMsg = "";
+      let suggestions: string[] = [];
+
+      if (err.code === "ENOENT") {
+        errorMsg = `The path "${path}" does not exist.`;
+        suggestions = [
+          "Check if the path is correct and the directory exists",
+          "Make sure you're using an absolute path (starts with / on macOS/Linux or C:\\ on Windows)",
+          "Verify the path doesn't contain typos",
+          "Example of correct format: /Users/username/my-project",
+        ];
+      } else if (err.code === "EACCES") {
+        errorMsg = `Permission denied: Cannot access "${path}".`;
+        suggestions = [
+          "Check if you have read permissions for this directory",
+          "Try running with appropriate permissions",
+          "Verify the directory is accessible",
+        ];
+      } else if (err.code === "ENOTDIR") {
+        errorMsg = `"${path}" is not a directory (it appears to be a file).`;
+        suggestions = [
+          "Provide the path to a directory, not a file",
+          "Make sure the path points to a folder containing your project",
+        ];
+      } else {
+        errorMsg = `Cannot access path "${path}": ${err.message}`;
+        suggestions = [
+          "Verify the path is correct",
+          "Check if you have the necessary permissions",
+          "Ensure the filesystem is accessible",
+        ];
       }
-    } catch {
-      console.error(`Error: Path "${path}" does not exist`);
-      process.exit(1);
+
+      exitWithError(errorMsg, suggestions);
+    }
+
+    // Check if path is a directory
+    if (!stats.isDirectory()) {
+      exitWithError(`"${path}" is not a directory.`, [
+        "The path must point to a directory (folder), not a file",
+        "Make sure you're providing the project root directory",
+        "Example: /Users/username/my-project (not /Users/username/my-project/file.txt)",
+      ]);
     }
 
     // Ask for optional documentation goal
@@ -83,20 +177,34 @@ program
     // Get monorepo root and .davia path
     const monorepoRoot = findMonorepoRoot(__dirname);
 
+    // Verify monorepo root was found (has workspace files)
+    const workspaceFileExists =
+      existsSync(join(monorepoRoot, "pnpm-workspace.yaml")) ||
+      existsSync(join(monorepoRoot, "turbo.json"));
+
+    if (!workspaceFileExists) {
+      exitWithError("Could not find monorepo root directory.", [
+        "Make sure you're running the command from within the Davia monorepo",
+        "Verify that pnpm-workspace.yaml or turbo.json exists in the project root",
+        "Check if the CLI is properly installed",
+      ]);
+    }
+
     // Check and set AI API key from .env files
     const model = checkAndSetAiEnv(monorepoRoot, path);
 
     // Exit if no API key found
     if (!model) {
-      console.error(
-        "Error: No AI API key found. Please define one of the following in a .env file:\n" +
-          "  - ANTHROPIC_API_KEY\n" +
-          "  - OPENAI_API_KEY\n" +
-          "  - GOOGLE_API_KEY\n" +
-          "\n" +
-          "You can create a .env file in the monorepo root or in the path of the project to document."
-      );
-      process.exit(1);
+      exitWithError("No AI API key found. Cannot proceed without an API key.", [
+        "Create a .env file in the monorepo root or in the project directory",
+        "Add one of the following environment variables:",
+        "  • ANTHROPIC_API_KEY (for Claude)",
+        "  • OPENAI_API_KEY (for GPT models)",
+        "  • GOOGLE_API_KEY (for Gemini models)",
+        "",
+        "Example .env file content:",
+        "  ANTHROPIC_API_KEY=your_api_key_here",
+      ]);
     }
 
     const daviaPath = join(monorepoRoot, ".davia");
@@ -115,10 +223,32 @@ program
     try {
       const projectsContent = readFileSync(projectsJsonPath, "utf-8");
       if (projectsContent.trim()) {
-        projects = JSON.parse(projectsContent);
+        try {
+          projects = JSON.parse(projectsContent);
+        } catch (parseError) {
+          console.error(
+            warningMessage(
+              `Failed to parse projects.json. Starting with empty projects list.`
+            )
+          );
+          console.error(
+            `${colors.dim}Parse error: ${parseError instanceof Error ? parseError.message : String(parseError)}${colors.reset}\n`
+          );
+          // Reset to empty object if JSON is invalid
+          projects = {};
+        }
       }
-    } catch {
-      // If file doesn't exist or is invalid, start with empty object
+    } catch (error) {
+      const err = error as NodeJS.ErrnoException;
+      // If file doesn't exist, that's fine - we'll create it
+      if (err.code !== "ENOENT") {
+        console.error(
+          warningMessage(
+            `Could not read projects.json: ${err.message}. Starting with empty projects list.`
+          )
+        );
+        console.error();
+      }
       projects = {};
     }
 
@@ -201,9 +331,23 @@ program
 
       // Await agent completion
       await agentPromise;
+
+      // Show reload message after agent completes
+      console.log(
+        `\n${colors.green}${colors.bold}✅ Documentation generation complete!${colors.reset}`
+      );
+      console.log(
+        `   ${colors.green}🔄 Please reload the page in your browser to see the updates.${colors.reset}\n`
+      );
     } catch (error) {
-      console.error("Error running agent:", error);
-      throw error;
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      exitWithError(`Documentation generation failed: ${errorMsg}`, [
+        "Check if the source path contains valid files to document",
+        "Verify you have write permissions in the destination directory",
+        "Check the agent logs above for more details",
+        "Ensure your API key is valid and has sufficient credits/quota",
+        "Try running the command again",
+      ]);
     } finally {
       // Cleanup signal handlers
       devServer.cleanup();
