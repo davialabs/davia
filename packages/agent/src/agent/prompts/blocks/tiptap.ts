@@ -8,6 +8,7 @@ export const TIPTAP_HTML_GUIDELINES = `<tiptap_html_guidelines>
    - **Inline/text-level**: \`<strong>\`, \`<em>\`, \`<code>\`, \`<a>\`, \`<br>\`
    - **MDX Components**: \`<mdx-component data-path="components/component-name.mdx"></mdx-component>\` for embedding interactive components
    - **Data Views**: \`<database-view data-path="data/path.json"></database-view>\` for displaying top-level array JSON directly in HTML
+   - **Excalidraw Diagrams**: \`<excalidraw data-path="data/diagram.json"></excalidraw>\` for embedding interactive diagrams
    Anything outside this list (like \`<div>\`, \`<span>\`, \`<img>\`) will be dropped unless the corresponding extension is added.
 
 2. **Well-formed HTML only**
@@ -60,15 +61,15 @@ export const TIPTAP_HTML_GUIDELINES = `<tiptap_html_guidelines>
    - Works only when the JSON file's root is a top-level array (table/list-like datasets)
    - For configs, single-value objects, or nested structures, use an MDX component instead
 
-6. **Spacing Multiple MDX Components or Data Views**
-   When adding multiple \`<mdx-component>\` or \`<database-view>\` blocks one after another, you MUST separate them with empty paragraphs to ensure proper editor behavior:
+6. **Spacing Multiple Components**
+   When adding multiple \`<mdx-component>\`, \`<database-view>\`, or \`<excalidraw>\` blocks one after another, you MUST separate them with empty paragraphs to ensure proper editor behavior:
    
    \`\`\`html
    <mdx-component data-path="components/component1.mdx"></mdx-component>
    <p></p>
    <database-view data-path="data/list-a.json"></database-view>
    <p></p>
-   <mdx-component data-path="components/component2.mdx"></mdx-component>
+   <excalidraw data-path="data/diagram.json"></excalidraw>
    \`\`\`
    
    This creates editable zones where users can position their cursor and add content

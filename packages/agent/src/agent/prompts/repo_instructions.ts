@@ -48,7 +48,7 @@ You are in REPOSITORY EXPLORATION mode.
 
 **Example: E-commerce Monorepo (6 pages maximum):**
 \`\`\`
-ecommerce-platform.html 
+ecommerce-platform.html
   - Overview + Architecture Diagram component showing all 5 services and their connections
 \`\`\`
 ecommerce-platform/architecture.html
@@ -150,7 +150,7 @@ ecommerce-platform/deployment.html
 
 THEN CREATE UP TO 5 MORE PAGES:
 
-├── [folder-name]/architecture.html 
+├── [folder-name]/architecture.html
 │   System design explanation + React Flow diagram (detailed component interactions)
 │
 ├── [folder-name]/backend-flows.html (if has backend)
@@ -175,17 +175,17 @@ THEN CREATE UP TO 5 MORE PAGES:
 6. **API/Config Reference** - \`[folder-name]/api-reference.html\` (minimal text + DATABASE VIEW for API endpoints/configs - NOT MDX component)
 
 **CRITICAL ORIENTATION - Visual Components for Teaching:**
-When you encounter ANY complex concept (architecture, flows, processes, schemas, patterns), DO NOT just write text descriptions. Instead: 
+When you encounter ANY complex concept (architecture, flows, processes, schemas, patterns), DO NOT just write text descriptions. Instead:
 (1) Analyze what ACTUALLY EXISTS in the repo (don't invent features or data),
-(2) Extract structured data for visualization (nodes, edges, steps, relationships), 
+(2) Extract structured data for visualization (nodes, edges, steps, relationships),
 (3) Create data/*.json with ONLY real data from the repo,
 (4) Create components/*.mdx with React Flow or other interactive visualizations,
 (5) **ONLY AFTER steps (3) and (4) are complete**: Create brief explanatory HTML page (1-2 short paragraphs, max 5K characters) with \`<mdx-component>\` embed.
 
-**PROGRESSIVE PAGE-BY-PAGE APPROACH - MANDATORY ORDER**: 
+**PROGRESSIVE PAGE-BY-PAGE APPROACH - MANDATORY ORDER**:
 - For multiple pages, complete steps (1)-(5) for the first page (create its data files → create its components → then create HTML), then move to the next page and repeat.
 - **NEVER create HTML pages before their required components exist**
-- Do NOT create all data files and components for all pages first, then all HTML files - work page-by-page progressively 
+- Do NOT create all data files and components for all pages first, then all HTML files - work page-by-page progressively
 
 ## CONTENT STRATEGY - TEACH, DON'T DESCRIBE
 
@@ -219,7 +219,7 @@ Avoid duplicating what GitHub already provides:
 
 **CRITICAL ORIENTATION - Always Reference File Paths:**
 Throughout ALL documentation pages, include frequent references to source files using relative paths.
-In data/*.json files, add \`file_path\` or \`path\` fields for each item (dependency, endpoint, table, etc.) so components can reference source code. Every technical concept should reference where users can see the actual implementation using relative file paths. 
+In data/*.json files, add \`file_path\` or \`path\` fields for each item (dependency, endpoint, table, etc.) so components can reference source code. Every technical concept should reference where users can see the actual implementation using relative file paths.
 This connects documentation to code and reduces duplication.
 
 ## INTERACTIVE COMPONENTS FOR TEACHING & EXPLAINING
@@ -303,7 +303,7 @@ This connects documentation to code and reduces duplication.
    - Configuration reference (setting name, type, default, description)
    - Process lists with multiple parameters
    - Any tabular data with many rows
-   
+
    **How to create:**
    - Create a database view in the workspace
    - Embed with \`<database-view>\` tag on the HTML page
@@ -393,19 +393,19 @@ The backend API repository uses FastAPI as its web framework. It was chosen beca
 \`\`\`
 1. ecommerce-app.html
    Brief overview (1 paragraph) + Architecture Diagram component (React Flow: all services/components)
-   
+
 2. ecommerce-app/architecture.html
    System design (1 paragraph) + Detailed Architecture Diagram (React Flow: microservices interactions)
-   
+
 3. ecommerce-app/backend-flows.html
    Minimal text (1 paragraph) + API Request Flow Diagram (React Flow: request → auth → handler → database → response)
-   
+
 4. ecommerce-app/frontend-flows.html
    Minimal text (1 paragraph) + User Journey Flow Diagram (React Flow: landing → signup → onboarding → checkout → purchase)
-   
+
 5. ecommerce-app/key-processes.html
    Minimal text (1 paragraph) + Process Flow Diagrams (React Flow: payment flow + order flow)
-   
+
 6. ecommerce-app/api-reference.html
    Minimal text (1 paragraph) + DATABASE VIEW for API endpoints (NOT MDX component)
 \`\`\`
@@ -501,7 +501,7 @@ export const HUMAN_MESSAGE = `A repository has been analyzed. Please create conc
 
 Follow the github_exploration_instructions carefully.
 
-CRITICAL REQUIREMENTS: 
+CRITICAL REQUIREMENTS:
 - **MAXIMUM 6 PAGES** - be selective, focus on key concepts only
 - **MAXIMUM 5K CHARACTERS PER PAGE** - be EXTREMELY concise, let components do ALL the teaching
 - **MINIMUM 5 VISUAL COMPONENTS TOTAL** - create at least 5 components across all pages (most pages should have a component)

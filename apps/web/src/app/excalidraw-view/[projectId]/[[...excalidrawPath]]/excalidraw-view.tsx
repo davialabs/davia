@@ -32,6 +32,10 @@ export function ExcalidrawView({
     const data = JSON.parse(excalidrawContent);
     return data?.files ?? {};
   }, [excalidrawContent]);
+  const appState = useMemo(() => {
+    const data = JSON.parse(excalidrawContent);
+    return data?.appState ?? {};
+  }, [excalidrawContent]);
 
   // Map resolvedTheme to Excalidraw's theme format
   // resolvedTheme is "light" | "dark" | undefined
@@ -45,14 +49,14 @@ export function ExcalidrawView({
         const parsed = JSON.parse(serializedContent);
 
         // Extract elements if they exist
-        const contentObject: { elements?: unknown; files?: unknown } = {};
-        if (parsed?.elements) {
-          contentObject.elements = parsed.elements;
-        }
-        // Add files if they exist and are not empty
-        if (files && Object.keys(files).length > 0) {
-          contentObject.files = files;
-        }
+        const contentObject: {
+          elements?: unknown;
+          files?: unknown;
+          appState?: unknown;
+        } = {};
+        if (parsed?.elements) contentObject.elements = parsed.elements;
+        if (parsed?.appState) contentObject.appState = parsed.appState;
+        if (files && Object.keys(files).length > 0) contentObject.files = files;
 
         // Serialize the rebuilt object
         const content = JSON.stringify(contentObject, null, 2);
@@ -92,14 +96,13 @@ export function ExcalidrawView({
       files,
       "database"
     );
-    console.log(serialized);
     handleUpdate(serialized, files);
   };
 
   return (
     <div style={{ height: "32rem" }}>
       <Excalidraw
-        initialData={{ elements, files }}
+        initialData={{ elements, files, appState, scrollToContent: true }}
         theme={excalidrawTheme}
         onChange={handleChange}
       />
