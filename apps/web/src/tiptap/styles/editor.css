@@ -341,3 +341,30 @@
 .react-flow__minimap {
   @apply border border-border bg-popover text-popover-foreground;
 }
+
+/* =====================
+   DIFF STYLES
+   ===================== */
+
+/* Diff container */
+.tiptap .diff-container {
+  @apply relative my-2 rounded-md border border-border bg-background;
+}
+
+/* Old/deleted content - red background */
+.tiptap .diff-container diff-old {
+  @apply block bg-red-500/15 dark:bg-red-500/20 rounded px-2 py-1 my-1;
+  @apply border-l-2 border-red-500 dark:border-red-400;
+}
+
+/* New/inserted content - green background */
+.tiptap .diff-container diff-new {
+  @apply block bg-emerald-500/15 dark:bg-emerald-500/20 rounded px-2 py-1 my-1;
+  @apply border-l-2 border-emerald-500 dark:border-emerald-400;
+}
+
+/* Ensure diff-old is read-only */
+.tiptap .diff-container diff-old * {
+  pointer-events: none;
+  user-select: none;
+}

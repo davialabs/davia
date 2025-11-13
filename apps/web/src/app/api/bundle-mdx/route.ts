@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const projectId = searchParams.get("projectId");
   const path = searchParams.get("path");
+  const preferProposed = searchParams.get("preferProposed") === "true";
 
   if (!projectId || !path) {
     return NextResponse.json(
@@ -28,9 +29,19 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Construct the file path
+  // Construct the file paths
   const assetsPath = join(monorepoRoot, ".davia", "assets", projectId);
-  const filePath = join(assetsPath, path);
+  const proposedPath = join(monorepoRoot, ".davia", "proposed", projectId);
+  const assetFilePath = join(assetsPath, path);
+  const proposedFilePath = join(proposedPath, path);
+
+  // Determine which file to use
+  let filePath: string;
+  if (preferProposed && existsSync(proposedFilePath)) {
+    filePath = proposedFilePath;
+  } else {
+    filePath = assetFilePath;
+  }
 
   // Check if the file exists
   if (!existsSync(filePath)) {

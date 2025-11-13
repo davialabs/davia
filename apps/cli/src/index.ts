@@ -2,9 +2,15 @@
 
 import { Command } from "commander";
 import { fileURLToPath } from "url";
-import { dirname, join } from "path";
+import { dirname, join, relative } from "path";
 import { createInterface } from "readline";
-import { statSync, readFileSync, writeFileSync, mkdirSync } from "fs";
+import {
+  statSync,
+  readFileSync,
+  writeFileSync,
+  mkdirSync,
+  readdirSync,
+} from "fs";
 import { nanoid } from "nanoid";
 import inquirer from "inquirer";
 import {
@@ -228,6 +234,39 @@ program
     });
   });
 
+/**
+ * Recursively find all HTML files in a directory
+ */
+function findHtmlFiles(
+  dir: string,
+  baseDir: string,
+  htmlFiles: Array<{ path: string; content: string }> = []
+): Array<{ path: string; content: string }> {
+  try {
+    const entries = readdirSync(dir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      const fullPath = join(dir, entry.name);
+
+      if (entry.isDirectory()) {
+        findHtmlFiles(fullPath, baseDir, htmlFiles);
+      } else if (entry.name.endsWith(".html")) {
+        try {
+          const content = readFileSync(fullPath, "utf-8");
+          const relativePath = relative(baseDir, fullPath).replace(/\\/g, "/");
+          htmlFiles.push({ path: relativePath, content });
+        } catch {
+          // Skip files that can't be read
+        }
+      }
+    }
+  } catch {
+    // Skip directories we can't read
+  }
+
+  return htmlFiles;
+}
+
 program
   .command("update-docs")
   .description("Update documentation for a specific project")
@@ -235,6 +274,8 @@ program
     const monorepoRoot = findMonorepoRoot(__dirname);
     const daviaPath = join(monorepoRoot, ".davia");
     const projectsJsonPath = join(daviaPath, "projects.json");
+    const assetsPath = join(daviaPath, "assets");
+    const proposedPath = join(daviaPath, "proposed");
 
     // Read projects.json
     type ProjectState = {
@@ -284,11 +325,100 @@ program
       },
     ]);
 
-    // Display the selected path and prompt
-    console.log("\n---");
-    console.log("Selected path:", selectedProject.path);
-    console.log("Update prompt:", updatePrompt);
-    console.log("---\n");
+    const { id, path: projectPath } = selectedProject;
+
+    // Check if assets folder exists for this project
+    const assetFolderPath = join(assetsPath, id);
+    if (!statSync(assetFolderPath).isDirectory()) {
+      console.error(`Error: No documentation found for project ${id}`);
+      process.exit(1);
+    }
+
+    // Read all HTML files from assets
+    const htmlFiles = findHtmlFiles(assetFolderPath, assetFolderPath);
+    if (htmlFiles.length === 0) {
+      console.error(`Error: No HTML files found in assets for project ${id}`);
+      process.exit(1);
+    }
+
+    // Check and set AI API key
+    const model = checkAndSetAiEnv(monorepoRoot, projectPath);
+
+    // Exit if no API key found
+    if (!model) {
+      console.error(
+        "Error: No AI API key found. Please define one of the following in a .env file:\n" +
+          "  - ANTHROPIC_API_KEY\n" +
+          "  - OPENAI_API_KEY\n" +
+          "  - GOOGLE_API_KEY\n" +
+          "\n" +
+          "You can create a .env file in the monorepo root or in the path of the project to document."
+      );
+      process.exit(1);
+    }
+
+    // Create proposed folder for this project
+    const proposedFolderPath = join(proposedPath, id);
+    mkdirSync(proposedFolderPath, { recursive: true });
+
+    // Ensure project exists and get reference
+    const project = projects[id] ?? { path: projectPath, running: false };
+    projects[id] = project;
+
+    // Set running to true before agent run
+    project.running = true;
+    writeFileSync(projectsJsonPath, JSON.stringify(projects, null, 2), "utf-8");
+
+    // Helper function to set running to false
+    const setRunningFalse = () => {
+      project.running = false;
+      writeFileSync(
+        projectsJsonPath,
+        JSON.stringify(projects, null, 2),
+        "utf-8"
+      );
+    };
+
+    // Start the Next.js dev server
+    const devServer = startNextJsDevServer({
+      monorepoRoot,
+      openBrowserOnStart: false,
+      onSignal: setRunningFalse,
+      filterRequestLogs: true,
+    });
+
+    // Wait a moment for Next.js server to show startup messages before starting agent
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Run the agent in update mode
+    try {
+      const agentPromise = runAgent(
+        projectPath,
+        proposedFolderPath,
+        model,
+        id,
+        updatePrompt || undefined,
+        true, // isUpdate = true
+        htmlFiles, // existing HTML files
+        assetFolderPath // assets path for creating empty files
+      );
+
+      // Open browser after agent starts
+      setTimeout(async () => {
+        await devServer.openBrowser(id);
+      }, 2000);
+
+      // Await agent completion
+      await agentPromise;
+    } catch (error) {
+      console.error("Error running agent:", error);
+      throw error;
+    } finally {
+      // Cleanup signal handlers
+      devServer.cleanup();
+      // Set running to false after agent completes or fails
+      setRunningFalse();
+    }
   });
 
 program.parse();

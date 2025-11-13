@@ -6,9 +6,15 @@ export async function runAgent(
   destinationPath: string,
   model: "anthropic" | "openai" | "google",
   projectId?: string,
-  documentationGoal?: string
+  documentationGoal?: string,
+  isUpdate: boolean = false,
+  existingHtmlFiles?: Array<{ path: string; content: string }>,
+  assetsPath?: string
 ): Promise<void> {
   console.log(`\n🚀 Starting Davia Agent`);
+  if (isUpdate) {
+    console.log(`   Mode: UPDATE`);
+  }
   console.log(`   Source Path: ${sourcePath}`);
   console.log(`   Destination Path: ${destinationPath}`);
   console.log(`   Model: ${model}\n`);
@@ -18,12 +24,24 @@ export async function runAgent(
     const agent = await createDaviaAgent(model);
 
     // Build the user message
-    let userMessage = `I need you to convert documentation from ${sourcePath} to ${destinationPath}. 
+    let userMessage: string;
+    if (isUpdate) {
+      userMessage = `I need you to UPDATE existing documentation. The documentation files are already created in the assets directory, and I want you to update them based on the user's request. Please analyze the existing HTML files, the source code, and update the documentation accordingly. Write the updated files to ${destinationPath} (proposed directory).`;
+
+      if (existingHtmlFiles && existingHtmlFiles.length > 0) {
+        userMessage += `\n\n**Existing documentation files:**\n`;
+        for (const file of existingHtmlFiles) {
+          userMessage += `\n- ${file.path}\n`;
+        }
+      }
+    } else {
+      userMessage = `I need you to convert documentation from ${sourcePath} to ${destinationPath}. 
 Please analyze the source files, perform any necessary transformations, and write the results to the destination.`;
+    }
 
     // Append user's documentation goal if provided
     if (documentationGoal) {
-      userMessage += `\n\n**User's documentation goal:** ${documentationGoal}\n\nPlease prioritize and incorporate this context when generating the documentation.`;
+      userMessage += `\n\n**User's request:** ${documentationGoal}\n\nPlease prioritize and incorporate this context when ${isUpdate ? "updating" : "generating"} the documentation.`;
     }
 
     // Invoke the agent with the initial task
@@ -43,6 +61,9 @@ Please analyze the source files, perform any necessary transformations, and writ
           sourcePath,
           destinationPath,
           projectId,
+          isUpdate,
+          existingHtmlFiles,
+          assetsPath,
         },
       }
     );

@@ -122,29 +122,45 @@ export default async function PagePathPage({
     redirect(`/${projectId}/${pathWithoutExtension}`);
   }
 
-  // Construct the file path from pagePath array
-  const filePath = join(assetPath, ...pagePath) + ".html";
+  // Construct the file paths
+  const assetFilePath = join(assetPath, ...pagePath) + ".html";
+  const proposedPath = join(monorepoRoot, ".davia", "proposed", projectId);
+  const proposedFilePath = join(proposedPath, ...pagePath) + ".html";
 
-  // Check if the file exists
-  if (!existsSync(filePath)) {
+  // Check if the asset file exists
+  if (!existsSync(assetFilePath)) {
     return <PageNotFound />;
   }
 
   // Read the HTML file content
   let htmlContent: string;
   try {
-    htmlContent = readFileSync(filePath, "utf-8");
+    htmlContent = readFileSync(assetFilePath, "utf-8");
   } catch (error) {
-    console.error(`Error reading ${filePath}:`, error);
+    console.error(`Error reading ${assetFilePath}:`, error);
     return <PageNotFound />;
   }
 
+  // Check if proposed content exists
+  let proposedContent: string | null = null;
+  if (existsSync(proposedFilePath)) {
+    try {
+      proposedContent = readFileSync(proposedFilePath, "utf-8");
+    } catch (error) {
+      console.error(`Error reading proposed file ${proposedFilePath}:`, error);
+      // Continue without proposed content if there's an error reading it
+    }
+  }
+
   // Render the HTML content
+  // Pass both content and proposedContent to the client-side Editor
+  // which will generate the diff HTML in the browser where DOMParser is available
   return (
     <Editor
       projectId={projectId}
       pagePath={pagePath.join("/")}
       initialContent={htmlContent}
+      proposedContent={proposedContent}
     />
   );
 }

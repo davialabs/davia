@@ -5,6 +5,7 @@ import { useErrorBoundary } from "react-error-boundary";
 import type { BundleMDXResult } from "@/lib/types";
 import { useDataDependencies } from "../use-mdx-data";
 import { useData } from "@/tiptap/hooks/use-data";
+import { useProposedData } from "@/tiptap/hooks/use-proposed-data";
 import { getMDXComponent } from "mdx-bundler/client";
 import { MdxLoading } from "./fallback-views";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -28,8 +29,12 @@ const MDX_GLOBAL_CONFIG = {
 
 export function MdxRenderer({
   bundlePromise,
+  preferProposed = false,
+  hideTabs = false,
 }: {
   bundlePromise: Promise<BundleMDXResult>;
+  preferProposed?: boolean;
+  hideTabs?: boolean;
 }) {
   const { showBoundary } = useErrorBoundary();
   const bundleResult = use(bundlePromise);
@@ -45,9 +50,9 @@ export function MdxRenderer({
     if (!bundleResult.result.code) return null;
     return getMDXComponent(bundleResult.result.code, {
       ...MDX_GLOBAL_CONFIG,
-      useData: useData,
+      useData: preferProposed ? useProposedData : useData,
     });
-  }, [bundleResult.result.code]);
+  }, [bundleResult.result.code, preferProposed]);
 
   const [activeTab, setActiveTab] = useState("component");
 
@@ -62,10 +67,17 @@ export function MdxRenderer({
     return <MdxLoading />;
   }
 
+  // If hiding tabs (e.g., in comparison view), just render the component
+  if (hideTabs) {
+    return (
+      <MDXProvider>{FinalMDXComponent && <FinalMDXComponent />}</MDXProvider>
+    );
+  }
+
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab}>
       {dataImports.length > 0 && (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 mb-2">
           <Badge
             variant="outline"
             className={cn(
@@ -74,7 +86,7 @@ export function MdxRenderer({
             )}
             onClick={() => setActiveTab("component")}
           >
-            <LayoutTemplateIcon />
+            <LayoutTemplateIcon className="w-3 h-3 mr-1" />
             View
           </Badge>
           <Badge
@@ -85,15 +97,15 @@ export function MdxRenderer({
             )}
             onClick={() => setActiveTab("data")}
           >
-            <DatabaseIcon />
+            <DatabaseIcon className="w-3 h-3 mr-1" />
             Data
           </Badge>
         </div>
       )}
-      <TabsContent value="component">
+      <TabsContent value="component" className="mt-0">
         <MDXProvider>{FinalMDXComponent && <FinalMDXComponent />}</MDXProvider>
       </TabsContent>
-      <TabsContent value="data">
+      <TabsContent value="data" className="mt-0">
         <DataView dataImports={dataImports} />
       </TabsContent>
     </Tabs>

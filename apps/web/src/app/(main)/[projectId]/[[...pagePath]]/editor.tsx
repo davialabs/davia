@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import { renderDiffWrappers } from "@/tiptap/diff-utils";
 import { PageRegistryStoreProvider } from "@/providers/page-registry";
 import { useProjects } from "@/providers/projects-provider";
 import { extractTitle } from "@/lib/utils";
@@ -26,6 +27,11 @@ import { UiStateExtension } from "@/tiptap/ui-state-extension";
 import { TitlePlaceholder } from "@/tiptap/extensions/title-placeholder";
 import { MdxExtension } from "@/tiptap/extensions/mdx";
 import { DatabaseExtension } from "@/tiptap/extensions/database";
+import {
+  DiffExtension,
+  DiffOldExtension,
+  DiffNewExtension,
+} from "@/tiptap/extensions/diff";
 
 // --- Tiptap hooks ---
 import { useUiEditorState } from "@/tiptap/hooks/use-ui-editor-state";
@@ -40,16 +46,51 @@ export function Editor({
   projectId,
   pagePath,
   initialContent,
+  proposedContent,
 }: {
   projectId: string;
   pagePath: string;
   initialContent: string;
+  proposedContent?: string | null;
 }) {
   const { setTrees } = useProjects();
+
+  // Generate diff HTML on the client side where DOMParser is available
+  const contentWithDiffs = useMemo(() => {
+    if (proposedContent) {
+      try {
+        return renderDiffWrappers(initialContent, proposedContent);
+      } catch (error) {
+        console.error("Error generating diff:", error);
+        return initialContent;
+      }
+    }
+    return initialContent;
+  }, [initialContent, proposedContent]);
 
   const handleUpdate = useDebounceCallback(
     async (htmlContent: string) => {
       const filePath = pagePath + ".html";
+
+      // Check if content has diffs and extract accordingly
+      const { checkHasDiffs, stripDiffWrappers } = await import(
+        "@/tiptap/diff-utils"
+      );
+      const hasDiffs = checkHasDiffs(htmlContent);
+
+      let contentToSave = htmlContent;
+      let proposedContentToSave: string | null = null;
+
+      if (hasDiffs) {
+        // Extract old and new content from diff wrappers
+        const oldContent = stripDiffWrappers(htmlContent, "old");
+        const proposedContent = stripDiffWrappers(htmlContent, "new");
+        contentToSave = oldContent;
+        proposedContentToSave = proposedContent;
+      } else {
+        // No diffs, clear proposed content
+        proposedContentToSave = null;
+      }
 
       // POST to /api/content
       try {
@@ -61,7 +102,8 @@ export function Editor({
           body: JSON.stringify({
             projectId,
             path: filePath,
-            content: htmlContent,
+            content: contentToSave,
+            proposedContent: proposedContentToSave,
           }),
         });
 
@@ -140,14 +182,17 @@ export function Editor({
       }),
       MdxExtension,
       DatabaseExtension,
+      DiffExtension,
+      DiffOldExtension,
+      DiffNewExtension,
     ],
   });
 
-  // Effect 1: Set initial content when editor is ready or initialContent changes
+  // Effect 1: Set initial content when editor is ready or contentWithDiffs changes
   useEffect(() => {
     if (!editor) return;
-    editor.commands.setContent(initialContent, { emitUpdate: false });
-  }, [editor, initialContent]);
+    editor.commands.setContent(contentWithDiffs, { emitUpdate: false });
+  }, [editor, contentWithDiffs]);
 
   // Effect 2: Subscribe to update event
   useEffect(() => {

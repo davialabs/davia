@@ -5,6 +5,10 @@ import {
   GIT_EXPLO_INSTRUCTIONS,
   HUMAN_MESSAGE,
 } from "../prompts/repo_instructions.js";
+import {
+  UPDATE_INSTRUCTIONS,
+  UPDATE_HUMAN_MESSAGE,
+} from "../prompts/update_instructions.js";
 import * as z from "zod";
 
 /**
@@ -36,10 +40,20 @@ export const repositoryInitializationMiddleware = createMiddleware({
   name: "RepositoryInitialization",
   contextSchema: z.object({
     sourcePath: z.string(),
+    isUpdate: z.boolean().optional(),
+    existingHtmlFiles: z
+      .array(
+        z.object({
+          path: z.string(),
+          content: z.string(),
+        })
+      )
+      .optional(),
+    assetsPath: z.string().optional(),
   }),
   beforeAgent: async (state, runtime) => {
-    // Get source path from context
-    const { sourcePath } = runtime.context;
+    // Get context values
+    const { sourcePath, isUpdate, existingHtmlFiles } = runtime.context;
 
     // Get existing messages from state
     const messages = state.messages || [];
@@ -50,11 +64,24 @@ export const repositoryInitializationMiddleware = createMiddleware({
     // Format as markdown
     const formattedContent = formatRepositoryContent(repositoryContent);
 
-    // Create git exploration instructions with repository content
-    const gitExploInstructions = GIT_EXPLO_INSTRUCTIONS(formattedContent);
-
     // Only insert if there's no existing system message
     if (!messages.some((msg) => msg instanceof SystemMessage)) {
+      let instructionsText: string;
+      let humanMessageText: string;
+
+      if (isUpdate && existingHtmlFiles && existingHtmlFiles.length > 0) {
+        // Use update instructions
+        instructionsText = UPDATE_INSTRUCTIONS(
+          formattedContent,
+          existingHtmlFiles
+        );
+        humanMessageText = UPDATE_HUMAN_MESSAGE;
+      } else {
+        // Use regular initialization instructions
+        instructionsText = GIT_EXPLO_INSTRUCTIONS(formattedContent);
+        humanMessageText = HUMAN_MESSAGE;
+      }
+
       // Create a single SystemMessage with content blocks
       const systemMessage = new SystemMessage({
         content: [
@@ -63,7 +90,7 @@ export const repositoryInitializationMiddleware = createMiddleware({
             type: "text",
           },
           {
-            text: gitExploInstructions,
+            text: instructionsText,
             type: "text",
           },
         ],
@@ -76,7 +103,7 @@ export const repositoryInitializationMiddleware = createMiddleware({
       const humanMessage = new HumanMessage({
         content: [
           {
-            text: HUMAN_MESSAGE,
+            text: humanMessageText,
             type: "text",
             cache_control: { type: "ephemeral", ttl: "5m" },
           },

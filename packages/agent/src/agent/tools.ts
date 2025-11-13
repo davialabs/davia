@@ -14,6 +14,8 @@ type ContextType = {
   sourcePath: string;
   destinationPath: string;
   projectId?: string;
+  isUpdate?: boolean;
+  assetsPath?: string;
 };
 
 /**
@@ -165,6 +167,24 @@ export const writeTool = tool(
       const directory = path.dirname(absolutePath);
       await fs.mkdir(directory, { recursive: true });
 
+      // If in update mode and assetsPath is provided, check if this is a new file
+      if (context.isUpdate && context.assetsPath) {
+        const assetsFilePath = path.join(context.assetsPath, filePath);
+        const assetsFileExists = await fs
+          .access(assetsFilePath)
+          .then(() => true)
+          .catch(() => false);
+
+        // If file doesn't exist in assets, create empty version first
+        if (!assetsFileExists) {
+          const assetsDirectory = path.dirname(assetsFilePath);
+          await fs.mkdir(assetsDirectory, { recursive: true });
+          // Write empty file to assets
+          await fs.writeFile(assetsFilePath, "", "utf-8");
+          console.log(`  -> Created empty file in assets: ${filePath}`);
+        }
+      }
+
       // Write the file
       await fs.writeFile(absolutePath, content, "utf-8");
 
@@ -273,11 +293,34 @@ export const readFileTool = tool(
 
       const context = runtime.context as ContextType;
 
-      // Resolve the absolute path
+      // Try to read from proposed directory first
       const absolutePath = resolveFilePath(filePath, context.destinationPath);
+      let content: string;
 
-      // Read the file
-      const content = await fs.readFile(absolutePath, "utf-8");
+      try {
+        content = await fs.readFile(absolutePath, "utf-8");
+      } catch (error) {
+        // If file doesn't exist in proposed and we're in update mode with assetsPath,
+        // try reading from assets directory
+        if (
+          context.isUpdate &&
+          context.assetsPath &&
+          error instanceof Error &&
+          "code" in error &&
+          error.code === "ENOENT"
+        ) {
+          const assetsFilePath = path.join(context.assetsPath, filePath);
+          try {
+            content = await fs.readFile(assetsFilePath, "utf-8");
+          } catch {
+            throw new Error(
+              `Path '${filePath}' not found in proposed or assets`
+            );
+          }
+        } else {
+          throw error;
+        }
+      }
 
       return content;
     } catch (error) {
