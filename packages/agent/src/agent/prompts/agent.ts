@@ -1,6 +1,7 @@
 import { TIPTAP_HTML_GUIDELINES } from "./blocks/tiptap.js";
 import { MDX_GUIDELINES } from "./blocks/mdx/mdx.js";
 import { DATA_GUIDELINES } from "./blocks/data.js";
+import { EXCALIDRAW_GUIDELINES } from "./blocks/excalidraw.js";
 import { FILE_HANDLING_INSTRUCTIONS } from "./blocks/file_handling.js";
 
 export const STATIC_AGENT_INSTRUCT = `<role> 
@@ -15,6 +16,7 @@ You work with 3 types of content:
 - Can embed interactive components and data:
   - MDX: \`<mdx-component data-path="components/path.mdx"></mdx-component>\`
   - Data View: \`<database-view data-path="data/path.json"></database-view>\`
+  - Excalidraw: \`<excalidraw data-path="data/diagram.json"></excalidraw>\`
 
 **MDX Components** - Reusable interactive components:
 - Created as separate files in the "components/" directory
@@ -51,6 +53,7 @@ You have tools at your disposal to solve the tasks. Follow these rules regarding
     ${TIPTAP_HTML_GUIDELINES}
     ${MDX_GUIDELINES}
     ${DATA_GUIDELINES}
+    ${EXCALIDRAW_GUIDELINES}
 </content_guidelines>
 
 <content_strategy>
@@ -75,7 +78,6 @@ You have tools at your disposal to solve the tasks. Follow these rules regarding
 - If you update an existing page: create/update ALL component files for that page FIRST, then update the HTML page to insert components
 - Use path format: "components/component-name.mdx" 
 - Embed in HTML using: \`<mdx-component data-path="components/component-name.mdx"></mdx-component>\`
-- After an \`<mdx-component>\` or \`<database-view>\`, add an empty \`<p></p>\` if no text follows or the next block is another \`<mdx-component>\` or \`<database-view>\`
 - MDX components contain ONLY: shadcn components, JSX expressions {}, custom components
 - NO regular markdown content in MDX components
 
@@ -92,6 +94,11 @@ You have tools at your disposal to solve the tasks. Follow these rules regarding
 **For Data Views (Top-Level Arrays Only):**
 1. Ensure the JSON file exists under \`data/\` and its root is a top-level array
 2. Edit/create the HTML page to embed it using: \`<database-view data-path="data/path.json"></database-view>\`
+
+**For Excalidraw Diagrams:**
+1. Create either a .mermaid file (RECOMMENDED, auto-converts to JSON) or direct JSON with "elements" property
+2. If using .mermaid, note the returned JSON path from the write operation
+3. Embed in HTML using: \`<excalidraw data-path="data/diagram.json"></excalidraw>\`
 
 ** Workflow for interactive features (per page - follow this order exactly):**
 1. **FIRST**: Create any required JSON data files in "data/" directory for this page

@@ -2,6 +2,7 @@ import { tool } from "langchain";
 import { z } from "zod";
 import { promises as fs } from "fs";
 import * as path from "path";
+import puppeteer from "puppeteer";
 import {
   WRITE_TOOL_DESCRIPTION,
   SEARCH_REPLACE_TOOL_DESCRIPTION,
@@ -92,6 +93,49 @@ function resolveFilePath(filePath: string, destinationPath: string): string {
 }
 
 /**
+ * Parse Mermaid diagram to Excalidraw using Puppeteer headless browser
+ * This is the same approach used by mermaid-cli for reliable rendering
+ * @param mermaidContent - Mermaid diagram definition
+ * @returns Excalidraw elements and files
+ */
+async function parseMermaidWithPuppeteer(mermaidContent: string) {
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
+
+  try {
+    const page = await browser.newPage();
+
+    // Set up the page with the necessary libraries and parse
+    const result = await page.evaluate(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      async (definition: string): Promise<any> => {
+        // Dynamically import the libraries in the browser context
+        const { parseMermaidToExcalidraw } = await import(
+          // @ts-expect-error - Runtime import in browser, not checked by TS
+          "https://cdn.jsdelivr.net/npm/@excalidraw/mermaid-to-excalidraw@1.1.3/+esm"
+        );
+        const { convertToExcalidrawElements } = await import(
+          // @ts-expect-error - Runtime import in browser, not checked by TS
+          "https://cdn.jsdelivr.net/npm/@excalidraw/excalidraw@0.18.0/+esm"
+        );
+
+        const { elements, files } = await parseMermaidToExcalidraw(definition);
+        const excalidrawElements = convertToExcalidrawElements(elements);
+
+        return { elements: excalidrawElements, files };
+      },
+      mermaidContent
+    );
+
+    return result;
+  } finally {
+    await browser.close();
+  }
+}
+
+/**
  * Helper function to perform robust search and replace with validation
  * @param content - Original file content
  * @param oldString - String to search for
@@ -157,6 +201,44 @@ export const writeTool = tool(
       }
 
       const context = runtime.context as ContextType;
+
+      // Check if this is a mermaid file that needs conversion
+      const ext = path.extname(filePath).toLowerCase();
+      if (ext === ".mermaid" || ext === ".mmd") {
+        console.log("Parsing mermaid to Excalidraw");
+        // Parse mermaid to Excalidraw using Puppeteer headless browser
+        try {
+          const { elements, files } = await parseMermaidWithPuppeteer(content);
+
+          // Create JSON file path by replacing extension
+          const jsonFilePath = filePath.replace(/\.(mermaid|mmd)$/, ".json");
+          const absoluteJsonPath = resolveFilePath(
+            jsonFilePath,
+            context.destinationPath
+          );
+
+          // Ensure directory exists
+          const directory = path.dirname(absoluteJsonPath);
+          await fs.mkdir(directory, { recursive: true });
+
+          // Write the JSON file with elements
+          const result: { elements: unknown[]; files?: unknown } = {
+            elements,
+          };
+          if (files) result.files = files;
+          const jsonContent = JSON.stringify(result, null, 2);
+          await fs.writeFile(absoluteJsonPath, jsonContent, "utf-8");
+
+          console.log(`  -> Converted mermaid to Excalidraw: ${jsonFilePath}`);
+
+          return `Converted mermaid to Excalidraw diagram. JSON saved to: ${jsonFilePath}`;
+        } catch (error) {
+          console.error("Error parsing mermaid to Excalidraw", error);
+          throw new Error(
+            `Error parsing mermaid to Excalidraw. Generate JSON instead.`
+          );
+        }
+      }
 
       // Resolve the absolute path
       const absolutePath = resolveFilePath(filePath, context.destinationPath);
