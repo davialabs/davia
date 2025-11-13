@@ -105,13 +105,14 @@ export async function openBrowser(
   projectId?: string
 ): Promise<void> {
   try {
-    await open(url);
+    // If projectId is provided, open at the project URL instead
+    const urlToOpen = projectId ? `http://localhost:3000/${projectId}` : url;
+    await open(urlToOpen);
     if (projectId) {
       // Create clickable link to the project page
       const projectUrl = `http://localhost:3000/${projectId}`;
       const link = createTerminalLink(projectUrl, projectUrl);
-      console.log(`\n🌐 Browser opened at ${url}`);
-      console.log(`   Project: ${link}\n`);
+      console.log(`\n🌐 Browser opened at ${link}\n`);
     } else {
       console.log(`\n🌐 Browser opened at ${url}\n`);
     }

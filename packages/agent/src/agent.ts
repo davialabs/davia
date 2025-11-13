@@ -5,7 +5,8 @@ export async function runAgent(
   sourcePath: string,
   destinationPath: string,
   model: "anthropic" | "openai" | "google",
-  projectId?: string
+  projectId?: string,
+  documentationGoal?: string
 ): Promise<void> {
   console.log(`\n🚀 Starting Davia Agent`);
   console.log(`   Source Path: ${sourcePath}`);
@@ -16,14 +17,22 @@ export async function runAgent(
     // Create the agent with the specified model
     const agent = await createDaviaAgent(model);
 
+    // Build the user message
+    let userMessage = `I need you to convert documentation from ${sourcePath} to ${destinationPath}. 
+Please analyze the source files, perform any necessary transformations, and write the results to the destination.`;
+
+    // Append user's documentation goal if provided
+    if (documentationGoal) {
+      userMessage += `\n\n**User's documentation goal:** ${documentationGoal}\n\nPlease prioritize and incorporate this context when generating the documentation.`;
+    }
+
     // Invoke the agent with the initial task
     await agent.invoke(
       {
         messages: [
           {
             role: "user",
-            content: `I need you to convert documentation from ${sourcePath} to ${destinationPath}. 
-Please analyze the source files, perform any necessary transformations, and write the results to the destination.`,
+            content: userMessage,
           },
         ],
       },

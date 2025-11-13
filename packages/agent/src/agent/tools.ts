@@ -48,10 +48,10 @@ function getFileCreationMessage(
       const displayName =
         dirPath === "." ? nameWithoutExt : filePath.replace(/\.html$/, "");
       const clickableName = createTerminalLink(url, displayName);
-      return `✓ Created ${clickableName} page`;
+      return `✓ Created ${clickableName} page\n   🔄 Reload the page in your browser to see the updates.\n`;
     }
     const displayName = filePath.replace(/\.html$/, "");
-    return `✓ Created: ${displayName}`;
+    return `✓ Created: ${displayName}\n   🔄 Reload the page in your browser to see the updates.\n`;
   } else if (ext === ".mdx") {
     const displayPath = dirPath === "." ? fileName : filePath;
     return `  -> Creating component: ${displayPath}\n`;
