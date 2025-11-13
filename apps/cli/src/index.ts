@@ -357,18 +357,183 @@ program
     }
   });
 
+/**
+ * Interactive project selector with arrow key navigation
+ */
+async function selectProject(
+  projects: Record<string, { path: string; running: boolean }>
+): Promise<string | null> {
+  const projectEntries = Object.entries(projects);
+
+  if (projectEntries.length === 0) {
+    return null;
+  }
+
+  if (projectEntries.length === 1) {
+    const firstEntry = projectEntries[0];
+    if (!firstEntry) {
+      return null;
+    }
+    return firstEntry[0];
+  }
+
+  let selectedIndex = 0;
+  const projectIds = projectEntries.map(([id]) => id);
+  const projectPaths = projectEntries.map(([, project]) => project.path);
+
+  // Set terminal to raw mode for arrow key handling
+  const wasRawMode = process.stdin.isRaw;
+  if (!wasRawMode) {
+    process.stdin.setRawMode(true);
+  }
+  process.stdin.resume();
+  process.stdin.setEncoding("utf8");
+
+  // Hide cursor
+  process.stdout.write("\x1b[?25l");
+
+  const renderMenu = () => {
+    // Clear screen and move cursor to top
+    process.stdout.write("\x1b[2J\x1b[H");
+    console.log(`${colors.bold}Select a project to open:${colors.reset}\n`);
+
+    projectPaths.forEach((path, index) => {
+      const isSelected = index === selectedIndex;
+      const prefix = isSelected
+        ? `${colors.green}${colors.bold}>${colors.reset} `
+        : "  ";
+      const pathColor = isSelected ? colors.green : colors.dim;
+      console.log(`${prefix}${pathColor}${path}${colors.reset}`);
+    });
+
+    console.log(
+      `\n${colors.dim}Use ↑↓ arrow keys to navigate, Enter to select${colors.reset}`
+    );
+  };
+
+  renderMenu();
+
+  return new Promise<string>((resolve) => {
+    let buffer = "";
+    const onData = (data: string) => {
+      buffer += data;
+
+      // Limit buffer size to prevent memory issues
+      if (buffer.length > 10) {
+        buffer = buffer.slice(-5);
+      }
+
+      // Handle arrow keys (escape sequences can be split across multiple chunks)
+      if (buffer.includes("\u001b[A") || buffer.endsWith("[A")) {
+        // Up arrow
+        buffer = "";
+        selectedIndex = Math.max(0, selectedIndex - 1);
+        renderMenu();
+      } else if (buffer.includes("\u001b[B") || buffer.endsWith("[B")) {
+        // Down arrow
+        buffer = "";
+        selectedIndex = Math.min(projectIds.length - 1, selectedIndex + 1);
+        renderMenu();
+      } else if (data === "\r" || data === "\n") {
+        buffer = "";
+        // Enter key
+        // Restore terminal state
+        process.stdin.removeListener("data", onData);
+        process.stdin.pause();
+        if (!wasRawMode) {
+          process.stdin.setRawMode(false);
+        }
+        // Show cursor
+        process.stdout.write("\x1b[?25h");
+        // Clear screen
+        process.stdout.write("\x1b[2J\x1b[H");
+        const selectedId = projectIds[selectedIndex];
+        if (selectedId) {
+          resolve(selectedId);
+        } else {
+          // Fallback to first project if somehow selectedIndex is invalid
+          resolve(projectIds[0] ?? "");
+        }
+      } else if (data === "\u0003") {
+        // Ctrl+C
+        process.stdin.removeListener("data", onData);
+        process.stdin.pause();
+        if (!wasRawMode) {
+          process.stdin.setRawMode(false);
+        }
+        // Show cursor
+        process.stdout.write("\x1b[?25h");
+        process.exit(0);
+      }
+    };
+
+    process.stdin.on("data", onData);
+  });
+}
+
 program
   .command("open")
   .description("Open the Davia web app")
   .action(async () => {
     const monorepoRoot = findMonorepoRoot(__dirname);
 
-    // Start the Next.js dev server with automatic browser opening
-    startNextJsDevServer({
+    // Read projects.json to check available projects
+    const daviaPath = join(monorepoRoot, ".davia");
+    const projectsJsonPath = join(daviaPath, "projects.json");
+
+    type ProjectState = {
+      path: string;
+      running: boolean;
+    };
+    let projects: Record<string, ProjectState> = {};
+
+    try {
+      if (existsSync(projectsJsonPath)) {
+        const projectsContent = readFileSync(projectsJsonPath, "utf-8");
+        if (projectsContent.trim()) {
+          try {
+            projects = JSON.parse(projectsContent);
+          } catch {
+            // If parsing fails, use empty projects
+            projects = {};
+          }
+        }
+      }
+    } catch {
+      // If reading fails, use empty projects
+      projects = {};
+    }
+
+    // Select project
+    const projectId = await selectProject(projects);
+
+    if (!projectId) {
+      console.log(
+        `${colors.yellow}${colors.bold}⚠ No projects found.${colors.reset}`
+      );
+      console.log(
+        `${colors.dim}Run 'pnpm docs' to create your first project.${colors.reset}\n`
+      );
+      // Still start the server, but open root URL
+      startNextJsDevServer({
+        monorepoRoot,
+        openBrowserOnStart: true,
+        openBrowserDelay: 5000,
+      });
+      return;
+    }
+
+    // Start the Next.js dev server
+    const devServer = startNextJsDevServer({
       monorepoRoot,
-      openBrowserOnStart: true, // Open browser after delay
+      openBrowserOnStart: false, // We'll open manually with project ID
       openBrowserDelay: 5000,
     });
+
+    // Open browser with selected project after delay
+    setTimeout(async () => {
+      await devServer.openBrowser(projectId);
+    }, 5000);
   });
 
 program.parse();

@@ -24,41 +24,21 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Construct the file paths
+  // Construct the file path
   const assetPath = join(monorepoRoot, ".davia", "assets", projectId);
-  const proposedPath = join(monorepoRoot, ".davia", "proposed", projectId);
-  const assetFilePath = join(assetPath, path);
-  const proposedFilePath = join(proposedPath, path);
+  const filePath = join(assetPath, path);
 
-  // Check if the asset file exists
-  if (!existsSync(assetFilePath)) {
+  // Check if the file exists
+  if (!existsSync(filePath)) {
     return NextResponse.json({ error: "File not found" }, { status: 404 });
   }
 
-  // Read the asset file content
+  // Read the file content
   try {
-    const content = readFileSync(assetFilePath, "utf-8");
-
-    // Check if proposed content exists
-    let proposedContent: string | null = null;
-    if (existsSync(proposedFilePath)) {
-      try {
-        proposedContent = readFileSync(proposedFilePath, "utf-8");
-      } catch (error) {
-        console.error(
-          `Error reading proposed file ${proposedFilePath}:`,
-          error
-        );
-        // Continue without proposed content if there's an error reading it
-      }
-    }
-
-    return NextResponse.json({
-      content,
-      proposedContent: proposedContent ?? null,
-    });
+    const content = readFileSync(filePath, "utf-8");
+    return NextResponse.json({ content });
   } catch (error) {
-    console.error(`Error reading ${assetFilePath}:`, error);
+    console.error(`Error reading ${filePath}:`, error);
     return NextResponse.json({ error: "Failed to read file" }, { status: 500 });
   }
 }
@@ -66,7 +46,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { projectId, path, content, proposedContent } = body;
+    const { projectId, path, content } = body;
 
     if (!projectId || !path || content === undefined) {
       return NextResponse.json(
@@ -85,68 +65,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Construct the file paths
+    // Construct the file path
     const assetPath = join(monorepoRoot, ".davia", "assets", projectId);
-    const proposedPath = join(monorepoRoot, ".davia", "proposed", projectId);
-    const assetFilePath = join(assetPath, path);
-    const proposedFilePath = join(proposedPath, path);
+    const filePath = join(assetPath, path);
 
-    // Ensure directories exist
-    const { mkdir } = await import("fs/promises");
+    // Write the file content
     try {
-      await mkdir(assetPath, { recursive: true });
-      if (proposedContent !== undefined) {
-        await mkdir(proposedPath, { recursive: true });
-      }
+      writeFileSync(filePath, content, "utf-8");
+      return NextResponse.json({ success: true });
     } catch (error) {
-      // Directory might already exist, ignore error
-    }
-
-    // Write the asset file content
-    try {
-      writeFileSync(assetFilePath, content, "utf-8");
-    } catch (error) {
-      console.error(`Error writing ${assetFilePath}:`, error);
+      console.error(`Error writing ${filePath}:`, error);
       return NextResponse.json(
         { error: "Failed to write file" },
         { status: 500 }
       );
     }
-
-    // Handle proposed content
-    if (proposedContent !== undefined) {
-      if (proposedContent === null) {
-        // Delete proposed file if it exists
-        if (existsSync(proposedFilePath)) {
-          try {
-            const { unlink } = await import("fs/promises");
-            await unlink(proposedFilePath);
-          } catch (error) {
-            console.error(
-              `Error deleting proposed file ${proposedFilePath}:`,
-              error
-            );
-            // Continue even if deletion fails
-          }
-        }
-      } else {
-        // Write proposed content
-        try {
-          writeFileSync(proposedFilePath, proposedContent, "utf-8");
-        } catch (error) {
-          console.error(
-            `Error writing proposed file ${proposedFilePath}:`,
-            error
-          );
-          return NextResponse.json(
-            { error: "Failed to write proposed file" },
-            { status: 500 }
-          );
-        }
-      }
-    }
-
-    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error processing request:", error);
     return NextResponse.json(
