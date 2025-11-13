@@ -17,7 +17,7 @@
 
 ## What is Davia?
 
-Davia is an **open-source tool** that generates **interactive internal documentation** for your local codebase. Point it at a project path and it writes documentation files locally with **interactive visualizations** that you can edit in a **Notion-like platform** or locally in your **IDE**.
+Davia is an **open-source tool** that generates **interactive internal documentation** for your local codebase. Point it at a project path and it writes documentation files locally with **interactive visualizations** and **editable whiteboards** that you can edit in a **Notion-like platform** or locally in your **IDE**.
 
 ---
 
@@ -45,11 +45,15 @@ By default, Davia looks for a **`.env` file** in the root of the project path yo
 pnpm run docs
 ```
 
-When prompted, enter the **absolute path** of your project:
+The process involves two steps:
 
-```
-Enter absolute path of the project to document: [path of the local codebase you want to document]
-```
+1. **Enter the absolute path** when prompted:
+
+   ```
+   Enter absolute path of the project to document: /path/to/project
+   ```
+
+2. **Provide a prompt** describing what to document (e.g., "Document the authentication system" or "Create API documentation").
 
 Davia spins up a docs window that populates in real time, and you can edit the pages as they appear.
 
@@ -79,7 +83,11 @@ Contributions are welcome! We'd love your help to make Davia better:
 
 ## Example
 
-https://github.com/user-attachments/assets/6eecb62f-3c13-434a-9aa0-a8dd3840bf49
+https://github.com/user-attachments/assets/1b9ed809-81e5-474b-995f-e38eb5a672e7
+
+Another example with flows:
+
+https://github.com/user-attachments/assets/6eecb62f-3c13-434a-9aa0-a8dd3840bf49 (with visual whiteboard flow)
 
 ---
 
