@@ -58,7 +58,7 @@ export function ExcalidrawErrorFallback({
       <CardHeader>
         <CardTitle>An error occurred</CardTitle>
         <CardDescription>
-          We are having trouble with this database.
+          We are having trouble with this Excalidraw diagram.
         </CardDescription>
         <CardAction>
           <AlertCircle className="size-5 text-destructive" />
