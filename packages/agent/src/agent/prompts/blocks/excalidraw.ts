@@ -18,12 +18,12 @@ Excalidraw elements embed interactive diagrams and visual workflows directly in 
 - Simpler syntax for creating diagrams
 
 **Option 2: Direct JSON Creation**
-- Create a JSON file with an "elements" property containing ExcalidrawElementSkeleton objects
+- Create a JSON file with an "elements" property containing ExcalidrawElement objects
 - Structure:
 \`\`\`json
 {
   "elements": [
-    // array of ExcalidrawElementSkeleton objects
+    // array of ExcalidrawElement objects
   ]
 }
 \`\`\`

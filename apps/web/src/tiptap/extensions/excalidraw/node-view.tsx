@@ -52,7 +52,7 @@ export function ExcalidrawNodeView(props: ReactNodeViewProps) {
       >
         <iframe
           src={`/excalidraw-view/${projectId}/${excalidrawPath}`}
-          className="w-full h-128"
+          className="w-full h-160"
           title="Excalidraw"
         />
       </ErrorBoundary>

@@ -2,7 +2,6 @@ import { tool } from "langchain";
 import { z } from "zod";
 import { promises as fs } from "fs";
 import * as path from "path";
-import { parseMermaidToExcalidraw } from "@excalidraw/mermaid-to-excalidraw";
 import puppeteer from "puppeteer";
 import {
   WRITE_TOOL_DESCRIPTION,
@@ -112,13 +111,20 @@ async function parseMermaidWithPuppeteer(mermaidContent: string) {
     const result = await page.evaluate(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       async (definition: string): Promise<any> => {
-        // Dynamically import the library in the browser context
+        // Dynamically import the libraries in the browser context
         const { parseMermaidToExcalidraw } = await import(
           // @ts-expect-error - Runtime import in browser, not checked by TS
           "https://cdn.jsdelivr.net/npm/@excalidraw/mermaid-to-excalidraw@1.1.3/+esm"
         );
+        const { convertToExcalidrawElements } = await import(
+          // @ts-expect-error - Runtime import in browser, not checked by TS
+          "https://cdn.jsdelivr.net/npm/@excalidraw/excalidraw@0.18.0/+esm"
+        );
 
-        return await parseMermaidToExcalidraw(definition);
+        const { elements, files } = await parseMermaidToExcalidraw(definition);
+        const excalidrawElements = convertToExcalidrawElements(elements);
+
+        return { elements: excalidrawElements, files };
       },
       mermaidContent
     );
@@ -216,7 +222,7 @@ export const writeTool = tool(
           await fs.mkdir(directory, { recursive: true });
 
           // Write the JSON file with elements
-          const result: Awaited<ReturnType<typeof parseMermaidToExcalidraw>> = {
+          const result: { elements: unknown[]; files?: unknown } = {
             elements,
           };
           if (files) result.files = files;

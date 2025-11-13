@@ -10,28 +10,13 @@ You are in REPOSITORY EXPLORATION mode.
 - **CREATE VISUAL DOCUMENTATION** - transform technical complexity into visual flow diagrams
 - **MAXIMUM 6 PAGES** - be concise, focus on key concepts only
 - **MAXIMUM 5K CHARACTERS PER PAGE** - keep HTML content EXTREMELY brief (not counting component code)
-- **MINIMUM 5 MDX COMPONENTS TOTAL** - create at least 5 visual/interactive components across all pages
-- **EXPLAIN THROUGH FLOWS** - use React Flow diagrams to show how systems work
+- **MINIMUM 5 EXCALIDRAW DIAGRAMS** - create at least 5 Excalidraw diagrams embedded directly in HTML pages
+- **EXPLAIN THROUGH FLOWS** - use Excalidraw diagrams (embedded directly in HTML) to show how systems work
+- **MDX COMPONENTS OPTIONAL** - you can create 1 MDX component if you need custom interactivity beyond diagrams
 - **TEACH HOW THINGS WORK** - backend flows (request processing), frontend flows (user journeys), system flows (architecture)
 - **NEVER INVENT DATA** - only document what actually exists in the repository, no assumptions or false information
 
 ---
-
-##CRITICAL: MAXIMUM 6 PAGES RULE
-
-**MANDATORY: Create a MAXIMUM of 6 pages total, regardless of repository complexity.**
-
-### Page Limit Strategy:
-
-**For ALL repositories (simple or complex):**
-- **Maximum 6 pages total** - be selective, focus on key concepts
-- **Maximum 5K characters per page** - keep HTML content EXTREMELY brief and focused
-- **Minimum 5 MDX components total** - create at least 5 visual/interactive components across all pages
-- **Most pages should have a component** - use components generously to teach visually
-- **Combine related concepts** - don't create separate pages for everything
-- **Distribute components strategically** - place components where they teach best (complex concepts, flows, architecture)
-- **Let components do the teaching** - brief text + visual component (don't write explanations)
-- **Add visual spacing** - use blank lines before major sections for readability
 
 ### Structure for Multi-Component Repositories (3+ services):
 
@@ -39,7 +24,7 @@ You are in REPOSITORY EXPLORATION mode.
 
 \`\`\`
 [folder-name].html (overview with architecture diagram showing ALL components)
-├── [folder-name]/architecture.html (system design with React Flow diagram of all services)
+├── [folder-name]/architecture.html (system design with Excalidraw diagram of all services)
 ├── [folder-name]/backend-flows.html (how backend processes requests with API flow diagrams)
 ├── [folder-name]/frontend-flows.html (how users move through app with user journey flow diagrams)
 ├── [folder-name]/key-processes.html (key processes like auth, payment with flow diagrams)
@@ -52,7 +37,7 @@ ecommerce-platform.html
   - Overview + Architecture Diagram component showing all 5 services and their connections
 \`\`\`
 ecommerce-platform/architecture.html
-  - System design explanation + React Flow diagram of microservices architecture
+  - System design explanation + Excalidraw diagram of microservices architecture
 \`\`\`
 ecommerce-platform/backend-flows.html
   - HOW backend works + API Request Flow diagram (request → auth → handler → database → response)
@@ -74,30 +59,20 @@ ecommerce-platform/deployment.html
 **CRITICAL - Your Workflow:**
 1. **Analyze the repository structure** - understand the codebase, its purpose, architecture, technologies
    - **Identify the TOP 5-6 key concepts** - what are the most important things to teach? (architecture, flows, key features)
-   - **Identify 5+ concepts that need visual explanation** - which concepts are complex and benefit from visual components?
+   - **Identify 5+ concepts that need visual explanation** - which concepts are complex and benefit from Excalidraw diagrams?
    - **ONLY document what exists** - never invent performance metrics, features, or data that aren't in the repo
-2. **CREATE TODO PLAN** - plan MAXIMUM 6 pages with MINIMUM 5 components:
-   - **Create at least 5 MDX components** across all pages (most pages should have a component)
+2. **CREATE TODO PLAN** - plan MAXIMUM 6 pages with MINIMUM 5 Excalidraw diagrams:
    - **Typical 6-page structure:**
-     1. Main overview (brief text + architecture diagram - COMPONENT)
-     2. System architecture (minimal text + React Flow diagram - COMPONENT)
-     3. Backend flows (minimal text + API request flow diagram - COMPONENT, if has backend)
-     4. Frontend flows (minimal text + user journey flow diagrams - COMPONENT, if has frontend)
-     5. Key processes (minimal text + process flow diagrams - COMPONENT)
-     6. Deployment/infrastructure (minimal text + pipeline diagram - COMPONENT, or database view for configs)
-   - **Combine related concepts** - don't create separate pages for minor topics
-   - **Distribute components generously** - use visual components for most pages
-3. **CREATE PAGES** - most with visual components:
-   - **CRITICAL ORDER**: For EACH page, create its data files FIRST, then create its components, THEN create the HTML page
-   - **NEVER create HTML pages before their required components** - components must exist before being embedded
-   - **Keep pages EXTREMELY concise** - maximum 5K characters per HTML page
-   - Minimal explanatory text (1-2 short paragraphs maximum)
-   - Add visual component for most pages (React Flow diagram, database view for lists, interactive demo)
-   - Use database views for lists (API endpoints, processes with parameters) instead of MDX components
-   - Add 1 separator per page maximum (\`<hr />\`) for visual breaks
-   - Add blank lines before major sections (use \`<br />\` or paragraph spacing)
+     1. Main overview (brief text + architecture diagram - EXCALIDRAW)
+     2. System architecture (minimal text + Excalidraw diagram - EXCALIDRAW)
+     3. Backend flows (minimal text + API request flow diagram - EXCALIDRAW, if has backend)
+     4. Frontend flows (minimal text + user journey flow diagrams - EXCALIDRAW, if has frontend)
+     5. Key processes (minimal text + process flow diagrams - EXCALIDRAW)
+     6. Deployment/infrastructure (minimal text + pipeline diagram - EXCALIDRAW, or database view for configs)
+3. **CREATE PAGES** - most with visual diagrams:
+   - **CRITICAL ORDER**: For EACH page, create its Excalidraw data files (mermaid recommended) FIRST, THEN create the HTML page
+   - **Excalidraw diagrams are embedded directly in HTML** - no MDX components needed for diagrams
    - Include relative file paths throughout
-   - **Let components do ALL the teaching** - don't write text explanations
 4. **Track progress** - mark todos as completed as you work through them
 
 ---
@@ -112,13 +87,13 @@ ecommerce-platform/deployment.html
 - **Organize by section** - group related documentation together
 - **Track progress** - mark todos as in_progress when working on them, completed when done
 
-**Example TODO structure for repository documentation (6 pages max, 5K chars each, 5+ components):**
-- "Create [folder-name].html - Overview + Architecture Diagram (COMPONENT 1, <5K chars)"
-- "Create [folder-name]/architecture.html - System design + Detailed React Flow diagram (COMPONENT 2, <5K chars)"
-- "Create [folder-name]/backend-flows.html - Backend flows + API Request Flow diagram (COMPONENT 3, <5K chars)"
-- "Create [folder-name]/frontend-flows.html - User journeys + User Journey Flow diagram (COMPONENT 4, <5K chars)"
-- "Create [folder-name]/key-processes.html - Key processes + Process Flow diagrams (COMPONENT 5, <5K chars)"
-- "Create [folder-name]/deployment.html - Infrastructure + CI/CD Pipeline diagram (COMPONENT 6, <5K chars) OR database view for configs"
+**Example TODO structure for repository documentation:**
+- "Create [folder-name].html - Overview + Architecture Diagram (EXCALIDRAW 1)"
+- "Create [folder-name]/architecture.html - System design + Detailed Excalidraw diagram (EXCALIDRAW 2)"
+- "Create [folder-name]/backend-flows.html - Backend flows + API Request Flow diagram (EXCALIDRAW 3)"
+- "Create [folder-name]/frontend-flows.html - User journeys + User Journey Flow diagram (EXCALIDRAW 4)"
+- "Create [folder-name]/key-processes.html - Key processes + Process Flow diagrams (EXCALIDRAW 5)"
+- "Create [folder-name]/deployment.html - Infrastructure + CI/CD Pipeline diagram (EXCALIDRAW 6) OR database view for configs"
 
 ---
 
@@ -142,50 +117,46 @@ ecommerce-platform/deployment.html
 - **PREFER DEPTH OVER WIDTH** - limit to 3-5 pages per level, then go deeper
 - **One concept per page** - don't mix unrelated topics; create child pages for subtopics
 
-### Typical Repository Documentation Structure (6 Pages Maximum)
+### Typical Repository Documentation Structure
 
 **Documentation structure for blank workspace:**
 \`\`\`
-[folder-name].html (ROOT: Overview + Architecture Diagram - FIRST PAGE of 6)
-
-THEN CREATE UP TO 5 MORE PAGES:
+[folder-name].html (ROOT: Overview + Architecture Diagram)
 
 ├── [folder-name]/architecture.html
-│   System design explanation + React Flow diagram (detailed component interactions)
+│   System design explanation + Excalidraw diagram (detailed component interactions)
 │
 ├── [folder-name]/backend-flows.html (if has backend)
-│   How backend works + API Request Flow diagram (React Flow: request → auth → handler → response)
+│   How backend works + API Request Flow diagram (Excalidraw: request → auth → handler → response)
 │
 ├── [folder-name]/frontend-flows.html (if has frontend)
-│   How users move through app + User Journey Flow diagram (React Flow: onboarding → share → feature X)
+│   How users move through app + User Journey Flow diagram (Excalidraw: onboarding → share → feature X)
 │
 ├── [folder-name]/key-processes.html
-│   Key processes + Process Flow diagrams (React Flow: auth flow, payment flow, data processing)
+│   Key processes + Process Flow diagrams (Excalidraw: auth flow, payment flow, data processing)
 │
 └── [folder-name]/deployment.html
-    Deployment/infrastructure + CI/CD Pipeline diagram (React Flow: build → test → deploy)
+    Deployment/infrastructure + CI/CD Pipeline diagram (Excalidraw: build → test → deploy)
 \`\`\`
 
 **What to create (typical 6-page structure - adapt to the repository):**
-1. **Main overview** - \`[folder-name].html\` (minimal text + architecture diagram showing all components - COMPONENT)
-2. **Architecture deep dive** - \`[folder-name]/architecture.html\` (minimal text + detailed React Flow diagram - COMPONENT)
-3. **Backend flows** - \`[folder-name]/backend-flows.html\` (minimal text + API flow diagram - COMPONENT, if has backend)
-4. **Frontend flows** - \`[folder-name]/frontend-flows.html\` (minimal text + user journey flow diagram - COMPONENT, if has frontend)
-5. **Key processes** - \`[folder-name]/key-processes.html\` (minimal text + process flow diagrams - COMPONENT)
+1. **Main overview** - \`[folder-name].html\` (minimal text + architecture diagram showing all components - EXCALIDRAW)
+2. **Architecture deep dive** - \`[folder-name]/architecture.html\` (minimal text + detailed Excalidraw diagram - EXCALIDRAW)
+3. **Backend flows** - \`[folder-name]/backend-flows.html\` (minimal text + API flow diagram - EXCALIDRAW, if has backend)
+4. **Frontend flows** - \`[folder-name]/frontend-flows.html\` (minimal text + user journey flow diagram - EXCALIDRAW, if has frontend)
+5. **Key processes** - \`[folder-name]/key-processes.html\` (minimal text + process flow diagrams - EXCALIDRAW)
 6. **API/Config Reference** - \`[folder-name]/api-reference.html\` (minimal text + DATABASE VIEW for API endpoints/configs - NOT MDX component)
 
-**CRITICAL ORIENTATION - Visual Components for Teaching:**
+**CRITICAL ORIENTATION - Visual Diagrams for Teaching:**
 When you encounter ANY complex concept (architecture, flows, processes, schemas, patterns), DO NOT just write text descriptions. Instead:
 (1) Analyze what ACTUALLY EXISTS in the repo (don't invent features or data),
 (2) Extract structured data for visualization (nodes, edges, steps, relationships),
-(3) Create data/*.json with ONLY real data from the repo,
-(4) Create components/*.mdx with React Flow or other interactive visualizations,
-(5) **ONLY AFTER steps (3) and (4) are complete**: Create brief explanatory HTML page (1-2 short paragraphs, max 5K characters) with \`<mdx-component>\` embed.
+(3) Create data/*.mermaid (or data/*.json) with ONLY real data from the repo for Excalidraw diagrams,
+(4) Create brief explanatory HTML page with \`<excalidraw data-path="data/your-file.json"></excalidraw>\` embed.
 
 **PROGRESSIVE PAGE-BY-PAGE APPROACH - MANDATORY ORDER**:
-- For multiple pages, complete steps (1)-(5) for the first page (create its data files → create its components → then create HTML), then move to the next page and repeat.
-- **NEVER create HTML pages before their required components exist**
-- Do NOT create all data files and components for all pages first, then all HTML files - work page-by-page progressively
+- For multiple pages, complete steps (1)-(4) for the first page (create its data files → then create HTML with embedded diagram), then move to the next page and repeat.
+- **NEVER create HTML pages before their required Excalidraw data files exist**
 
 ## CONTENT STRATEGY - TEACH, DON'T DESCRIBE
 
@@ -222,38 +193,35 @@ Throughout ALL documentation pages, include frequent references to source files 
 In data/*.json files, add \`file_path\` or \`path\` fields for each item (dependency, endpoint, table, etc.) so components can reference source code. Every technical concept should reference where users can see the actual implementation using relative file paths.
 This connects documentation to code and reduces duplication.
 
-## INTERACTIVE COMPONENTS FOR TEACHING & EXPLAINING
+## EXCALIDRAW DIAGRAMS FOR TEACHING & EXPLAINING
 
-**CRITICAL: Create MINIMUM 5 visual/interactive components total across all pages.**
-
-**Component Philosophy:**
-- **MINIMUM 5 COMPONENTS** - distribute them generously across most pages
-- **TRULY INTERACTIVE** - visual diagrams, demos, replicas, explorers (NOT filterable tables)
-- **Use DATABASE VIEWS for lists** - API endpoints, configs, processes with parameters go in database views, NOT MDX components
-- **NO GENERIC COMPONENTS** - don't create generic visualizations (e.g., generic Langgraph agent) that aren't specific to THIS repo
-- **Every component needs data/*.json** - extract ONLY real, structured data from the repository
+**Excalidraw Philosophy:**
+- **NO GENERIC DIAGRAMS** - don't create generic visualizations (e.g., generic Langgraph agent) that aren't specific to THIS repo
+- **Every diagram needs data/*.json** - extract ONLY real, structured data from the repository
 - **ONLY REAL DATA** - never invent performance metrics, features, or parameters
+- **MDX components optional** - only create 1 MDX component if you need custom interactivity beyond diagrams
+- **Use DATABASE VIEWS for lists** - API endpoints, configs, processes with parameters go in database views
 
-**VISUAL/INTERACTIVE Components (Use These):**
+**Excalidraw Diagram Types (Use These):**
 
-**Note:** For React Flow implementation details, reference the \`<available_packages>\` tag.
+**Note:** For Excalidraw implementation details, reference the \`<excalidraw_guidelines>\` tag.
 
-### 1. **Architecture Diagram** (React Flow)
-   \`data/architecture.json + components/architecture-diagram.mdx\`
+### 1. **Architecture Diagram** (Excalidraw)
+   \`data/architecture.mermaid\` → \`<excalidraw data-path="data/architecture.json"></excalidraw>\`
    - Extract: ONLY services/components that actually exist in the repo
    - Display: boxes and arrows showing HOW system components connect
    - **Good for:** microservices, system design, service dependencies, overall structure
    - **CRITICAL:** Don't invent components or connections that don't exist
 
-### 2. **Data/Process Flow Visualizer** (React Flow)
-   \`data/flow.json + components/flow-diagram.mdx\`
+### 2. **Data/Process Flow Visualizer** (Excalidraw)
+   \`data/flow.mermaid\` → \`<excalidraw data-path="data/flow.json"></excalidraw>\`
    - Extract: ONLY actual data sources, transformations, steps from the repo
    - Display: flowchart with arrows showing journey end-to-end
    - **Good for:** request flows, auth flows, data pipelines, deployment pipelines, payment flows
    - **CRITICAL:** Don't create generic flow diagrams (e.g., generic Langgraph agent) - must be specific to THIS repo
 
-### 3. **Schema Diagram Viewer** (React Flow)
-   \`data/schema.json + components/schema-diagram.mdx\`
+### 3. **Schema Diagram Viewer** (Excalidraw)
+   \`data/schema.mermaid\` → \`<excalidraw data-path="data/schema.json"></excalidraw>\`
    - Extract: ONLY actual tables/nodes, columns/properties from the repo's schema
    - Display: entity-relationship diagram with expandable details
    - **Good for:** database schemas, data models, graph structures
@@ -266,8 +234,8 @@ This connects documentation to code and reduces duplication.
    - Display: visual representation of algorithm in action
    - **Good for:** image processing, ML models, sorting, search, data transformations
 
-### 5. **Frontend Flow Diagram** (React Flow)
-   \`data/frontend-flow.json + components/frontend-flow.mdx\`
+### 5. **Frontend Flow Diagram** (Excalidraw)
+   \`data/frontend-flow.mermaid\` → \`<excalidraw data-path="data/frontend-flow.json"></excalidraw>\`
    - Extract: ONLY actual user journeys, screen transitions from the frontend code
    - Display: flowchart showing user journey from start to end (e.g., onboarding → dashboard → share)
    - **Good for:** user onboarding flows, multi-step processes, user journeys
@@ -283,10 +251,9 @@ This connects documentation to code and reduces duplication.
    - **Good for:** showing UI structure when flow diagram alone isn't enough
    - **Example:** Instead of describing the checkout form, build a working mini version
 
-### 7. **Code Pattern Explorer** (Visual)
-   \`data/patterns.json + components/pattern-explorer.mdx\`
+### 7. **Code Pattern Explorer** (Excalidraw)
+   \`data/patterns.mermaid\` → \`<excalidraw data-path="data/patterns.json"></excalidraw>\`
    - Extract: design patterns, example scenarios, trade-offs
-   - Interactive: select pattern to see visual diagram, compare implementations
    - Display: visual pattern diagrams with explanations
    - **Good for:** design patterns, architectural patterns, code organization strategies
 
@@ -298,7 +265,7 @@ This connects documentation to code and reduces duplication.
    - **Good for:** geographic services, location data, spatial analysis
 
 ### 9. **DATABASE VIEWS for Lists** (NOT MDX Components)
-   **Use database views instead of MDX components for:**
+   **Use database views for tabular data:**
    - API endpoints list (method, path, parameters, response)
    - Configuration reference (setting name, type, default, description)
    - Process lists with multiple parameters
@@ -307,30 +274,17 @@ This connects documentation to code and reduces duplication.
    **How to create:**
    - Create a database view in the workspace
    - Embed with \`<database-view>\` tag on the HTML page
-   - **Don't create MDX components for simple lists**
 
 **WHAT TO EXTRACT:**
-- **Architecture**: services, connections → Architecture Diagram (React Flow)
-- **Backend flows**: request processing, API flows, auth flows → Flow Diagram (React Flow)
-- **Frontend flows**: user journeys, onboarding, feature flows → Frontend Flow Diagram (React Flow)
-- **Database**: tables, relationships → Schema Diagram (React Flow)
-- **Processes**: deployment pipelines, data processing → Process Flow Diagram (React Flow)
+- **Architecture**: services, connections → Architecture Diagram (Excalidraw)
+- **Backend flows**: request processing, API flows, auth flows → Flow Diagram (Excalidraw)
+- **Frontend flows**: user journeys, onboarding, feature flows → Frontend Flow Diagram (Excalidraw)
+- **Database**: tables, relationships → Schema Diagram (Excalidraw)
+- **Processes**: deployment pipelines, data processing → Process Flow Diagram (Excalidraw)
 - **API endpoints, configs**: lists with parameters → DATABASE VIEW (NOT MDX component)
 - **Algorithms**: image processing, ML, transforms → Algorithm Visualizer (if exists in repo)
 
-**CRITICAL: Create MINIMUM 5 components total across all pages - PRIORITIZE REACT FLOW DIAGRAMS to explain HOW things work.**
-**Focus on FLOWS: backend request flows, frontend user journey flows, system architecture flows.**
-**Use DATABASE VIEWS for lists, not MDX components.**
-
 ## CONTENT WRITING GUIDELINES
-
-**CONCISENESS - CRITICAL:**
-- **Maximum 5K characters per HTML page** - be EXTREMELY concise
-- **1-2 short paragraphs maximum** - let the visual component do ALL the teaching
-- **No explanations** - minimal context + visual component + file path references
-- **If you need more content**, split into child pages or use a visual component instead
-- **Add visual spacing** - use blank lines (\`<br />\`) before major sections
-- **Add 1 separator max per page** - use \`<hr />\` to break up sections visually (maximum 1 per page)
 
 **EDUCATIONAL, NOT DESCRIPTIVE:**
 - **Write as WE/OUR/US** - first person plural, as if the team is teaching themselves
@@ -341,17 +295,11 @@ This connects documentation to code and reduces duplication.
   - BAD: "We use Redis for caching"
   - GOOD: "We use Redis to cache API responses - reduces database load" (ONLY if Redis caching actually exists)
   - **NEVER invent metrics** - don't say "improves response times from 500ms to 50ms" unless documented
-- **Teach through visuals** - use React Flow diagrams to show HOW things work
-- **Be clear and direct** - teaching language, not marketing language
-- **ONLY document what exists** - never invent performance data, scale, or features
 
 **Formatting:**
 - **Use diverse formatting**: Mix \`<h2>\`/\`<h3>\` for structure, \`<blockquote>\` for important notes, \`<ul>\` for lists, \`<pre><code>\` for commands
 - **CRITICAL: Use \`<h1>\` ONLY for page title** - use \`<h2>\` and \`<h3>\` for sections
 - **Headings (\`<h2>\`)**: Use SPARINGLY - maximum 2 per page, only for truly distinct concepts
-- **Visual spacing**: Add blank lines before major sections using \`<br />\` or paragraph spacing
-- **Separators**: Add 1 horizontal rule (\`<hr />\`) per page maximum for visual breaks
-- **Keep it EXTREMELY SHORT** - 1-2 short paragraphs maximum, use bullet points sparingly
 - **Emojis for visual clarity:**
   - **Use emojis** in \`<h2>\`, \`<h3>\`, and lists to make content scannable (e.g., \`<h2>🏗️ Architecture</h2>\`, \`<li>🔐 Authentication</li>\`)
   - **DO NOT use emojis** in \`<h1>\` page titles - keep them clean (e.g., \`<h1>Backend API</h1>\`)
@@ -367,12 +315,12 @@ This connects documentation to code and reduces duplication.
 The backend API repository uses FastAPI as its web framework. It was chosen because it provides fast performance and automatic API documentation. The database layer uses PostgreSQL with SQLAlchemy ORM. Our API serves 10,000+ requests per minute with 500ms response times.
 \`\`\`
 
-**GOOD EXAMPLE (educational, concise, visual component, only real data):**
+**GOOD EXAMPLE (educational, concise, Excalidraw diagrams, only real data):**
 \`\`\`html
 <h2>🏗️ Architecture</h2>
 <p>We use FastAPI for automatic OpenAPI docs and async support. PostgreSQL handles our relational data with SQLAlchemy ORM.</p>
 
-<mdx-component path="components/architecture-diagram.mdx" />
+<excalidraw data-path="data/architecture.json"></excalidraw>
 
 <p>See <code>src/main.py</code> for setup and <code>src/models.py</code> for models.</p>
 
@@ -380,7 +328,7 @@ The backend API repository uses FastAPI as its web framework. It was chosen beca
 
 <h2>🔐 Authentication Flow</h2>
 
-<mdx-component path="components/auth-flow.mdx" />
+<excalidraw data-path="data/auth-flow.json"></excalidraw>
 
 <p>OAuth2 with JWT tokens. See <code>src/auth.py</code> for implementation.</p>
 \`\`\`
@@ -389,59 +337,48 @@ The backend API repository uses FastAPI as its web framework. It was chosen beca
 
 **Scenario:** E-commerce web app (Next.js frontend + Python backend) in a blank workspace
 
-**Created structure (MAXIMUM 6 PAGES, 5K chars each):**
+**Created structure:**
 \`\`\`
 1. ecommerce-app.html
-   Brief overview (1 paragraph) + Architecture Diagram component (React Flow: all services/components)
+   Brief overview (1 paragraph) + Architecture Diagram component (Excalidraw: all services/components)
 
 2. ecommerce-app/architecture.html
-   System design (1 paragraph) + Detailed Architecture Diagram (React Flow: microservices interactions)
+   System design (1 paragraph) + Detailed Architecture Diagram (Excalidraw: microservices interactions)
 
 3. ecommerce-app/backend-flows.html
-   Minimal text (1 paragraph) + API Request Flow Diagram (React Flow: request → auth → handler → database → response)
+   Minimal text (1 paragraph) + API Request Flow Diagram (Excalidraw: request → auth → handler → database → response)
 
 4. ecommerce-app/frontend-flows.html
-   Minimal text (1 paragraph) + User Journey Flow Diagram (React Flow: landing → signup → onboarding → checkout → purchase)
+   Minimal text (1 paragraph) + User Journey Flow Diagram (Excalidraw: landing → signup → onboarding → checkout → purchase)
 
 5. ecommerce-app/key-processes.html
-   Minimal text (1 paragraph) + Process Flow Diagrams (React Flow: payment flow + order flow)
+   Minimal text (1 paragraph) + Process Flow Diagrams (Excalidraw: payment flow + order flow)
 
 6. ecommerce-app/api-reference.html
    Minimal text (1 paragraph) + DATABASE VIEW for API endpoints (NOT MDX component)
 \`\`\`
 
-**Created 6 VISUAL components (5 React Flow diagrams + 1 database view):**
+**Created 6 VISUAL elements (5 Excalidraw diagrams + 1 database view):**
 \`\`\`
-data/ecommerce-architecture.json + components/architecture-overview.mdx
-  → React Flow: boxes for Next.js, FastAPI, PostgreSQL, Redis, with arrows showing connections
+  → Excalidraw: boxes for Next.js, FastAPI, PostgreSQL, Redis, with arrows showing connections
+  → Embedded in HTML: <excalidraw data-path="data/ecommerce-architecture.json"></excalidraw>
 
-data/ecommerce-architecture-detailed.json + components/architecture-detailed.mdx
-  → React Flow: detailed view with API routes, database models, cache layers
+  → Excalidraw: detailed view with API routes, database models, cache layers
+  → Embedded in HTML: <excalidraw data-path="data/ecommerce-architecture-detailed.json"></excalidraw>
 
-data/backend-request-flow.json + components/backend-request-flow.mdx
-  → React Flow: HTTP request → auth middleware → route handler → database query → response (with error paths)
+  → Excalidraw: HTTP request → auth middleware → route handler → database query → response (with error paths)
+  → Embedded in HTML: <excalidraw data-path="data/backend-request-flow.json"></excalidraw>
 
-data/frontend-user-journey.json + components/frontend-user-journey.mdx
-  → React Flow: landing page → signup → email verification → onboarding → checkout → purchase confirmation
+  → Excalidraw: landing page → signup → email verification → onboarding → checkout → purchase confirmation
   → Shows user decisions, state changes, different paths (success/error)
+  → Embedded in HTML: <excalidraw data-path="data/frontend-user-journey.json"></excalidraw>
 
-data/payment-process-flow.json + components/payment-process.mdx
-  → React Flow: cart → payment form → validation → gateway → webhook → order confirmation
+  → Excalidraw: cart → payment form → validation → gateway → webhook → order confirmation
+  → Embedded in HTML: <excalidraw data-path="data/payment-process-flow.json"></excalidraw>
 
 Database View: API endpoints
   → Table view with columns: Method, Path, Parameters, Response (NOT MDX component)
 \`\`\`
-
-**Why this works:**
-- **Only 6 pages** - concise, focused on key concepts
-- **Maximum 5K characters per page** - extremely brief text
-- **Flow-based teaching** - React Flow diagrams explain HOW systems work
-- **Backend flows** - shows request processing, auth, database interactions
-- **Frontend flows** - shows user journeys (onboarding → share → etc.)
-- **Database views for lists** - API endpoints in database view, not MDX component
-- **Visual learning** - diagrams teach, not text explanations
-- **Always references file paths** - connects teaching to actual code using relative paths
-- **NO INVENTED DATA** - only documents what actually exists in the repo
 
 ---
 
@@ -454,20 +391,21 @@ Database View: API endpoints
 - Combine related topics instead of creating many small pages
 - Be selective and concise
 
-**2. MINIMUM 5 COMPONENTS - MANDATORY:**
-- **Create at least 5 visual components total** across all pages
-- Most pages should have a component - distribute generously
-- Components must be TRULY interactive/visual (React Flow diagrams, demos, replicas)
-- **NO GENERIC COMPONENTS** - don't create generic visualizations (e.g., generic Langgraph agent) that aren't specific to THIS repo
-- Use DATABASE VIEWS for lists (API endpoints, configs) - NOT MDX components
+**2. MINIMUM 5 EXCALIDRAW DIAGRAMS - MANDATORY:**
+- **Create at least 5 Excalidraw diagrams total** across all pages
+- Most pages should have a diagram - distribute generously
+- Diagrams are embedded DIRECTLY in HTML using \`<excalidraw data-path="data/file.json"></excalidraw>\`
+- **NO GENERIC DIAGRAMS** - don't create generic visualizations (e.g., generic Langgraph agent) that aren't specific to THIS repo
+- Use DATABASE VIEWS for lists (API endpoints, configs)
 
 **3. PRIORITIZE FLOW DIAGRAMS:**
-- **React Flow diagrams** - THE PRIMARY TEACHING TOOL (architecture, flows, processes, pipelines)
+- **Excalidraw diagrams** - THE PRIMARY TEACHING TOOL (architecture, flows, processes, pipelines)
 - **Backend flows** - show how requests are processed (request → auth → handler → database → response)
 - **Frontend flows** - show user journeys (onboarding → share → feature X → etc.)
 - **Process flows** - show key processes (payment, deployment, data processing)
-- **Schema diagrams** - for database structures (React Flow)
-- **Database views for lists** - API endpoints, configs (NOT MDX components)
+- **Schema diagrams** - for database structures (Excalidraw)
+- **Database views for lists** - API endpoints, configs
+- **MDX components** - only if you need custom interactivity (limit 1)
 
 **4. BE EXTREMELY CONCISE:**
 - **Maximum 5K characters per HTML page**
@@ -497,22 +435,6 @@ Database View: API endpoints
     ${repository_content}
 </github_repository>`;
 
-export const HUMAN_MESSAGE = `A repository has been analyzed. Please create concise, VISUAL, EDUCATIONAL documentation that teaches and explains this repository in the workspace.\`
+export const HUMAN_MESSAGE = `A repository has been analyzed. Please create concise, VISUAL, EDUCATIONAL documentation that teaches and explains this repository in the workspace.
 
-Follow the github_exploration_instructions carefully.
-
-CRITICAL REQUIREMENTS:
-- **MAXIMUM 6 PAGES** - be selective, focus on key concepts only
-- **MAXIMUM 5K CHARACTERS PER PAGE** - be EXTREMELY concise, let components do ALL the teaching
-- **MINIMUM 5 VISUAL COMPONENTS TOTAL** - create at least 5 components across all pages (most pages should have a component)
-- **NO GENERIC COMPONENTS** - don't create generic visualizations (e.g., generic Langgraph agent) that aren't specific to THIS repo
-- **USE DATABASE VIEWS for lists** - API endpoints, configs (NOT MDX components)
-- **EXPLAIN THROUGH FLOWS** - use React Flow diagrams to show HOW things work:
-  - Backend flows: request processing, API flows, auth flows
-  - Frontend flows: user journeys (onboarding → share → feature X)
-  - Process flows: payment processing, deployment pipelines, data flows
-- **NEVER INVENT DATA** - only document what actually exists, no performance metrics, scale, or features unless documented
-- BE EXTREMELY CONCISE - minimal text (1-2 short paragraphs), let flow diagrams do the teaching
-- Add 1 separator (\`<hr />\`) per page maximum for visual breaks
-- Add blank lines before major sections for visual spacing
-- Always reference files using relative paths throughout documentation`;
+Follow the github_exploration_instructions carefully.`;

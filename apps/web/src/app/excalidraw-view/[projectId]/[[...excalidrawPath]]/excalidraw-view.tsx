@@ -1,17 +1,14 @@
 "use client";
 
-import {
-  Excalidraw,
-  convertToExcalidrawElements,
-  serializeAsJSON,
-} from "@excalidraw/excalidraw";
+import { Excalidraw, serializeAsJSON } from "@excalidraw/excalidraw";
 import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import type { AppState, BinaryFiles } from "@excalidraw/excalidraw/types";
 import "@excalidraw/excalidraw/index.css";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { useHasMounted } from "@/hooks/use-has-mounted";
 import { useDebounceCallback } from "usehooks-ts";
+import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 
 export function ExcalidrawView({
   projectId,
@@ -24,18 +21,34 @@ export function ExcalidrawView({
 }) {
   const mounted = useHasMounted();
   const { resolvedTheme } = useTheme();
-  const elements = useMemo(() => {
+  const [excalidrawAPI, setExcalidrawAPI] =
+    useState<ExcalidrawImperativeAPI | null>(null);
+
+  const sceneData = useMemo(() => {
     const data = JSON.parse(excalidrawContent);
-    return convertToExcalidrawElements(data?.elements ?? []);
+    return {
+      elements: data?.elements ?? [],
+      files: data?.files ?? {},
+      appState: data?.appState ?? {},
+    };
   }, [excalidrawContent]);
-  const files = useMemo(() => {
-    const data = JSON.parse(excalidrawContent);
-    return data?.files ?? {};
-  }, [excalidrawContent]);
-  const appState = useMemo(() => {
-    const data = JSON.parse(excalidrawContent);
-    return data?.appState ?? {};
-  }, [excalidrawContent]);
+
+  // Set scene data and fit to viewport when Excalidraw API is ready
+  useEffect(() => {
+    if (excalidrawAPI) {
+      // Wait for the canvas to be fully initialized
+      const timeoutId = setTimeout(() => {
+        // Update the scene with the parsed data
+        excalidrawAPI.updateScene(sceneData);
+        // Then fit to viewport
+        excalidrawAPI.scrollToContent(undefined, {
+          fitToViewport: true,
+          viewportZoomFactor: 1.2,
+        });
+      }, 100);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [excalidrawAPI, sceneData]);
 
   // Map resolvedTheme to Excalidraw's theme format
   // resolvedTheme is "light" | "dark" | undefined
@@ -100,9 +113,9 @@ export function ExcalidrawView({
   };
 
   return (
-    <div style={{ height: "32rem" }}>
+    <div style={{ height: "40rem" }}>
       <Excalidraw
-        initialData={{ elements, files, appState, scrollToContent: true }}
+        excalidrawAPI={(api) => setExcalidrawAPI(api)}
         theme={excalidrawTheme}
         onChange={handleChange}
       />
