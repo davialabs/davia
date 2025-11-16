@@ -18,8 +18,7 @@ export async function runAgent(
     const agent = await createDaviaAgent(model);
 
     // Build the user message
-    let userMessage = `I need you to convert documentation from ${sourcePath} to ${destinationPath}. 
-Please analyze the source files, perform any necessary transformations, and write the results to the destination.`;
+    let userMessage = `Please analyze the source files, perform any necessary transformations, and write the results following the guidelines.`;
 
     // Append user's documentation goal if provided
     if (documentationGoal) {
