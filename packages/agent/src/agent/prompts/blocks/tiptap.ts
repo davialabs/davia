@@ -8,7 +8,7 @@ export const TIPTAP_HTML_GUIDELINES = `<tiptap_html_guidelines>
    - **Inline/text-level**: \`<strong>\`, \`<em>\`, \`<code>\`, \`<a>\`, \`<br>\`
    - **MDX Components**: \`<mdx-component data-path="components/component-name.mdx"></mdx-component>\` for embedding interactive components
    - **Data Views**: \`<database-view data-path="data/path.json"></database-view>\` for displaying top-level array JSON directly in HTML
-   - **Excalidraw Diagrams**: \`<excalidraw data-path="data/diagram.json"></excalidraw>\` for embedding interactive diagrams
+   - **Excalidraw Whiteboards**: \`<excalidraw data-path="data/diagram.json"></excalidraw>\` for embedding interactive whiteboards
    Anything outside this list (like \`<div>\`, \`<span>\`, \`<img>\`) will be dropped unless the corresponding extension is added.
 
 2. **Well-formed HTML only**

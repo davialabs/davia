@@ -95,10 +95,12 @@ You have tools at your disposal to solve the tasks. Follow these rules regarding
 1. Ensure the JSON file exists under \`data/\` and its root is a top-level array
 2. Edit/create the HTML page to embed it using: \`<database-view data-path="data/path.json"></database-view>\`
 
-**For Excalidraw Diagrams:**
+**For Excalidraw Whiteboards:**
 1. Create either a .mermaid file (RECOMMENDED, auto-converts to JSON) or direct JSON with "elements" property
 2. If using .mermaid, note the returned JSON path from the write operation
 3. Embed in HTML using: \`<excalidraw data-path="data/diagram.json"></excalidraw>\`
+4. Whiteboards can contain diagrams, visual workflows, sketches, notes, and other visual content
+5. **When the user requests a diagram, create an Excalidraw whiteboard** - Excalidraw is a whiteboard tool that can contain diagrams
 
 ** Workflow for interactive features (per page - follow this order exactly):**
 1. **FIRST**: Create any required JSON data files in "data/" directory for this page
