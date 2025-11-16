@@ -1,6 +1,31 @@
 {
   "name": "@davia/web",
   "version": "0.1.0-alpha.1",
+  "license": "MIT",
+  "description": "View Davia docs locally",
+  "homepage": "https://davia.ai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/davia-labs/davia.git"
+  },
+  "bugs": {
+    "url": "https://github.com/davialabs/davia/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -8,15 +33,6 @@
     "start": "node dist/server.js",
     "lint": "eslint",
     "check-types": "next typegen && tsc --noEmit"
-  },
-  "files": [
-    "dist"
-  ],
-  "main": "dist/index.js",
-  "exports": {
-    ".": {
-      "require": "./dist/index.js"
-    }
   },
   "dependencies": {
     "next": "16.0.3"
@@ -59,9 +75,9 @@
     "@radix-ui/react-toggle-group": "^1.1.11",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@repo/typescript-config": "workspace:*",
-    "@tanstack/react-table": "^8.21.3",
     "@tailwindcss/postcss": "^4",
     "@tailwindcss/typography": "^0.5.19",
+    "@tanstack/react-table": "^8.21.3",
     "@tiptap/core": "3.6.5",
     "@tiptap/extension-code-block-lowlight": "3.6.5",
     "@tiptap/extension-document": "3.6.5",
