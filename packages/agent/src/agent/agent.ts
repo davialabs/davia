@@ -13,8 +13,9 @@ import { afterModelCachingMiddleware } from "./middlewares/after-model.js";
 const contextSchema = z.object({
   modelName: z.string(),
   sourcePath: z.string(),
-  destinationPath: z.string(),
-  projectId: z.string().optional(),
+  daviaPath: z.string(),
+  projectId: z.string(),
+  isUpdate: z.boolean(),
 });
 
 // Create and return the agent with the model and tools

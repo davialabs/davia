@@ -16,6 +16,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
     "docs": "pnpm --filter @davia/cli docs",
+    "update-docs": "pnpm --filter @davia/cli update-docs",
     "open": "pnpm --filter @davia/cli open"
   },
   "devDependencies": {

@@ -1,10 +1,20 @@
-import { createMiddleware, SystemMessage, HumanMessage } from "langchain";
+import {
+  createMiddleware,
+  SystemMessage,
+  HumanMessage,
+  ContentBlock,
+} from "langchain";
 import { readRepositoryContent } from "../helpers/initialization.js";
-import { STATIC_AGENT_INSTRUCT } from "../prompts/agent.js";
+import {
+  STATIC_AGENT_INSTRUCT,
+  DYNAMIC_AGENT_INSTRUCT,
+} from "../prompts/agent.js";
 import {
   GIT_EXPLO_INSTRUCTIONS,
   HUMAN_MESSAGE,
 } from "../prompts/repo_instructions.js";
+import { collectPaths, formatTree } from "../helpers/tree.js";
+import { getAssetsPath } from "../helpers/tools.js";
 import * as z from "zod";
 
 /**
@@ -36,10 +46,13 @@ export const repositoryInitializationMiddleware = createMiddleware({
   name: "RepositoryInitialization",
   contextSchema: z.object({
     sourcePath: z.string(),
+    daviaPath: z.string(),
+    projectId: z.string(),
+    isUpdate: z.boolean(),
   }),
   beforeAgent: async (state, runtime) => {
-    // Get source path from context
-    const { sourcePath } = runtime.context;
+    // Get context values
+    const { sourcePath, daviaPath, projectId, isUpdate } = runtime.context;
 
     // Get existing messages from state
     const messages = state.messages || [];
@@ -51,22 +64,52 @@ export const repositoryInitializationMiddleware = createMiddleware({
     const formattedContent = formatRepositoryContent(repositoryContent);
 
     // Create git exploration instructions with repository content
-    const gitExploInstructions = GIT_EXPLO_INSTRUCTIONS(formattedContent);
+    const gitExploInstructions = GIT_EXPLO_INSTRUCTIONS(
+      formattedContent,
+      isUpdate
+    );
 
     // Only insert if there's no existing system message
     if (!messages.some((msg) => msg instanceof SystemMessage)) {
+      // Build system message content blocks
+      const contentBlocks: Array<ContentBlock> = [
+        {
+          text: STATIC_AGENT_INSTRUCT,
+          type: "text",
+        },
+      ];
+
+      // If isUpdate, add dynamic instruction with workspace tree
+      if (isUpdate) {
+        // Collect paths from assets folder
+        const assetsPath = getAssetsPath(daviaPath, projectId);
+        const paths = await collectPaths(assetsPath);
+        const tree = formatTree(paths);
+
+        // Get current date and time
+        const currentDateTime = new Date().toISOString();
+
+        // Generate dynamic instruction
+        const dynamicInstruction = DYNAMIC_AGENT_INSTRUCT(
+          currentDateTime,
+          tree
+        );
+
+        contentBlocks.push({
+          text: dynamicInstruction,
+          type: "text",
+        });
+      }
+
+      // Add git exploration instructions
+      contentBlocks.push({
+        text: gitExploInstructions,
+        type: "text",
+      });
+
       // Create a single SystemMessage with content blocks
       const systemMessage = new SystemMessage({
-        content: [
-          {
-            text: STATIC_AGENT_INSTRUCT,
-            type: "text",
-          },
-          {
-            text: gitExploInstructions,
-            type: "text",
-          },
-        ],
+        content: contentBlocks,
       });
 
       // Insert at position 0

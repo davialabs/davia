@@ -1,11 +1,14 @@
 export const GIT_EXPLO_INSTRUCTIONS = (
-  repository_content: string
-) => `<github_exploration_instructions>
+  repositoryContent: string,
+  isUpdate: boolean = false
+) => {
+  const workspaceType = isUpdate ? "an existing" : "a blank";
+  return `<github_exploration_instructions>
 You are in REPOSITORY EXPLORATION mode.
-**Your mission: Create concise, VISUAL, EDUCATIONAL documentation that teaches and explains a repository in a blank Davia workspace.**
+**Your mission: Create concise, VISUAL, EDUCATIONAL documentation that teaches and explains a repository in ${workspaceType} Davia workspace.**
 
 **CRITICAL - What You're Doing:**
-- **WORKING WITH a blank workspace** - you'll create a fresh documentation structure
+- **WORKING WITH ${workspaceType} workspace** - you'll create a fresh documentation structure
 - **PLAN FIRST** - create a TODO plan of documentation to create
 - **CREATE VISUAL DOCUMENTATION** - transform technical complexity into visual flow diagrams
 - **MAXIMUM 6 PAGES** - be concise, focus on key concepts only
@@ -119,7 +122,7 @@ ecommerce-platform/deployment.html
 
 ### Typical Repository Documentation Structure
 
-**Documentation structure for blank workspace:**
+**Documentation structure for ${workspaceType} workspace:**
 \`\`\`
 [folder-name].html (ROOT: Overview + Architecture Diagram)
 
@@ -337,7 +340,7 @@ The backend API repository uses FastAPI as its web framework. It was chosen beca
 
 ## EXAMPLE: Complete Repository Documentation (6 Pages)
 
-**Scenario:** E-commerce web app (Next.js frontend + Python backend) in a blank workspace
+**Scenario:** E-commerce web app (Next.js frontend + Python backend) in ${workspaceType} workspace
 
 **Created structure:**
 \`\`\`
@@ -434,8 +437,9 @@ Database View: API endpoints
 </github_exploration_instructions>
 
 <github_repository>
-    ${repository_content}
+    ${repositoryContent}
 </github_repository>`;
+};
 
 export const HUMAN_MESSAGE = `A repository has been analyzed. Please create concise, VISUAL, EDUCATIONAL documentation that teaches and explains this repository in the workspace.
 

@@ -124,3 +124,33 @@ when you're done editing, you can say: "I've edited the file 'page1/page2/page3'
 
 ${FILE_HANDLING_INSTRUCTIONS}
 `;
+
+/**
+ * Generate dynamic agent instruction with provided workspace
+ * @param currentDateTime - Current date and time string
+ * @param elements - Formatted filesystem tree string
+ * @returns Formatted instruction string
+ */
+export function DYNAMIC_AGENT_INSTRUCT(
+  currentDateTime: string,
+  elements: string
+): string {
+  return `Current date and time: ${currentDateTime}
+
+<provided_workspace>
+
+You'll be provided with a filesystem representing the user's workspace. Each file will be identified by its path with proper extensions:
+- HTML pages: 'page1/page2/page3.html'
+- MDX components: 'components/name.mdx'
+- Data files: 'data/name.json'
+
+Inside each file you'll find the content of the file.
+
+Important: This is the provided workspace at the beginning of the run, it'll change as you make changes to the workspace.
+
+PROVIDED WORKSPACE:
+
+${elements}
+
+</provided_workspace>`;
+}

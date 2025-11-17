@@ -1,8 +1,19 @@
 import { dirname, join } from "path";
-import { existsSync, readFileSync } from "fs";
+import { existsSync, readFileSync, writeFileSync, statSync } from "fs";
 import { parse } from "dotenv";
 import { spawn, ChildProcess } from "child_process";
 import open from "open";
+import { nanoid } from "nanoid";
+import chalk from "chalk";
+import { runAgent } from "@davia/agent";
+
+/**
+ * Project state stored in projects.json
+ */
+export type ProjectState = {
+  path: string;
+  running: boolean;
+};
 
 /**
  * Find monorepo root (where pnpm-workspace.yaml or turbo.json exists)
@@ -69,20 +80,30 @@ export function checkAndSetAiEnv(
   const monorepoEnvPath = join(monorepoRoot, ".env");
   const monorepoResult = checkEnvFile(monorepoEnvPath);
   if (monorepoResult.found && monorepoResult.model) {
-    console.log(`Using ${monorepoResult.model} API key in Davia settings`);
+    console.log(
+      chalk.blue(
+        `Using ${chalk.bold(monorepoResult.model)} API key in Davia settings`
+      )
+    );
     return monorepoResult.model;
   }
 
   // Log that nothing was found in monorepo root
   console.log(
-    `No environment variable found in Davia monorepo, looking in ${projectPath} for environment variables`
+    chalk.dim(
+      `No environment variable found in Davia monorepo, looking in ${projectPath} for environment variables`
+    )
   );
 
   // Then check project path .env
   const projectEnvPath = join(projectPath, ".env");
   const projectResult = checkEnvFile(projectEnvPath);
   if (projectResult.found && projectResult.model) {
-    console.log(`Using ${projectResult.model} API key in ${projectEnvPath}`);
+    console.log(
+      chalk.blue(
+        `Using ${chalk.bold(projectResult.model)} API key in ${projectEnvPath}`
+      )
+    );
     return projectResult.model;
   }
 
@@ -112,12 +133,12 @@ export async function openBrowser(
       // Create clickable link to the project page
       const projectUrl = `http://localhost:3000/${projectId}`;
       const link = createTerminalLink(projectUrl, projectUrl);
-      console.log(`\n🌐 Browser opened at ${link}\n`);
+      console.log(chalk.blue(`\n🌐 Browser opened at ${link}\n`));
     } else {
-      console.log(`\n🌐 Browser opened at ${url}\n`);
+      console.log(chalk.blue(`\n🌐 Browser opened at ${url}\n`));
     }
   } catch (error) {
-    console.error("Failed to open browser:", error);
+    console.error(chalk.red("Failed to open browser:"), error);
   }
 }
 
@@ -168,7 +189,7 @@ export function startNextJsDevServer(
   const localhostUrl = "http://localhost:3000";
   let hasOpenedBrowser = false;
 
-  console.log("Starting Davia web app...");
+  console.log(chalk.blue("Starting Davia web app..."));
 
   // Start the Next.js dev server
   // Use pipe for stdout/stderr if we need to filter logs, otherwise inherit
@@ -243,4 +264,236 @@ export function startNextJsDevServer(
     openBrowser: openBrowserOnce,
     cleanup,
   };
+}
+
+/**
+ * Load projects from projects.json file
+ */
+export function loadProjects(
+  projectsJsonPath: string
+): Record<string, ProjectState> {
+  let projects: Record<string, ProjectState> = {};
+  try {
+    if (existsSync(projectsJsonPath)) {
+      const projectsContent = readFileSync(projectsJsonPath, "utf-8");
+      if (projectsContent.trim()) {
+        try {
+          projects = JSON.parse(projectsContent);
+        } catch {
+          // If parsing fails, use empty projects
+          projects = {};
+        }
+      }
+    }
+  } catch {
+    // If reading fails, use empty projects
+    projects = {};
+  }
+  return projects;
+}
+
+/**
+ * Save projects to projects.json file
+ */
+export function saveProjects(
+  projectsJsonPath: string,
+  projects: Record<string, ProjectState>
+): void {
+  writeFileSync(projectsJsonPath, JSON.stringify(projects, null, 2), "utf-8");
+}
+
+/**
+ * Find existing project ID by path or create a new one
+ */
+export function findOrCreateProjectId(
+  projects: Record<string, ProjectState>,
+  path: string,
+  projectsJsonPath: string
+): string {
+  // Check if path already exists in projects.json
+  let existingId: string | undefined;
+  for (const [id, project] of Object.entries(projects)) {
+    if (project.path === path) {
+      existingId = id;
+      break;
+    }
+  }
+
+  // Determine the project ID
+  if (!existingId) {
+    // Generate nanoid and add to projects
+    const id = nanoid();
+    projects[id] = {
+      path,
+      running: false,
+    };
+
+    // Write updated projects.json
+    saveProjects(projectsJsonPath, projects);
+    return id;
+  }
+
+  return existingId;
+}
+
+/**
+ * Ensure project is marked as running and return cleanup function
+ */
+export function ensureProjectRunning(
+  projects: Record<string, ProjectState>,
+  id: string,
+  path: string,
+  projectsJsonPath: string
+): {
+  project: ProjectState;
+  setRunningFalse: () => void;
+} {
+  // Ensure project exists and get reference
+  const project = projects[id] ?? { path, running: false };
+  projects[id] = project;
+
+  // Set running to true before agent run
+  project.running = true;
+  saveProjects(projectsJsonPath, projects);
+
+  // Helper function to set running to false
+  const setRunningFalse = () => {
+    project.running = false;
+    saveProjects(projectsJsonPath, projects);
+  };
+
+  return { project, setRunningFalse };
+}
+
+/**
+ * Validate that a project path exists and is a directory
+ */
+export function validateProjectPath(path: string): void {
+  if (!path || path.trim() === "") {
+    throw new Error("No path provided. The path cannot be empty.");
+  }
+
+  let stats;
+  try {
+    stats = statSync(path);
+  } catch (error) {
+    const err = error as NodeJS.ErrnoException;
+    if (err.code === "ENOENT") {
+      throw new Error(`The path "${path}" does not exist.`);
+    } else if (err.code === "EACCES") {
+      throw new Error(`Permission denied: Cannot access "${path}".`);
+    } else if (err.code === "ENOTDIR") {
+      throw new Error(
+        `"${path}" is not a directory (it appears to be a file).`
+      );
+    } else {
+      throw new Error(`Cannot access path "${path}": ${err.message}`);
+    }
+  }
+
+  if (!stats.isDirectory()) {
+    throw new Error(`"${path}" is not a directory.`);
+  }
+}
+
+/**
+ * Validate that monorepo root exists and has workspace files
+ */
+export function validateMonorepoRoot(monorepoRoot: string): void {
+  const workspaceFileExists =
+    existsSync(join(monorepoRoot, "pnpm-workspace.yaml")) ||
+    existsSync(join(monorepoRoot, "turbo.json"));
+
+  if (!workspaceFileExists) {
+    throw new Error("Could not find monorepo root directory.");
+  }
+}
+
+/**
+ * Options for running agent with web interface
+ */
+export interface RunAgentWithWebOptions {
+  sourcePath: string;
+  daviaPath: string;
+  projectId: string;
+  model: "anthropic" | "openai" | "google";
+  isUpdate: boolean;
+  additionalInstructions?: string;
+  monorepoRoot: string;
+  projectsJsonPath: string;
+  projects: Record<string, ProjectState>;
+  noBrowser?: boolean;
+}
+
+/**
+ * Run agent with optional web server and browser opening
+ */
+export async function runAgentWithWeb(
+  options: RunAgentWithWebOptions
+): Promise<void> {
+  const {
+    sourcePath,
+    daviaPath,
+    projectId,
+    model,
+    isUpdate,
+    additionalInstructions,
+    monorepoRoot,
+    projectsJsonPath,
+    projects,
+    noBrowser = false,
+  } = options;
+
+  const { setRunningFalse } = ensureProjectRunning(
+    projects,
+    projectId,
+    sourcePath,
+    projectsJsonPath
+  );
+
+  let devServer: ReturnType<typeof startNextJsDevServer> | null = null;
+
+  // Start the Next.js dev server if browser should be opened
+  if (!noBrowser) {
+    devServer = startNextJsDevServer({
+      monorepoRoot,
+      openBrowserOnStart: false, // We'll open manually after agent starts
+      onSignal: setRunningFalse,
+      filterRequestLogs: true, // Filter out GET/POST logs when running docs
+    });
+
+    // Wait a moment for Next.js server to show startup messages before starting agent
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+
+  try {
+    const agentPromise = runAgent(
+      sourcePath,
+      daviaPath,
+      projectId,
+      model,
+      isUpdate,
+      additionalInstructions
+    );
+
+    // Open browser after agent starts (give it a moment to initialize)
+    if (!noBrowser && devServer) {
+      setTimeout(async () => {
+        await devServer!.openBrowser(projectId);
+      }, 2000);
+    }
+
+    // Await agent completion
+    await agentPromise;
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    throw new Error(`Documentation generation failed: ${errorMsg}`);
+  } finally {
+    // Cleanup signal handlers
+    if (devServer) {
+      devServer.cleanup();
+    }
+    // Set running to false after agent completes or fails
+    setRunningFalse();
+  }
 }
