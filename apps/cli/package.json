@@ -1,7 +1,23 @@
 {
-  "name": "@davia/cli",
-  "version": "0.1.0",
-  "private": true,
+  "name": "davia",
+  "version": "0.1.0-alpha.5",
+  "license": "MIT",
+  "description": "Interactive internal documentation that writes itself",
+  "homepage": "https://davia.ai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/davia-labs/davia.git"
+  },
+  "bugs": {
+    "url": "https://github.com/davialabs/davia/issues"
+  },
+  "keywords": [
+    "davia",
+    "cli"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "bin": {
@@ -14,22 +30,25 @@
     "dev": "tsx src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "docs": "tsx src/index.ts docs",
-    "open": "tsx src/index.ts open",
     "lint": "eslint --max-warnings 0",
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@davia/agent": "workspace:*",
     "@davia/web": "workspace:*",
+    "@inquirer/prompts": "^8.0.1",
+    "chalk": "^5.6.2",
     "commander": "^14.0.2",
+    "detect-port": "^2.1.0",
     "dotenv": "^17.2.3",
+    "env-paths": "^3.0.0",
+    "fs-extra": "^11.3.2",
     "nanoid": "^5.1.6",
     "open": "^10.2.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.15.3",
     "eslint": "^9.38.0",
     "tsx": "^4.19.2",

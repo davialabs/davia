@@ -4,6 +4,7 @@
   "private": true,
   "license": "MIT",
   "description": "Interactive internal documentation that writes itself",
+  "author": "Davia Labs, Inc.",
   "homepage": "https://davia.ai",
   "repository": {
     "type": "git",
