@@ -42,12 +42,12 @@ export const writeTool = tool(
           const jsonFilePath = filePath.replace(/\.(mermaid|mmd)$/, ".json");
           const absoluteJsonPath = resolveFilePath(jsonFilePath, context);
 
-          // Write the JSON file with elements (ensureDir is handled by writeJson)
+          // Write the JSON file with elements (ensureDir is handled by outputJson)
           const result: { elements: unknown[]; files?: unknown } = {
             elements,
           };
           if (files) result.files = files;
-          await fs.writeJson(absoluteJsonPath, result, { spaces: 2 });
+          await fs.outputJson(absoluteJsonPath, result, { spaces: 2 });
 
           console.log(
             chalk.dim(`  → Converted mermaid to Excalidraw: ${jsonFilePath}`)

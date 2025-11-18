@@ -1,8 +1,10 @@
 import { bundleMDX } from "mdx-bundler";
 
-export type ProjectState = {
+export type Project = {
+  id: string;
   path: string;
   running: boolean;
+  workspace_id?: string;
 };
 
 export type FlatTreeNode = {

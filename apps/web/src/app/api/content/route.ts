@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 import { NextRequest, NextResponse } from "next/server";
+import { readProjects, findProjectById } from "@/lib/projects";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -14,18 +15,19 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Get monorepo root from environment variable
-  const monorepoRoot = process.env.DAVIA_MONOREPO_ROOT;
+  // Read projects and find project by id
+  const projects = await readProjects();
+  const project = findProjectById(projects, projectId);
 
-  if (!monorepoRoot) {
+  if (!project) {
     return NextResponse.json(
-      { error: "DAVIA_MONOREPO_ROOT environment variable is not set" },
-      { status: 500 }
+      { error: "Project not found" },
+      { status: 404 }
     );
   }
 
   // Construct the file path
-  const assetPath = join(monorepoRoot, ".davia", "assets", projectId);
+  const assetPath = join(project.path, ".davia", "assets");
   const filePath = join(assetPath, path);
 
   // Check if the file exists
@@ -55,18 +57,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get monorepo root from environment variable
-    const monorepoRoot = process.env.DAVIA_MONOREPO_ROOT;
+    // Read projects and find project by id
+    const projects = await readProjects();
+    const project = findProjectById(projects, projectId);
 
-    if (!monorepoRoot) {
+    if (!project) {
       return NextResponse.json(
-        { error: "DAVIA_MONOREPO_ROOT environment variable is not set" },
-        { status: 500 }
+        { error: "Project not found" },
+        { status: 404 }
       );
     }
 
     // Construct the file path
-    const assetPath = join(monorepoRoot, ".davia", "assets", projectId);
+    const assetPath = join(project.path, ".davia", "assets");
     const filePath = join(assetPath, path);
 
     // Write the file content

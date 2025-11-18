@@ -36,26 +36,23 @@ export const createDaviaDataPlugin = (
 /**
  * Plugin to resolve shadcn imports from local assets folder
  * Resolves to local file system:
- * - @/components/ui/* -> assetsPath/components/ui/<component>.tsx
- * - @/lib/utils -> assetsPath/lib/utils.ts
- * - @/hooks/use-mobile -> assetsPath/hooks/use-mobile.ts
+ * - @/components/ui/* -> webAppSrcPath/components/ui/<component>.tsx
+ * - @/lib/utils -> webAppSrcPath/lib/utils.ts
+ * - @/hooks/use-mobile -> webAppSrcPath/hooks/use-mobile.ts
  */
-export const createShadcnPlugin = (): Plugin => ({
+export const createShadcnPlugin = (webAppSrcPath: string): Plugin => ({
   name: "shadcn",
 
   setup(build) {
-    const monorepoRoot = process.env.DAVIA_MONOREPO_ROOT!;
-    const assetsPath = join(monorepoRoot, "apps", "web", "src");
-
     // Map @/lib/utils to local utils.ts
     build.onResolve({ filter: /^@\/lib\/utils$/ }, () => ({
-      path: join(assetsPath, "lib", "utils.ts"),
+      path: join(webAppSrcPath, "lib", "utils.ts"),
       namespace: "shadcn-fs",
     }));
 
     // Map @/hooks/use-mobile to local use-mobile.ts
     build.onResolve({ filter: /^@\/hooks\/use-mobile$/ }, () => ({
-      path: join(assetsPath, "hooks", "use-mobile.ts"),
+      path: join(webAppSrcPath, "hooks", "use-mobile.ts"),
       namespace: "shadcn-fs",
     }));
 
@@ -63,7 +60,7 @@ export const createShadcnPlugin = (): Plugin => ({
     build.onResolve({ filter: /^@\/components\/ui\// }, (args) => {
       const componentName = args.path.replace(/^@\/components\/ui\//, "");
       return {
-        path: join(assetsPath, "components", "ui", `${componentName}.tsx`),
+        path: join(webAppSrcPath, "components", "ui", `${componentName}.tsx`),
         namespace: "shadcn-fs",
       };
     });

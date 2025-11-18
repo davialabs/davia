@@ -5,6 +5,7 @@ import { bundleMDX } from "mdx-bundler";
 import type { Plugin } from "esbuild";
 import { createShadcnPlugin, createDaviaDataPlugin } from "./plugins";
 import type { DataCollector, BundlingResult } from "./types";
+import { readProjects, findProjectById } from "@/lib/projects";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -18,18 +19,19 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Get monorepo root from environment variable
-  const monorepoRoot = process.env.DAVIA_MONOREPO_ROOT;
+  // Read projects and find project by id
+  const projects = await readProjects();
+  const project = findProjectById(projects, projectId);
 
-  if (!monorepoRoot) {
+  if (!project) {
     return NextResponse.json(
-      { error: "DAVIA_MONOREPO_ROOT environment variable is not set" },
-      { status: 500 }
+      { error: "Project not found" },
+      { status: 404 }
     );
   }
 
   // Construct the file path
-  const assetsPath = join(monorepoRoot, ".davia", "assets", projectId);
+  const assetsPath = join(project.path, ".davia", "assets");
   const filePath = join(assetsPath, path);
 
   // Check if the file exists
@@ -52,6 +54,10 @@ export async function GET(request: NextRequest) {
     // Collect data needed
     const dataCollector: DataCollector = new Set();
 
+    // Get web app source path (this file is at apps/web/src/app/api/bundle-mdx/route.ts)
+    // So we need to go up 3 levels to get to apps/web/src
+    const webAppSrcPath = join(process.cwd(), "src");
+
     // Set up globals
     const globals = {
       "@mdx-js/react": {
@@ -68,7 +74,7 @@ export async function GET(request: NextRequest) {
 
     // Set up plugins
     const plugins: Plugin[] = [
-      createShadcnPlugin(),
+      createShadcnPlugin(webAppSrcPath),
       createDaviaDataPlugin(dataCollector),
     ];
 

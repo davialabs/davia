@@ -2,19 +2,19 @@
 
 import { createContext, type ReactNode, use, useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import type { ProjectState, AssetTrees } from "@/lib/types";
+import type { Project, AssetTrees } from "@/lib/types";
 
 type ProjectsContextValue = {
-  projects: Record<string, ProjectState>;
+  projects: Record<string, Project>;
   trees: AssetTrees;
   setTrees: React.Dispatch<React.SetStateAction<AssetTrees>>;
-  currentProject: ({ id: string } & ProjectState) | null;
+  currentProject: Project | null;
 };
 
 const ProjectsContext = createContext<ProjectsContextValue | null>(null);
 
 type ProjectsProviderProps = {
-  projects: Record<string, ProjectState>;
+  projects: Record<string, Project>;
   initialTrees: AssetTrees;
   children: ReactNode;
 };
@@ -34,9 +34,7 @@ export function ProjectsProvider({
 
   // Get current project only if projectId exists and is in projects
   const currentProject =
-    projectId && projects[projectId]
-      ? { id: projectId, ...projects[projectId] }
-      : null;
+    projectId && projects[projectId] ? projects[projectId] : null;
 
   const value: ProjectsContextValue = {
     projects,

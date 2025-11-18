@@ -9,6 +9,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { SplinePointerIcon } from "lucide-react";
+import { readProjects, findProjectById } from "@/lib/projects";
 
 export default async function ExcalidrawViewPage({
   params,
@@ -17,15 +18,19 @@ export default async function ExcalidrawViewPage({
 }) {
   const { projectId, excalidrawPath } = await params;
 
-  // Get monorepo root from environment variable
-  const monorepoRoot = process.env.DAVIA_MONOREPO_ROOT!;
+  // Read projects and find project by id
+  const projects = await readProjects();
+  const project = findProjectById(projects, projectId);
+
+  if (!project) {
+    return <EmptyExcalidraw />;
+  }
 
   // Check if the asset folder exists
   const assetPath = join(
-    monorepoRoot,
+    project.path,
     ".davia",
     "assets",
-    projectId,
     ...excalidrawPath
   );
   if (!existsSync(assetPath)) {

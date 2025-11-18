@@ -3,10 +3,11 @@ import { join, relative } from "path";
 import { redirect } from "next/navigation";
 import { findHtmlFiles } from "@/lib/tree/server";
 import { extractTitle, getBaseName } from "@/lib/utils";
-import { ProjectState } from "@/lib/types";
+import { Project } from "@/lib/types";
 import type { Metadata } from "next";
 import { Editor } from "./editor";
 import { EmptyDocumentation, PageNotFound } from "./fallback-views";
+import { readProjects, findProjectById } from "@/lib/projects";
 
 export async function generateMetadata({
   params,
@@ -15,23 +16,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { projectId, pagePath } = await params;
 
-  // Get monorepo root from environment variable
-  const monorepoRoot = process.env.DAVIA_MONOREPO_ROOT!;
+  // Read projects and find project by id
+  const projects = await readProjects();
+  const project = findProjectById(projects, projectId);
 
-  // Read projects.json
-  const projectsJsonPath = join(monorepoRoot, ".davia", "projects.json");
-  let projects: Record<string, ProjectState> = {};
-  try {
-    const projectsContent = readFileSync(projectsJsonPath, "utf-8");
-    if (projectsContent.trim()) {
-      projects = JSON.parse(projectsContent);
-    }
-  } catch (error) {
-    console.error("Error reading projects.json:", error);
-  }
-
-  // Check if projectId exists in projects
-  const project = projects[projectId];
   if (!project) {
     return {
       title: "Project not found",
@@ -49,7 +37,7 @@ export async function generateMetadata({
   }
 
   // Construct the file path from pagePath array
-  const assetPath = join(monorepoRoot, ".davia", "assets", projectId);
+  const assetPath = join(project.path, ".davia", "assets");
   const filePath = join(assetPath, ...pagePath) + ".html";
 
   // Check if the file exists
@@ -81,11 +69,16 @@ export default async function PagePathPage({
 }) {
   const { projectId, pagePath } = await params;
 
-  // Get monorepo root from environment variable
-  const monorepoRoot = process.env.DAVIA_MONOREPO_ROOT!;
+  // Read projects and find project by id
+  const projects = await readProjects();
+  const project = findProjectById(projects, projectId);
+
+  if (!project) {
+    return <EmptyDocumentation />;
+  }
 
   // Check if the asset folder exists
-  const assetPath = join(monorepoRoot, ".davia", "assets", projectId);
+  const assetPath = join(project.path, ".davia", "assets");
   if (!existsSync(assetPath)) {
     return <EmptyDocumentation />;
   }

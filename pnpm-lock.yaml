@@ -253,6 +253,9 @@ importers:
       '@tiptap/suggestion':
         specifier: 3.6.5
         version: 3.6.5(@tiptap/core@3.6.5(@tiptap/pm@3.6.5))(@tiptap/pm@3.6.5)
+      '@types/fs-extra':
+        specifier: ^11.0.4
+        version: 11.0.4
       '@types/node':
         specifier: ^20
         version: 20.19.25
@@ -295,6 +298,9 @@ importers:
       embla-carousel-react:
         specifier: ^8.6.0
         version: 8.6.0(react@19.2.0)
+      env-paths:
+        specifier: ^3.0.0
+        version: 3.0.0
       esbuild:
         specifier: ^0.25.12
         version: 0.25.12
@@ -304,6 +310,9 @@ importers:
       eslint-config-next:
         specifier: 16.0.3
         version: 16.0.3(@typescript-eslint/parser@8.47.0(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.2))(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.2)
+      fs-extra:
+        specifier: ^11.3.2
+        version: 11.3.2
       input-otp:
         specifier: ^1.4.2
         version: 1.4.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0)

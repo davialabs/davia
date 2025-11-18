@@ -1,40 +1,27 @@
-import { readFileSync } from "fs";
-import { join } from "path";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Header } from "@/components/app-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ProjectsProvider } from "@/providers/projects-provider";
-import { ProjectState } from "@/lib/types";
+import { Project } from "@/lib/types";
 import { buildAssetTrees } from "@/lib/tree/server";
+import { readProjects } from "@/lib/projects";
 
 export default async function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Get monorepo root from environment variable
-  const monorepoRoot = process.env.DAVIA_MONOREPO_ROOT;
+  // Read projects from env-paths
+  const projectsArray = await readProjects();
 
-  if (!monorepoRoot) {
-    throw new Error(
-      "DAVIA_MONOREPO_ROOT environment variable is not set. Please run `pnpm run open` to start the web app."
-    );
+  // Convert to Record<string, Project> keyed by project id
+  const projects: Record<string, Project> = {};
+  for (const project of projectsArray) {
+    projects[project.id] = project;
   }
 
-  // Read projects.json
-  const projectsJsonPath = join(monorepoRoot, ".davia", "projects.json");
-  let projects: Record<string, ProjectState> = {};
-  try {
-    const projectsContent = readFileSync(projectsJsonPath, "utf-8");
-    if (projectsContent.trim()) {
-      projects = JSON.parse(projectsContent);
-    }
-  } catch (error) {
-    console.error("Error reading projects.json:", error);
-  }
-
-  // Build tree structures for all assets
-  const trees = buildAssetTrees(monorepoRoot);
+  // Build tree structures for all projects
+  const trees = buildAssetTrees(projectsArray);
 
   return (
     <ProjectsProvider projects={projects} initialTrees={trees}>
