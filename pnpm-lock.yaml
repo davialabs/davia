@@ -391,6 +391,9 @@ importers:
       chalk:
         specifier: ^5.6.2
         version: 5.6.2
+      fs-extra:
+        specifier: ^11.3.2
+        version: 11.3.2
       ignore:
         specifier: ^7.0.5
         version: 7.0.5
@@ -410,6 +413,9 @@ importers:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@types/fs-extra':
+        specifier: ^11.0.4
+        version: 11.0.4
       '@types/node':
         specifier: ^22.15.3
         version: 22.19.1

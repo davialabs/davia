@@ -1,6 +1,6 @@
 import { tool } from "langchain";
 import { z } from "zod";
-import { promises as fs } from "fs";
+import fs from "fs-extra";
 import * as path from "path";
 import chalk from "chalk";
 import {
@@ -42,17 +42,12 @@ export const writeTool = tool(
           const jsonFilePath = filePath.replace(/\.(mermaid|mmd)$/, ".json");
           const absoluteJsonPath = resolveFilePath(jsonFilePath, context);
 
-          // Ensure directory exists
-          const directory = path.dirname(absoluteJsonPath);
-          await fs.mkdir(directory, { recursive: true });
-
-          // Write the JSON file with elements
+          // Write the JSON file with elements (ensureDir is handled by writeJson)
           const result: { elements: unknown[]; files?: unknown } = {
             elements,
           };
           if (files) result.files = files;
-          const jsonContent = JSON.stringify(result, null, 2);
-          await fs.writeFile(absoluteJsonPath, jsonContent, "utf-8");
+          await fs.writeJson(absoluteJsonPath, result, { spaces: 2 });
 
           console.log(
             chalk.dim(`  → Converted mermaid to Excalidraw: ${jsonFilePath}`)
@@ -75,26 +70,18 @@ export const writeTool = tool(
         const assetsPath = getAssetsPath(context.projectPath);
         const assetsFilePath = path.join(assetsPath, filePath);
 
-        try {
-          // Check if file exists in assets
-          await fs.access(assetsFilePath);
-        } catch {
-          // File doesn't exist in assets, create it
-          const assetsDirectory = path.dirname(assetsFilePath);
-          await fs.mkdir(assetsDirectory, { recursive: true });
-          await fs.writeFile(assetsFilePath, "", "utf-8");
+        // Check if file exists in assets, create it if it doesn't
+        const fileExists = await fs.pathExists(assetsFilePath);
+        if (!fileExists) {
+          await fs.outputFile(assetsFilePath, "");
         }
       }
 
       // Resolve the absolute path (will use proposed or assets based on isUpdate)
       const absolutePath = resolveFilePath(filePath, context);
 
-      // Ensure directory exists
-      const directory = path.dirname(absolutePath);
-      await fs.mkdir(directory, { recursive: true });
-
-      // Write the file
-      await fs.writeFile(absolutePath, content, "utf-8");
+      // Write the file (ensureDir is handled by outputFile)
+      await fs.outputFile(absolutePath, content, "utf-8");
 
       const message = getFileCreationMessage(filePath, context);
       // getFileCreationMessage already includes chalk formatting, so just log it
