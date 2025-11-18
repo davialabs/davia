@@ -34,6 +34,7 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@davia/agent": "workspace:*",
     "@davia/web": "workspace:*",
     "@inquirer/prompts": "^8.0.1",
     "chalk": "^5.6.2",

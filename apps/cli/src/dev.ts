@@ -1,5 +1,5 @@
 import { Command } from "commander";
-import { confirm, select } from "@inquirer/prompts";
+import { confirm, select, input } from "@inquirer/prompts";
 import chalk from "chalk";
 import fs from "fs-extra";
 import path from "node:path";
@@ -10,8 +10,10 @@ import {
   addProject,
   setRunning,
 } from "./projects.js";
-import { createPromptMd } from "./prompt-md.js";
+import { createPromptMd, checkAndSetAiEnv } from "./ai.js";
+import { exitWithError } from "./utils.js";
 import { startWebDevServer, setupGracefulShutdown } from "./web.js";
+import { runAgent } from "@davia/agent";
 
 /**
  * Adds dev commands to the program
@@ -97,17 +99,83 @@ export function addDevCommands(program: Command): void {
       console.log(chalk.green("  - .davia/proposed/"));
       console.log(chalk.green("  - .davia/prompt.md"));
 
-      if (project && options.browser !== false) {
-        // Start web dev server and open browser after bootstrapping
-        let running = true;
-        const cleanup = async () => {
-          running = false;
-          await setRunning(project.id, false);
-        };
+      // Check and set AI API key from .env files
+      const model = checkAndSetAiEnv(cwd);
 
-        setupGracefulShutdown(cleanup);
+      // Exit if no API key found
+      if (!model) {
+        exitWithError(
+          "No AI API key found. Cannot proceed without an API key.",
+          [
+            "Create a .env file in the .davia folder or in the project directory",
+            "Add one of the following environment variables:",
+            "  • ANTHROPIC_API_KEY (for Claude)",
+            "  • OPENAI_API_KEY (for GPT models)",
+            "  • GOOGLE_API_KEY (for Gemini models)",
+            "",
+            "Example .env file content:",
+            "  ANTHROPIC_API_KEY=your_api_key_here",
+          ]
+        );
+      }
 
+      // Get documentation goal from user
+      const documentationGoal = await input({
+        message:
+          "What do you want to document? (Optional - press Enter to skip):",
+        default: "",
+      });
+
+      // Set running to true
+      await setRunning(project.id, true);
+
+      // Setup cleanup for graceful shutdown
+      const cleanup = async () => {
+        await setRunning(project.id, false);
+      };
+      setupGracefulShutdown(cleanup);
+
+      // Start web dev server and open browser if requested
+      if (options.browser !== false) {
         await startWebDevServer(project.id);
+      }
+
+      try {
+        // Run the agent
+        await runAgent(
+          project.id,
+          cwd,
+          false, // isUpdate = false for initial docs
+          model,
+          documentationGoal.trim() || undefined // additionalInstructions
+        );
+
+        // Success message
+        console.log(
+          `\n${chalk.green.bold("✅ Documentation generation complete!")}`
+        );
+
+        if (options.browser !== false) {
+          console.log(
+            `   ${chalk.green("🔄 Please reload the page in your browser to see the updates.")}\n`
+          );
+        }
+      } catch (error) {
+        console.error(chalk.red.bold("\n❌ Documentation generation failed!"));
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        exitWithError(errorMessage, [
+          "",
+          "💡 Troubleshooting tips:",
+          "  • Check if the source path contains valid files to document",
+          "  • Verify you have write permissions in the destination directory",
+          "  • Check the agent logs above for more details",
+          "  • Ensure your API key is valid and has sufficient credits/quota",
+          "  • Try running the command again",
+        ]);
+      } finally {
+        // Set running to false
+        await setRunning(project.id, false);
       }
     });
 

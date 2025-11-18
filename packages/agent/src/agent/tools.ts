@@ -2,193 +2,21 @@ import { tool } from "langchain";
 import { z } from "zod";
 import { promises as fs } from "fs";
 import * as path from "path";
-import puppeteer from "puppeteer";
+import chalk from "chalk";
 import {
   WRITE_TOOL_DESCRIPTION,
   SEARCH_REPLACE_TOOL_DESCRIPTION,
   MULTI_EDIT_TOOL_DESCRIPTION,
 } from "./prompts/tool_descriptions.js";
-
-// Context schema type - matches the contextSchema in agent.ts
-type ContextType = {
-  modelName: string;
-  sourcePath: string;
-  destinationPath: string;
-  projectId?: string;
-};
-
-/**
- * Create a clickable terminal hyperlink using OSC 8 escape sequence
- */
-function createTerminalLink(url: string, text: string): string {
-  // OSC 8 escape sequence for hyperlinks: \x1b]8;;URL\x1b\\TEXT\x1b]8;;\x1b\\
-  return `\x1b]8;;${url}\x1b\\${text}\x1b]8;;\x1b\\`;
-}
-
-/**
- * Generate a log message for file creation based on file type
- */
-function getFileCreationMessage(
-  filePath: string,
-  context: ContextType
-): string {
-  const ext = path.extname(filePath).toLowerCase();
-  const fileName = path.basename(filePath);
-  const dirPath = path.dirname(filePath);
-
-  if (ext === ".html") {
-    // For HTML files, create a clickable link
-    if (context.projectId) {
-      // Convert file path to URL path (remove .html extension, use forward slashes)
-      const urlPath = filePath.replace(/\.html$/, "").replace(/\\/g, "/");
-      const url = `http://localhost:3000/${context.projectId}/${urlPath}`;
-      // Get display name without .html extension
-      const nameWithoutExt = fileName.replace(/\.html$/, "");
-      const displayName =
-        dirPath === "." ? nameWithoutExt : filePath.replace(/\.html$/, "");
-      const clickableName = createTerminalLink(url, displayName);
-      return `✓ Created ${clickableName} page\n   🔄 Reload the page in your browser to see the updates.\n`;
-    }
-    const displayName = filePath.replace(/\.html$/, "");
-    return `✓ Created: ${displayName}\n   🔄 Reload the page in your browser to see the updates.\n`;
-  } else if (ext === ".mdx") {
-    const displayPath = dirPath === "." ? fileName : filePath;
-    return `  -> Creating component: ${displayPath}\n`;
-  } else if (ext === ".json") {
-    const displayPath = dirPath === "." ? fileName : filePath;
-    return `  -> Creating data structure: ${displayPath}`;
-  } else {
-    return `✓ Created: ${filePath}`;
-  }
-}
-
-/**
- * Helper function to resolve file path using runtime context
- * @param filePath - Relative file path
- * @param destinationPath - Base destination path from runtime context
- * @returns Absolute file path
- * @throws Error if path validation fails
- */
-function resolveFilePath(filePath: string, destinationPath: string): string {
-  // Validate that path doesn't start with /
-  if (filePath.startsWith("/")) {
-    throw new Error(
-      "Absolute paths with leading slash are not allowed. " +
-        `Use relative paths like 'page1/page2/file.html' instead of '${filePath}'`
-    );
-  }
-
-  // Join and normalize the path
-  const absolutePath = path.normalize(path.join(destinationPath, filePath));
-  const normalizedDestination = path.normalize(destinationPath);
-
-  // Security check: ensure the resolved path doesn't escape the destination directory
-  if (!absolutePath.startsWith(normalizedDestination)) {
-    throw new Error(
-      `Path '${filePath}' attempts to escape the destination directory`
-    );
-  }
-
-  return absolutePath;
-}
-
-/**
- * Parse Mermaid diagram to Excalidraw using Puppeteer headless browser
- * This is the same approach used by mermaid-cli for reliable rendering
- * @param mermaidContent - Mermaid diagram definition
- * @returns Excalidraw elements and files
- */
-async function parseMermaidWithPuppeteer(mermaidContent: string) {
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
-
-  try {
-    const page = await browser.newPage();
-
-    // Set up the page with the necessary libraries and parse
-    const result = await page.evaluate(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      async (definition: string): Promise<any> => {
-        // Dynamically import the libraries in the browser context
-        const { parseMermaidToExcalidraw } = await import(
-          // @ts-expect-error - Runtime import in browser, not checked by TS
-          "https://cdn.jsdelivr.net/npm/@excalidraw/mermaid-to-excalidraw@1.1.3/+esm"
-        );
-        const { convertToExcalidrawElements } = await import(
-          // @ts-expect-error - Runtime import in browser, not checked by TS
-          "https://cdn.jsdelivr.net/npm/@excalidraw/excalidraw@0.18.0/+esm"
-        );
-
-        const { elements, files } = await parseMermaidToExcalidraw(definition);
-        const excalidrawElements = convertToExcalidrawElements(elements);
-
-        return { elements: excalidrawElements, files };
-      },
-      mermaidContent
-    );
-
-    return result;
-  } finally {
-    await browser.close();
-  }
-}
-
-/**
- * Helper function to perform robust search and replace with validation
- * @param content - Original file content
- * @param oldString - String to search for
- * @param newString - String to replace with
- * @param replaceAll - Whether to replace all occurrences
- * @returns Object with new content, success status, and error message
- */
-function robustSearchReplace(
-  content: string,
-  oldString: string,
-  newString: string,
-  replaceAll: boolean = false
-): { newContent: string; success: boolean; errorMessage?: string } {
-  // Check if old_string and new_string are the same
-  if (oldString === newString) {
-    return {
-      newContent: content,
-      success: false,
-      errorMessage: "old_string and new_string must be different",
-    };
-  }
-
-  // Check if old_string exists in content
-  if (!content.includes(oldString)) {
-    return {
-      newContent: content,
-      success: false,
-      errorMessage: `The string to replace was not found in the file. Make sure old_string matches the file content exactly, including whitespace and indentation.`,
-    };
-  }
-
-  // If not replacing all, check that old_string appears exactly once
-  if (!replaceAll) {
-    const occurrences = content.split(oldString).length - 1;
-    if (occurrences > 1) {
-      return {
-        newContent: content,
-        success: false,
-        errorMessage: `The string to replace appears ${occurrences} times in the file. Either provide more context to make old_string unique, or set replace_all to true.`,
-      };
-    }
-  }
-
-  // Perform the replacement
-  const newContent = replaceAll
-    ? content.split(oldString).join(newString)
-    : content.replace(oldString, newString);
-
-  return {
-    newContent,
-    success: true,
-  };
-}
+import { ContextType } from "./context.js";
+import {
+  getFileCreationMessage,
+  resolveFilePath,
+  parseMermaidWithPuppeteer,
+  robustSearchReplace,
+  getAssetsPath,
+  getBaseDestinationPath,
+} from "./helpers/tools.js";
 
 /**
  * Tool for writing content to a file
@@ -205,17 +33,14 @@ export const writeTool = tool(
       // Check if this is a mermaid file that needs conversion
       const ext = path.extname(filePath).toLowerCase();
       if (ext === ".mermaid" || ext === ".mmd") {
-        console.log("Parsing mermaid to Excalidraw");
+        console.log(chalk.blue("Parsing mermaid to Excalidraw"));
         // Parse mermaid to Excalidraw using Puppeteer headless browser
         try {
           const { elements, files } = await parseMermaidWithPuppeteer(content);
 
           // Create JSON file path by replacing extension
           const jsonFilePath = filePath.replace(/\.(mermaid|mmd)$/, ".json");
-          const absoluteJsonPath = resolveFilePath(
-            jsonFilePath,
-            context.destinationPath
-          );
+          const absoluteJsonPath = resolveFilePath(jsonFilePath, context);
 
           // Ensure directory exists
           const directory = path.dirname(absoluteJsonPath);
@@ -229,19 +54,40 @@ export const writeTool = tool(
           const jsonContent = JSON.stringify(result, null, 2);
           await fs.writeFile(absoluteJsonPath, jsonContent, "utf-8");
 
-          console.log(`  -> Converted mermaid to Excalidraw: ${jsonFilePath}`);
+          console.log(
+            chalk.dim(`  → Converted mermaid to Excalidraw: ${jsonFilePath}`)
+          );
 
           return `Converted mermaid to Excalidraw diagram. JSON saved to: ${jsonFilePath}`;
         } catch (error) {
-          console.error("Error parsing mermaid to Excalidraw", error);
+          console.error(
+            chalk.red("Error parsing mermaid to Excalidraw:"),
+            error instanceof Error ? error.message : String(error)
+          );
           throw new Error(
             `Error parsing mermaid to Excalidraw. Generate JSON instead.`
           );
         }
       }
 
-      // Resolve the absolute path
-      const absolutePath = resolveFilePath(filePath, context.destinationPath);
+      // For isUpdate mode, ensure file exists in assets first
+      if (context.isUpdate) {
+        const assetsPath = getAssetsPath(context.projectPath);
+        const assetsFilePath = path.join(assetsPath, filePath);
+
+        try {
+          // Check if file exists in assets
+          await fs.access(assetsFilePath);
+        } catch {
+          // File doesn't exist in assets, create it
+          const assetsDirectory = path.dirname(assetsFilePath);
+          await fs.mkdir(assetsDirectory, { recursive: true });
+          await fs.writeFile(assetsFilePath, "", "utf-8");
+        }
+      }
+
+      // Resolve the absolute path (will use proposed or assets based on isUpdate)
+      const absolutePath = resolveFilePath(filePath, context);
 
       // Ensure directory exists
       const directory = path.dirname(absolutePath);
@@ -250,7 +96,9 @@ export const writeTool = tool(
       // Write the file
       await fs.writeFile(absolutePath, content, "utf-8");
 
-      console.log(getFileCreationMessage(filePath, context));
+      const message = getFileCreationMessage(filePath, context);
+      // getFileCreationMessage already includes chalk formatting, so just log it
+      console.log(message);
 
       return `Successfully wrote content to ${filePath}`;
     } catch (error) {
@@ -285,8 +133,8 @@ export const searchReplaceTool = tool(
 
       const context = runtime.context as ContextType;
 
-      // Resolve the absolute path
-      const absolutePath = resolveFilePath(filePath, context.destinationPath);
+      // Resolve the absolute path (will use proposed or assets based on isUpdate)
+      const absolutePath = resolveFilePath(filePath, context);
 
       // Read the file
       const originalContent = await fs.readFile(absolutePath, "utf-8");
@@ -355,11 +203,29 @@ export const readFileTool = tool(
 
       const context = runtime.context as ContextType;
 
-      // Resolve the absolute path
-      const absolutePath = resolveFilePath(filePath, context.destinationPath);
+      // If isUpdate, try to read from proposed first, then fallback to assets
+      if (context.isUpdate) {
+        // Files are at projectPath/.davia/proposed or projectPath/.davia/assets
+        const proposedPath = getBaseDestinationPath(context.projectPath, true);
+        const proposedFilePath = path.join(proposedPath, filePath);
 
-      // Read the file
-      const content = await fs.readFile(absolutePath, "utf-8");
+        try {
+          // Try to read from proposed first
+          const content = await fs.readFile(proposedFilePath, "utf-8");
+          return content;
+        } catch {
+          // Fallback to assets
+          const assetsPath = getAssetsPath(context.projectPath);
+          const assetsFilePath = path.join(assetsPath, filePath);
+          const content = await fs.readFile(assetsFilePath, "utf-8");
+          return content;
+        }
+      }
+
+      // If not isUpdate, read from assets directly
+      const assetsPath = getAssetsPath(context.projectPath);
+      const assetsFilePath = path.join(assetsPath, filePath);
+      const content = await fs.readFile(assetsFilePath, "utf-8");
 
       return content;
     } catch (error) {
@@ -401,11 +267,35 @@ export const deleteTool = tool(
 
       const context = runtime.context as ContextType;
 
-      // Resolve the absolute path
-      const absolutePath = resolveFilePath(filePath, context.destinationPath);
+      let deleted = false;
 
-      // Delete the file
-      await fs.unlink(absolutePath);
+      // Delete from proposed if exists
+      if (context.isUpdate) {
+        const proposedPath = getBaseDestinationPath(context.projectPath, true);
+        const proposedFilePath = path.join(proposedPath, filePath);
+
+        try {
+          await fs.unlink(proposedFilePath);
+          deleted = true;
+        } catch {
+          // File doesn't exist in proposed, continue
+        }
+      }
+
+      // Delete from assets
+      const assetsPath = getAssetsPath(context.projectPath);
+      const assetsFilePath = path.join(assetsPath, filePath);
+
+      try {
+        await fs.unlink(assetsFilePath);
+        deleted = true;
+      } catch {
+        // File doesn't exist in assets
+      }
+
+      if (!deleted) {
+        throw new Error(`Path '${filePath}' not found`);
+      }
 
       return `File '${filePath}' has been deleted`;
     } catch (error) {
@@ -470,8 +360,8 @@ export const multiEditTool = tool(
         }
       }
 
-      // Resolve the absolute path
-      const absolutePath = resolveFilePath(filePath, context.destinationPath);
+      // Resolve the absolute path (will use proposed or assets based on isUpdate)
+      const absolutePath = resolveFilePath(filePath, context);
 
       // Read the file once
       let currentContent = await fs.readFile(absolutePath, "utf-8");

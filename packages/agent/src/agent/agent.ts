@@ -1,4 +1,3 @@
-import * as z from "zod";
 import { createAgent, initChatModel } from "langchain";
 import {
   writeTool,
@@ -9,13 +8,7 @@ import {
 } from "./tools.js";
 import { repositoryInitializationMiddleware } from "./middlewares/initialization.js";
 import { afterModelCachingMiddleware } from "./middlewares/after-model.js";
-
-const contextSchema = z.object({
-  modelName: z.string(),
-  sourcePath: z.string(),
-  destinationPath: z.string(),
-  projectId: z.string().optional(),
-});
+import { contextSchema } from "./context.js";
 
 // Create and return the agent with the model and tools
 export const createDaviaAgent = async (modelName: string) => {

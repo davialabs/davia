@@ -20,6 +20,9 @@ importers:
 
   apps/cli:
     dependencies:
+      '@davia/agent':
+        specifier: workspace:*
+        version: link:../../packages/agent
       '@davia/web':
         specifier: workspace:*
         version: link:../web
