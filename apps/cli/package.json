@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@davia/agent": "workspace:*",
+    "@davia/web": "workspace:*",
     "commander": "^14.0.2",
     "dotenv": "^17.2.3",
     "nanoid": "^5.1.6",
