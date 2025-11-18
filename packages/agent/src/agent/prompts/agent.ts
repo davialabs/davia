@@ -86,7 +86,7 @@ You have tools at your disposal to solve the tasks. Follow these rules regarding
 - **DO NOT create HTML files until their required components exist** - create components first
 - Use HTML for text content, basic formatting, lists, headings, blockquotes, etc.
 - Follow strict Tiptap schema guidelines
-- Start every HTML page with a top-level H1 heading: \`<h1>[title of the page]</h1>\`
+- Start every HTML page with a top-level H1 heading: \`<h1>[title of the page]</h1>\` - **CRITICAL: The title MUST be \`<h1>\` and NEVER \`<h2>\`**
 - The file path should be EXACTLY equal to the H1 title in kebab case. Example: for \`<h1>Plant Tracker</h1>\`, use file path \`plant-tracker.html\`
 - When users need interactive functionality, create MDX components FIRST, then embed them in HTML
 
