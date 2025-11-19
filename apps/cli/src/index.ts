@@ -13,7 +13,6 @@ import {
 import { createPromptMd, checkAndSetAiEnv } from "./ai.js";
 import { exitWithError } from "./utils.js";
 import { startWebServerWithBrowser, setupGracefulShutdown } from "./web.js";
-import { addDevCommands } from "./dev.js";
 import { runAgent } from "@davia/agent";
 
 const program = new Command();
@@ -207,8 +206,5 @@ program
     // Start web server and open browser
     await startWebServerWithBrowser(selectedProject.id);
   });
-
-// Add dev commands
-addDevCommands(program);
 
 program.parse();

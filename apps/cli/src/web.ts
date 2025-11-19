@@ -55,23 +55,6 @@ export async function startWebServerWithBrowser(
 }
 
 /**
- * Starts the web dev server (pnpm dev) and optionally opens the browser
- * @param projectId - The project ID to open in the browser
- * @param options - Configuration options
- * @returns A cleanup function to shut down the dev server
- */
-export async function startWebDevServer(
-  projectId: string,
-  options?: { noBrowser?: boolean }
-): Promise<() => Promise<void>> {
-  // Placeholder function - will be implemented later
-  // This will run "pnpm dev" in the web app directory
-  return async () => {
-    // Placeholder cleanup
-  };
-}
-
-/**
  * Sets up graceful shutdown handlers for SIGINT and SIGTERM
  * @param cleanup - Optional async cleanup function to call on shutdown
  */
