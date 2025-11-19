@@ -54,7 +54,7 @@ Whenever the user asks you to create, update, or read *documentation* (docs, spe
 ## Safety and instructions
 
 Before you create, edit, or delete any files inside .davia, you **must first read** the instruction file in that folder and strictly follow its conventions when manipulating documentation files.
-The instructions are in the .davia/AGENTS.md file, you must read it completely.
+The instructions are in the .davia/AGENTS.md file, you **must** read it completely.
 
 ## Helpful CLI commands (for the user)
 

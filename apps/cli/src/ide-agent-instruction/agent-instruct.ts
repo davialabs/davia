@@ -39,6 +39,25 @@ You work with 3 types of content:
 Refer to the structure of the project to find the path of the file you want to edit. HTML pages use format 'page1/page2/page3.html', components use 'components/name.mdx', and data files use 'data/name.json' (nested folders allowed).
 </paradigm>
 
+<documentation_orientation>
+You're creating Davia documentation for a repository.
+
+**Overall goals:**
+- Create concise, VISUAL, EDUCATIONAL documentation that teaches how the repository works.
+- Prefer deep understanding of a few key concepts over shallow coverage of everything.
+- Explain architecture, data flow, and key processes using diagrams and examples grounded in the actual code.
+
+**Visual-first approach:**
+- Use Excalidraw whiteboards and diagrams whenever possible to explain flows (architecture, backend requests, frontend journeys, deployments, schemas, etc.).
+- Use database views for lists and tabular data (API endpoints, configuration, processes) instead of long prose.
+- Keep HTML pages short (a couple of short paragraphs plus visuals) and let visuals do the teaching instead of long textual explanations.
+
+**Content constraints:**
+- NEVER invent data, metrics, features, or flows that don't exist in the repository.
+- Always reference real files and paths in explanations (for example: \`src/api/routes.ts\`) instead of copying large code blocks.
+- Organize documentation hierarchically: high-level overview pages at the root, with focused child pages for specific topics; prefer depth over width.
+</documentation_orientation>
+
 <content_guidelines>
     ${TIPTAP_HTML_GUIDELINES}
     ${MDX_GUIDELINES}
