@@ -13,6 +13,7 @@ import { exitWithError } from "./utils.js";
 import { startWebServerWithBrowser, setupGracefulShutdown } from "./web.js";
 import { runAgent } from "@davia/agent";
 import { ensureLoggedIn, getAccessToken } from "./sync.js";
+import { writeAgentConfig } from "./agent-ide/index.js";
 
 const program = new Command();
 
@@ -28,9 +29,16 @@ program
 program
   .command("init")
   .description("Initialize Davia in the current directory")
-  .action(async () => {
+  .option(
+    "--agent <agent>",
+    "Generate agent-specific configuration (cursor/windsurf/github-copilot)"
+  )
+  .action(async (options) => {
     const cwd = process.cwd();
     await initializeDavia(cwd);
+    if (options.agent) {
+      await writeAgentConfig(cwd, options.agent);
+    }
   });
 
 program
@@ -41,8 +49,17 @@ program
     "--no-browser",
     "Do not open the browser after generating documentation"
   )
+  .option(
+    "--agent <agent>",
+    "Generate agent-specific configuration (cursor/windsurf/github-copilot)"
+  )
   .action(async (options) => {
     const cwd = process.cwd();
+
+    // Write agent config if specified
+    if (options.agent) {
+      await writeAgentConfig(cwd, options.agent);
+    }
 
     // Initialize Davia (with overwrite option for docs command)
     const project = await initializeDavia(cwd, {
