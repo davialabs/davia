@@ -303,7 +303,7 @@ export const GIT_EXPLO_INSTRUCTIONS = (
  
  **Formatting:**
  - **Use diverse formatting**: Mix \`<h2>\`/\`<h3>\` for structure, \`<blockquote>\` for important notes, \`<ul>\` for lists, \`<pre><code>\` for commands
- - **CRITICAL: Use \`<h1>\` ONLY for page title** - use \`<h2>\` and \`<h3>\` for sections
+ - **CRITICAL: The page title MUST be \`<h1>\` and NEVER \`<h2>\`** - use \`<h1>\` ONLY for the page title, then use \`<h2>\` and \`<h3>\` for sections
  - **Headings (\`<h2>\`)**: Use SPARINGLY - maximum 2 per page, only for truly distinct concepts
  - **Emojis for visual clarity:**
    - **Use emojis** in \`<h2>\`, \`<h3>\`, and lists to make content scannable (e.g., \`<h2>🏗️ Architecture</h2>\`, \`<li>🔐 Authentication</li>\`)

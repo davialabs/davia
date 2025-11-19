@@ -29,9 +29,14 @@ export function ExcalidrawView({
     return {
       elements: data?.elements ?? [],
       files: data?.files ?? {},
-      appState: data?.appState ?? {},
+      appState: data?.appState,
     };
   }, [excalidrawContent]);
+
+  // Map resolvedTheme to Excalidraw's theme format
+  // resolvedTheme is "light" | "dark" | undefined
+  const excalidrawTheme =
+    mounted && resolvedTheme === "dark" ? "dark" : "light";
 
   // Set scene data and fit to viewport when Excalidraw API is ready
   useEffect(() => {
@@ -40,20 +45,27 @@ export function ExcalidrawView({
       const timeoutId = setTimeout(() => {
         // Update the scene with the parsed data
         excalidrawAPI.updateScene(sceneData);
-        // Then fit to viewport
-        excalidrawAPI.scrollToContent(undefined, {
-          fitToViewport: true,
-          viewportZoomFactor: 1.2,
-        });
+        // Enable zen mode and set background color for light mode
+        if (excalidrawTheme === "light") {
+          excalidrawAPI.updateScene({
+            appState: { zenModeEnabled: true, viewBackgroundColor: "#fafafa" },
+          });
+        } else {
+          excalidrawAPI.updateScene({
+            appState: { zenModeEnabled: true },
+          });
+        }
+        // Only scroll to content if there are elements
+        if (sceneData.elements && sceneData.elements.length > 0) {
+          excalidrawAPI.scrollToContent(undefined, {
+            fitToViewport: true,
+            viewportZoomFactor: 1.2,
+          });
+        }
       }, 100);
       return () => clearTimeout(timeoutId);
     }
-  }, [excalidrawAPI, sceneData]);
-
-  // Map resolvedTheme to Excalidraw's theme format
-  // resolvedTheme is "light" | "dark" | undefined
-  const excalidrawTheme =
-    mounted && resolvedTheme === "dark" ? "dark" : "light";
+  }, [excalidrawAPI, sceneData, excalidrawTheme]);
 
   const handleUpdate = useDebounceCallback(
     async (serializedContent: string, files: BinaryFiles) => {
@@ -112,9 +124,22 @@ export function ExcalidrawView({
     handleUpdate(serialized, files);
   };
 
+  // Prepare initial appState with zen mode and background color for light mode
+  const initialAppState = useMemo(() => {
+    const state: Partial<AppState> = { zenModeEnabled: true };
+    if (excalidrawTheme === "light") {
+      state.viewBackgroundColor = "#fafafa";
+    }
+    return state;
+  }, [excalidrawTheme]);
+
   return (
     <div style={{ height: "40rem" }}>
       <Excalidraw
+        initialData={{
+          files: sceneData.files,
+          appState: initialAppState,
+        }}
         excalidrawAPI={(api) => setExcalidrawAPI(api)}
         theme={excalidrawTheme}
         onChange={handleChange}
