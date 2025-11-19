@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { Command } from "commander";
 import { select, input } from "@inquirer/prompts";
 import chalk from "chalk";
