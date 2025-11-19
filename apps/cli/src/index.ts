@@ -14,6 +14,7 @@ import { createPromptMd, checkAndSetAiEnv } from "./ai.js";
 import { exitWithError } from "./utils.js";
 import { startWebServerWithBrowser, setupGracefulShutdown } from "./web.js";
 import { runAgent } from "@davia/agent";
+import { ensureLoggedIn, getAccessToken } from "./sync.js";
 
 const program = new Command();
 
@@ -205,6 +206,20 @@ program
 
     // Start web server and open browser
     await startWebServerWithBrowser(selectedProject.id);
+  });
+
+program
+  .command("login")
+  .description("Log in to Davia")
+  .option("--no-browser", "Do not open the browser automatically")
+  .action(async (options) => {
+    const existingToken = await getAccessToken();
+    if (existingToken) {
+      console.log(chalk.green.bold("✅ You are already logged in!\n"));
+      return;
+    }
+
+    await ensureLoggedIn(options.browser === false);
   });
 
 program.parse();
