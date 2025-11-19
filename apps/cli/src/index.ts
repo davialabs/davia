@@ -18,7 +18,6 @@ import {
   readConfig,
   writeConfig,
 } from "./sync.js";
-import { writeAgentConfig } from "./agent-ide/index.js";
 
 const program = new Command();
 
@@ -40,10 +39,7 @@ program
   )
   .action(async (options) => {
     const cwd = process.cwd();
-    await initializeDavia(cwd);
-    if (options.agent) {
-      await writeAgentConfig(cwd, options.agent);
-    }
+    await initializeDavia(cwd, { agent: options.agent });
   });
 
 program
@@ -61,14 +57,10 @@ program
   .action(async (options) => {
     const cwd = process.cwd();
 
-    // Write agent config if specified
-    if (options.agent) {
-      await writeAgentConfig(cwd, options.agent);
-    }
-
-    // Initialize Davia (with overwrite option for docs command)
+    // Initialize Davia (with overwrite and agent options)
     const project = await initializeDavia(cwd, {
       overwrite: options.overwrite || false,
+      agent: options.agent,
     });
 
     // Check and set AI API key from .env files
