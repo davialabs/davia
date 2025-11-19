@@ -1,19 +1,23 @@
+#!/usr/bin/env node
 import { Command } from "commander";
-import { confirm, select, input } from "@inquirer/prompts";
+import { select, input } from "@inquirer/prompts";
 import chalk from "chalk";
-import fs from "fs-extra";
-import path from "node:path";
 import {
   readProjects,
-  writeProjects,
-  findProjectByPath,
-  addProject,
   setRunning,
+  initializeDavia,
+  findProjectByPath,
 } from "./projects.js";
-import { createPromptMd, checkAndSetAiEnv } from "./ai.js";
+import { checkAndSetAiEnv } from "./ai.js";
 import { exitWithError } from "./utils.js";
 import { startWebServerWithBrowser, setupGracefulShutdown } from "./web.js";
 import { runAgent } from "@davia/agent";
+import {
+  ensureLoggedIn,
+  getAccessToken,
+  readConfig,
+  writeConfig,
+} from "./sync.js";
 
 const program = new Command();
 
@@ -27,6 +31,18 @@ program
   });
 
 program
+  .command("init")
+  .description("Initialize Davia in the current directory")
+  .option(
+    "--agent <agent>",
+    "Generate agent-specific configuration (cursor/windsurf/github-copilot)"
+  )
+  .action(async (options) => {
+    const cwd = process.cwd();
+    await initializeDavia(cwd, { agent: options.agent });
+  });
+
+program
   .command("docs")
   .description("Generate initial documentation")
   .option("-o, --overwrite", "Overwrite existing documentation")
@@ -34,74 +50,18 @@ program
     "--no-browser",
     "Do not open the browser after generating documentation"
   )
+  .option(
+    "--agent <agent>",
+    "Generate agent-specific configuration (cursor/windsurf/github-copilot)"
+  )
   .action(async (options) => {
     const cwd = process.cwd();
-    const daviaPath = path.join(cwd, ".davia");
 
-    // Read projects.json (will create if it doesn't exist)
-    const projects = await readProjects();
-
-    // Find existing project by path
-    let project = findProjectByPath(projects, cwd);
-
-    if (project) {
-      // Project exists
-      if (await fs.pathExists(daviaPath)) {
-        // .davia folder exists
-        let shouldOverwrite = options.overwrite || false;
-
-        if (!shouldOverwrite) {
-          // Prompt user unless --overwrite flag is set
-          shouldOverwrite = await confirm({
-            message: "Documentation already exists. Overwrite?",
-            default: false,
-          });
-        }
-
-        if (shouldOverwrite) {
-          // Remove .davia folder
-          await fs.remove(daviaPath);
-          console.log(chalk.green("Removed existing .davia folder"));
-        } else {
-          // User declined, exit
-          console.log(chalk.yellow("Operation cancelled."));
-          process.exit(0);
-        }
-      }
-    } else {
-      // Project doesn't exist
-      // Add project to projects array
-      project = addProject(projects, cwd);
-      await writeProjects(projects);
-      console.log(chalk.green(`Registered project at ${cwd}`));
-
-      // If .davia exists, remove it
-      if (await fs.pathExists(daviaPath)) {
-        await fs.remove(daviaPath);
-      }
-
-      // Check and update .gitignore
-      const gitignorePath = path.join(cwd, ".gitignore");
-      if (await fs.pathExists(gitignorePath)) {
-        const gitignoreContent = await fs.readFile(gitignorePath, "utf-8");
-        const daviaSection = "# Davia\n.davia/";
-
-        if (!gitignoreContent.includes(daviaSection)) {
-          // Add Davia section at the end with a space before # Davia
-          const updatedContent =
-            gitignoreContent.trimEnd() + "\n\n" + daviaSection + "\n";
-          await fs.writeFile(gitignorePath, updatedContent);
-          console.log(chalk.green("Updated .gitignore to include .davia/"));
-        }
-      }
-    }
-
-    // Create .davia folder structure
-    await fs.ensureDir(path.join(daviaPath, "assets"));
-    await fs.ensureDir(path.join(daviaPath, "proposed"));
-    await createPromptMd(daviaPath);
-
-    console.log(chalk.green("✓ Initialized .davia"));
+    // Initialize Davia (with overwrite and agent options)
+    const project = await initializeDavia(cwd, {
+      overwrite: options.overwrite || false,
+      agent: options.agent,
+    });
 
     // Check and set AI API key from .env files
     const model = checkAndSetAiEnv(cwd);
@@ -184,27 +144,63 @@ program
   .command("open")
   .description("Start the Davia web server")
   .action(async () => {
+    const cwd = process.cwd();
+
     // Read existing projects
     const projects = await readProjects();
 
     if (projects.length === 0) {
-      console.log(chalk.yellow("No projects found. Run 'davia docs' first."));
+      console.log(chalk.yellow("No projects found. Run 'davia init' first."));
       process.exit(1);
     }
 
-    // Let user choose a project
-    const selectedProject = await select({
-      message: "Select a project:",
-      choices: projects.map((p) => ({
-        name: p.path,
-        value: p,
-      })),
-    });
+    // Check if current directory is among the projects
+    let selectedProject = findProjectByPath(projects, cwd);
+
+    // If not found, let user choose a project
+    if (!selectedProject) {
+      selectedProject = await select({
+        message: "Select a project:",
+        choices: projects.map((p) => ({
+          name: p.path,
+          value: p,
+        })),
+      });
+    }
 
     setupGracefulShutdown();
 
     // Start web server and open browser
     await startWebServerWithBrowser(selectedProject.id);
+  });
+
+program
+  .command("login")
+  .description("Log in to Davia")
+  .option("--no-browser", "Do not open the browser automatically")
+  .option("--reset", "Remove existing access token and log in again")
+  .action(async (options) => {
+    // If --reset is provided, remove the existing access token
+    if (options.reset) {
+      const config = await readConfig();
+      if (config.accessToken) {
+        delete config.accessToken;
+        await writeConfig(config);
+        console.log(
+          chalk.yellow("🔄 Access token removed. Please log in again.\n")
+        );
+      } else {
+        console.log(chalk.yellow("ℹ️  No existing access token found.\n"));
+      }
+    }
+
+    const existingToken = await getAccessToken();
+    if (existingToken) {
+      console.log(chalk.green.bold("✅ You are already logged in!\n"));
+      return;
+    }
+
+    await ensureLoggedIn(options.browser === false);
   });
 
 program.parse();

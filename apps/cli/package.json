@@ -27,7 +27,7 @@
     "dist"
   ],
   "scripts": {
-    "dev": "tsx src/index.ts",
+    "dev": "NODE_ENV=development tsx src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "lint": "eslint --max-warnings 0",
@@ -44,7 +44,8 @@
     "env-paths": "^3.0.0",
     "fs-extra": "^11.3.2",
     "nanoid": "^5.1.6",
-    "open": "^10.2.0"
+    "open": "^10.2.0",
+    "ora": "^9.0.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
