@@ -54,6 +54,7 @@ Whenever the user asks you to create, update, or read *documentation* (docs, spe
 ## Safety and instructions
 
 Before you create, edit, or delete any files inside .davia, you **must first read** the instruction file in that folder and strictly follow its conventions when manipulating documentation files.
+The instructions are in the .davia/AGENTS.md file, you must read it completely.
 
 ## Helpful CLI commands (for the user)
 
@@ -62,7 +63,7 @@ The user has access to these Davia terminal commands:
 - davia open — start the Davia web server to browse and edit documentation.
 - davia login — log the user into their Davia profile.
 
-Tip: Once you've generated the documentation, you can run the command "davia open" to display the documentation in the user's browser.
+Tip: Once you've generated the documentation, you can run the command (using the right tools at your disposal) "davia open" to display the documentation in the user's browser.
 
 Always keep all documentation work aligned with the Davia wiki structure and conventions in .davia.`;
 }
