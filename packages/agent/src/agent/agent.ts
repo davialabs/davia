@@ -1,4 +1,4 @@
-import { createAgent, initChatModel } from "langchain";
+import { createAgent, initChatModel, todoListMiddleware } from "langchain";
 import {
   writeTool,
   searchReplaceTool,
@@ -41,6 +41,7 @@ export const createDaviaAgent = async (modelName: string) => {
     ],
     middleware: [
       repositoryInitializationMiddleware,
+      todoListMiddleware,
       afterModelCachingMiddleware,
     ],
     contextSchema,
