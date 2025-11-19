@@ -1,16 +1,13 @@
 import { Command } from "commander";
-import { confirm, select, input } from "@inquirer/prompts";
+import { select, input } from "@inquirer/prompts";
 import chalk from "chalk";
-import fs from "fs-extra";
-import path from "node:path";
 import {
   readProjects,
-  writeProjects,
-  findProjectByPath,
-  addProject,
   setRunning,
+  initializeDavia,
+  findProjectByPath,
 } from "./projects.js";
-import { createPromptMd, checkAndSetAiEnv } from "./ai.js";
+import { checkAndSetAiEnv } from "./ai.js";
 import { exitWithError } from "./utils.js";
 import { startWebServerWithBrowser, setupGracefulShutdown } from "./web.js";
 import { runAgent } from "@davia/agent";
@@ -28,6 +25,14 @@ program
   });
 
 program
+  .command("init")
+  .description("Initialize Davia in the current directory")
+  .action(async () => {
+    const cwd = process.cwd();
+    await initializeDavia(cwd);
+  });
+
+program
   .command("docs")
   .description("Generate initial documentation")
   .option("-o, --overwrite", "Overwrite existing documentation")
@@ -37,72 +42,11 @@ program
   )
   .action(async (options) => {
     const cwd = process.cwd();
-    const daviaPath = path.join(cwd, ".davia");
 
-    // Read projects.json (will create if it doesn't exist)
-    const projects = await readProjects();
-
-    // Find existing project by path
-    let project = findProjectByPath(projects, cwd);
-
-    if (project) {
-      // Project exists
-      if (await fs.pathExists(daviaPath)) {
-        // .davia folder exists
-        let shouldOverwrite = options.overwrite || false;
-
-        if (!shouldOverwrite) {
-          // Prompt user unless --overwrite flag is set
-          shouldOverwrite = await confirm({
-            message: "Documentation already exists. Overwrite?",
-            default: false,
-          });
-        }
-
-        if (shouldOverwrite) {
-          // Remove .davia folder
-          await fs.remove(daviaPath);
-          console.log(chalk.green("Removed existing .davia folder"));
-        } else {
-          // User declined, exit
-          console.log(chalk.yellow("Operation cancelled."));
-          process.exit(0);
-        }
-      }
-    } else {
-      // Project doesn't exist
-      // Add project to projects array
-      project = addProject(projects, cwd);
-      await writeProjects(projects);
-      console.log(chalk.green(`Registered project at ${cwd}`));
-
-      // If .davia exists, remove it
-      if (await fs.pathExists(daviaPath)) {
-        await fs.remove(daviaPath);
-      }
-
-      // Check and update .gitignore
-      const gitignorePath = path.join(cwd, ".gitignore");
-      if (await fs.pathExists(gitignorePath)) {
-        const gitignoreContent = await fs.readFile(gitignorePath, "utf-8");
-        const daviaSection = "# Davia\n.davia/";
-
-        if (!gitignoreContent.includes(daviaSection)) {
-          // Add Davia section at the end with a space before # Davia
-          const updatedContent =
-            gitignoreContent.trimEnd() + "\n\n" + daviaSection + "\n";
-          await fs.writeFile(gitignorePath, updatedContent);
-          console.log(chalk.green("Updated .gitignore to include .davia/"));
-        }
-      }
-    }
-
-    // Create .davia folder structure
-    await fs.ensureDir(path.join(daviaPath, "assets"));
-    await fs.ensureDir(path.join(daviaPath, "proposed"));
-    await createPromptMd(daviaPath);
-
-    console.log(chalk.green("✓ Initialized .davia"));
+    // Initialize Davia (with overwrite option for docs command)
+    const project = await initializeDavia(cwd, {
+      overwrite: options.overwrite || false,
+    });
 
     // Check and set AI API key from .env files
     const model = checkAndSetAiEnv(cwd);
@@ -185,6 +129,8 @@ program
   .command("open")
   .description("Start the Davia web server")
   .action(async () => {
+    const cwd = process.cwd();
+
     // Read existing projects
     const projects = await readProjects();
 
@@ -193,14 +139,19 @@ program
       process.exit(1);
     }
 
-    // Let user choose a project
-    const selectedProject = await select({
-      message: "Select a project:",
-      choices: projects.map((p) => ({
-        name: p.path,
-        value: p,
-      })),
-    });
+    // Check if current directory is among the projects
+    let selectedProject = findProjectByPath(projects, cwd);
+
+    // If not found, let user choose a project
+    if (!selectedProject) {
+      selectedProject = await select({
+        message: "Select a project:",
+        choices: projects.map((p) => ({
+          name: p.path,
+          value: p,
+        })),
+      });
+    }
 
     setupGracefulShutdown();
 
