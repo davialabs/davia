@@ -1,15 +1,12 @@
 import fs from "fs-extra";
 import path from "node:path";
 import chalk from "chalk";
-import { fileURLToPath } from "node:url";
 import {
   SUPPORTED_AGENTS,
   isValidAgent,
   getSupportedAgentsList,
+  getTemplateContent,
 } from "./agents.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 /**
  * Writes agent-specific configuration file to the project root
@@ -30,7 +27,7 @@ export async function writeAgentConfig(
     return;
   }
 
-  const agentConfig = SUPPORTED_AGENTS[agentType];
+  const agentConfig = SUPPORTED_AGENTS[agentType]!;
   const targetDir = path.join(projectRoot, agentConfig.folderPath);
   const targetFile = path.join(targetDir, agentConfig.fileName);
 
@@ -46,9 +43,8 @@ export async function writeAgentConfig(
   }
 
   try {
-    // Read the template content
-    const templatePath = path.join(__dirname, "template.md");
-    const templateContent = await fs.readFile(templatePath, "utf-8");
+    // Get the template content
+    const templateContent = getTemplateContent();
 
     // Combine frontmatter with template content
     const fileContent = agentConfig.frontmatter + templateContent;
@@ -72,4 +68,3 @@ export async function writeAgentConfig(
     );
   }
 }
-
