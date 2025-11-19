@@ -32,6 +32,9 @@ importers:
       chalk:
         specifier: ^5.6.2
         version: 5.6.2
+      change-case:
+        specifier: ^5.4.4
+        version: 5.4.4
       commander:
         specifier: ^14.0.2
         version: 14.0.2
@@ -56,6 +59,9 @@ importers:
       ora:
         specifier: ^9.0.0
         version: 9.0.0
+      slug:
+        specifier: ^11.0.1
+        version: 11.0.1
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -69,6 +75,9 @@ importers:
       '@types/node':
         specifier: ^22.15.3
         version: 22.19.1
+      '@types/slug':
+        specifier: ^5.0.9
+        version: 5.0.9
       eslint:
         specifier: ^9.38.0
         version: 9.39.1(jiti@2.6.1)
@@ -2887,6 +2896,9 @@ packages:
   '@types/retry@0.12.0':
     resolution: {integrity: sha512-wWKOClTTiizcZhXnPY4wikVAwmdYHp8q6DmC+EJUzAMsycb7HB32Kh9RN4+0gExjmPmZSAQjgURXIGATPegAvA==}
 
+  '@types/slug@5.0.9':
+    resolution: {integrity: sha512-6Yp8BSplP35Esa/wOG1wLNKiqXevpQTEF/RcL/NV6BBQaMmZh4YlDwCgrrFSoUE4xAGvnKd5c+lkQJmPrBAzfQ==}
+
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
 
@@ -5697,6 +5709,10 @@ packages:
 
   sliced@1.0.1:
     resolution: {integrity: sha512-VZBmZP8WU3sMOZm1bdgTadsQbcscK0UM8oKxKVBs4XAhUo2Xxzm/OFMGBkPusxw9xL3Uy8LrzEqGqJhclsr0yA==}
+
+  slug@11.0.1:
+    resolution: {integrity: sha512-VrM060OM/E7rdLQSnp6JHrzFfJFmqQBp0+TMhZStnEB8PfNliaZ9UWYjTHGHLUFVJorZ8TjVd/aKvIxHWU2O7g==}
+    hasBin: true
 
   smart-buffer@4.2.0:
     resolution: {integrity: sha512-94hK0Hh8rPqQl2xXc3HsaBoOXKV20MToPkcXvwbISWLEs+64sBq5kFgn2kJDHb1Pry9yrP0dxrCI9RRci7RXKg==}
@@ -8930,6 +8946,8 @@ snapshots:
   '@types/resolve@1.20.6': {}
 
   '@types/retry@0.12.0': {}
+
+  '@types/slug@5.0.9': {}
 
   '@types/unist@2.0.11': {}
 
@@ -12445,6 +12463,8 @@ snapshots:
   simple-wcswidth@1.1.2: {}
 
   sliced@1.0.1: {}
+
+  slug@11.0.1: {}
 
   smart-buffer@4.2.0: {}
 

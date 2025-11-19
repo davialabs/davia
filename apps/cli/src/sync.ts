@@ -2,6 +2,9 @@ import fs from "fs-extra";
 import chalk from "chalk";
 import ora from "ora";
 import open from "open";
+import path from "node:path";
+import { capitalCase } from "change-case";
+import slug from "slug";
 import { getConfigPath } from "./paths.js";
 import { exitWithError } from "./utils.js";
 
@@ -34,6 +37,16 @@ interface TokenResponse {
 
 interface Config {
   accessToken?: string;
+}
+
+interface CreateWorkspaceRequest {
+  name: string;
+  slug: string;
+}
+
+interface CreateWorkspaceResponse {
+  id: string;
+  slug: string;
 }
 
 // ============================================================================
@@ -270,18 +283,59 @@ export async function ensureLoggedIn(noBrowser = false): Promise<string> {
 }
 
 // ============================================================================
-// Link Function (Stub)
+// Link Function
 // ============================================================================
 
 /**
- * Links a chosen folder to an online workspace_id.
- * This function will be implemented later.
+ * Links a project folder to an online workspace by creating a new workspace.
+ * Generates a workspace name from the folder's base name and creates it via API.
+ * @param projectPath - The path to the project folder
+ * @returns The workspace ID
  */
-export async function link(): Promise<void> {
-  // TODO: Implement link functionality
-  // 1. Check if logged in (call ensureLoggedIn)
-  // 2. Get all workspaces from backend
-  // 3. Let user choose one or create new
-  // 4. Link folder to workspace_id
-  throw new Error("Link function not yet implemented");
+export async function link(projectPath: string): Promise<string> {
+  // Ensure user is logged in
+  const accessToken = await ensureLoggedIn();
+
+  // Extract folder base name
+  const folderName = path.basename(projectPath);
+
+  // Convert to capitalCase
+  const capitalCaseName = capitalCase(folderName);
+
+  // Slugify the capitalCase name
+  const slugifiedName = slug(capitalCaseName);
+
+  // Make POST request to create workspace
+  const serverUrl = getServerUrl();
+  const spinner = ora("Creating workspace...").start();
+
+  try {
+    const response = await fetch(`${serverUrl}/cli/workspaces`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        name: capitalCaseName,
+        slug: slugifiedName,
+      } as CreateWorkspaceRequest),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      spinner.fail("Failed to create workspace");
+      throw new Error(
+        `Failed to create workspace: ${response.status} ${errorText}`
+      );
+    }
+
+    const data = (await response.json()) as CreateWorkspaceResponse;
+    spinner.succeed("Workspace created successfully");
+    return data.id;
+  } catch (error) {
+    spinner.fail("Failed to create workspace");
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    throw new Error(`Failed to create workspace: ${errorMessage}`);
+  }
 }

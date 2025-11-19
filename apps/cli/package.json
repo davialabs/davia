@@ -38,6 +38,7 @@
     "@davia/web": "workspace:*",
     "@inquirer/prompts": "^8.0.1",
     "chalk": "^5.6.2",
+    "change-case": "^5.4.4",
     "commander": "^14.0.2",
     "detect-port": "^2.1.0",
     "dotenv": "^17.2.3",
@@ -45,13 +46,15 @@
     "fs-extra": "^11.3.2",
     "nanoid": "^5.1.6",
     "open": "^10.2.0",
-    "ora": "^9.0.0"
+    "ora": "^9.0.0",
+    "slug": "^11.0.1"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.15.3",
+    "@types/slug": "^5.0.9",
     "eslint": "^9.38.0",
     "tsx": "^4.19.2",
     "typescript": "5.9.2"

@@ -7,6 +7,7 @@ import {
   setRunning,
   initializeDavia,
   findProjectByPath,
+  setWorkspaceId,
 } from "./projects.js";
 import { checkAndSetAiEnv } from "./ai.js";
 import { exitWithError } from "./utils.js";
@@ -17,6 +18,7 @@ import {
   getAccessToken,
   readConfig,
   writeConfig,
+  link,
 } from "./sync.js";
 
 const program = new Command();
@@ -201,6 +203,56 @@ program
     }
 
     await ensureLoggedIn(options.browser === false);
+  });
+
+program
+  .command("push")
+  .description("Link the current project to a workspace")
+  .action(async () => {
+    const cwd = process.cwd();
+
+    // Read existing projects
+    const projects = await readProjects();
+
+    if (projects.length === 0) {
+      console.log(chalk.yellow("No projects found. Run 'davia init' first."));
+      process.exit(1);
+    }
+
+    // Check if current directory is among the projects
+    const selectedProject = findProjectByPath(projects, cwd);
+
+    if (!selectedProject) {
+      console.log(
+        chalk.yellow(
+          "No project found for this directory. Run 'davia init' first."
+        )
+      );
+      process.exit(1);
+    }
+
+    // Link project to workspace if not already linked
+    if (!selectedProject.workspaceId) {
+      try {
+        const workspaceId = await link(selectedProject.path);
+        await setWorkspaceId(selectedProject.id, workspaceId);
+        selectedProject.workspaceId = workspaceId;
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        exitWithError("Failed to link project to workspace", [
+          errorMessage,
+          "",
+          "💡 Troubleshooting tips:",
+          "  • Make sure you are logged in (run 'davia login')",
+          "  • Check your internet connection",
+          "  • Try running the command again",
+        ]);
+      }
+    }
+
+    console.log(chalk.green.bold("✅ Workspace ID:"));
+    console.log(chalk.cyan(`   ${selectedProject.workspaceId}\n`));
   });
 
 program.parse();
