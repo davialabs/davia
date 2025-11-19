@@ -12,7 +12,12 @@ import { checkAndSetAiEnv } from "./ai.js";
 import { exitWithError } from "./utils.js";
 import { startWebServerWithBrowser, setupGracefulShutdown } from "./web.js";
 import { runAgent } from "@davia/agent";
-import { ensureLoggedIn, getAccessToken } from "./sync.js";
+import {
+  ensureLoggedIn,
+  getAccessToken,
+  readConfig,
+  writeConfig,
+} from "./sync.js";
 
 const program = new Command();
 
@@ -136,7 +141,7 @@ program
     const projects = await readProjects();
 
     if (projects.length === 0) {
-      console.log(chalk.yellow("No projects found. Run 'davia docs' first."));
+      console.log(chalk.yellow("No projects found. Run 'davia init' first."));
       process.exit(1);
     }
 
@@ -164,7 +169,22 @@ program
   .command("login")
   .description("Log in to Davia")
   .option("--no-browser", "Do not open the browser automatically")
+  .option("--reset", "Remove existing access token and log in again")
   .action(async (options) => {
+    // If --reset is provided, remove the existing access token
+    if (options.reset) {
+      const config = await readConfig();
+      if (config.accessToken) {
+        delete config.accessToken;
+        await writeConfig(config);
+        console.log(
+          chalk.yellow("🔄 Access token removed. Please log in again.\n")
+        );
+      } else {
+        console.log(chalk.yellow("ℹ️  No existing access token found.\n"));
+      }
+    }
+
     const existingToken = await getAccessToken();
     if (existingToken) {
       console.log(chalk.green.bold("✅ You are already logged in!\n"));
