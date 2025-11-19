@@ -5,6 +5,7 @@ import chalk from "chalk";
 import { confirm } from "@inquirer/prompts";
 import { getProjectsPath } from "./paths.js";
 import { createPromptMd } from "./ai.js";
+import { writeAgentConfig } from "./agent-ide/index.js";
 
 export type Project = {
   id: string;
@@ -82,11 +83,12 @@ export async function setRunning(
  * @param cwd - Current working directory
  * @param options - Optional configuration
  * @param options.overwrite - If true, overwrite existing .davia folder. If undefined and .davia exists, exit with message.
+ * @param options.agent - Agent type to generate configuration for (cursor/windsurf/github-copilot)
  * @returns The project object
  */
 export async function initializeDavia(
   cwd: string,
-  options?: { overwrite?: boolean }
+  options?: { overwrite?: boolean; agent?: string }
 ): Promise<Project> {
   const daviaPath = path.join(cwd, ".davia");
 
@@ -163,6 +165,11 @@ export async function initializeDavia(
   await createPromptMd(daviaPath);
 
   console.log(chalk.green("✓ Initialized .davia"));
+
+  // Write agent config if specified
+  if (options?.agent) {
+    await writeAgentConfig(cwd, options.agent);
+  }
 
   return project;
 }

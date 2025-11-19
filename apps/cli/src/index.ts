@@ -33,9 +33,13 @@ program
 program
   .command("init")
   .description("Initialize Davia in the current directory")
-  .action(async () => {
+  .option(
+    "--agent <agent>",
+    "Generate agent-specific configuration (cursor/windsurf/github-copilot)"
+  )
+  .action(async (options) => {
     const cwd = process.cwd();
-    await initializeDavia(cwd);
+    await initializeDavia(cwd, { agent: options.agent });
   });
 
 program
@@ -46,12 +50,17 @@ program
     "--no-browser",
     "Do not open the browser after generating documentation"
   )
+  .option(
+    "--agent <agent>",
+    "Generate agent-specific configuration (cursor/windsurf/github-copilot)"
+  )
   .action(async (options) => {
     const cwd = process.cwd();
 
-    // Initialize Davia (with overwrite option for docs command)
+    // Initialize Davia (with overwrite and agent options)
     const project = await initializeDavia(cwd, {
       overwrite: options.overwrite || false,
+      agent: options.agent,
     });
 
     // Check and set AI API key from .env files
