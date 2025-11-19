@@ -26,11 +26,12 @@ export function ExcalidrawView({
 
   const sceneData = useMemo(() => {
     const data = JSON.parse(excalidrawContent);
-    return {
+    const parsed = {
       elements: data?.elements ?? [],
       files: data?.files ?? {},
       appState: data?.appState,
     };
+    return parsed;
   }, [excalidrawContent]);
 
   // Map resolvedTheme to Excalidraw's theme format
@@ -43,18 +44,21 @@ export function ExcalidrawView({
     if (excalidrawAPI) {
       // Wait for the canvas to be fully initialized
       const timeoutId = setTimeout(() => {
-        // Update the scene with the parsed data
-        excalidrawAPI.updateScene(sceneData);
-        // Enable zen mode and set background color for light mode
-        if (excalidrawTheme === "light") {
-          excalidrawAPI.updateScene({
-            appState: { zenModeEnabled: true, viewBackgroundColor: "#fafafa" },
-          });
-        } else {
-          excalidrawAPI.updateScene({
-            appState: { zenModeEnabled: true },
-          });
-        }
+        // Prepare appState with zen mode and background color
+        const appState = {
+          zenModeEnabled: true,
+          ...(excalidrawTheme === "light" && {
+            viewBackgroundColor: "#fafafa",
+          }),
+          ...sceneData.appState,
+        };
+
+        // Update the scene with all data at once (this cleans and reloads the scene)
+        excalidrawAPI.updateScene({
+          elements: sceneData.elements || [],
+          appState,
+        });
+
         // Only scroll to content if there are elements
         if (sceneData.elements && sceneData.elements.length > 0) {
           excalidrawAPI.scrollToContent(undefined, {
@@ -99,12 +103,11 @@ export function ExcalidrawView({
         });
 
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          console.error("Failed to update content:", errorData.error);
+          await response.json().catch(() => ({}));
           return;
         }
-      } catch (error) {
-        console.error("Error updating content:", error);
+      } catch {
+        // Error updating content
       }
     },
     300 // 300ms debounce delay

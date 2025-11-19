@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
-import { join } from "path";
+import { join, basename } from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { readProjects, findProjectById } from "@/lib/projects";
 
@@ -20,10 +20,7 @@ export async function GET(request: NextRequest) {
   const project = findProjectById(projects, projectId);
 
   if (!project) {
-    return NextResponse.json(
-      { error: "Project not found" },
-      { status: 404 }
-    );
+    return NextResponse.json({ error: "Project not found" }, { status: 404 });
   }
 
   // Construct the file path
@@ -32,6 +29,28 @@ export async function GET(request: NextRequest) {
 
   // Check if the file exists
   if (!existsSync(filePath)) {
+    // Check if this is a data/*.json file request and if a corresponding mermaid exists
+    if (path.startsWith("data/") && path.endsWith(".json")) {
+      const fileBasename = basename(path, ".json");
+      const mermaidPath = join(assetPath, "mermaids", `${fileBasename}.mmd`);
+
+      if (existsSync(mermaidPath)) {
+        try {
+          // Read the mermaid content
+          const mermaidContent = readFileSync(mermaidPath, "utf-8");
+          // Return mermaid content with a special flag so client knows to convert it
+          return NextResponse.json({
+            content: mermaidContent,
+            isMermaid: true,
+            mermaidPath: `mermaids/${fileBasename}.mmd`,
+            targetPath: path,
+          });
+        } catch (error) {
+          console.error(`Error reading mermaid file ${mermaidPath}:`, error);
+        }
+      }
+    }
+
     return NextResponse.json({ error: "File not found" }, { status: 404 });
   }
 
@@ -62,10 +81,7 @@ export async function POST(request: NextRequest) {
     const project = findProjectById(projects, projectId);
 
     if (!project) {
-      return NextResponse.json(
-        { error: "Project not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
     // Construct the file path

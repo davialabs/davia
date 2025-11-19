@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { NodeViewWrapper, type ReactNodeViewProps } from "@tiptap/react";
 import { usePageRegistryStore } from "@/providers/page-registry";
 import { ErrorBoundary } from "react-error-boundary";
+import { checkAndConvertMermaid } from "@/lib/mermaid-converter";
 import { ExcalidrawErrorFallback, ExcalidrawLoading } from "./fallback-views";
 
 export function ExcalidrawNodeView(props: ReactNodeViewProps) {
@@ -14,6 +15,9 @@ export function ExcalidrawNodeView(props: ReactNodeViewProps) {
     state.assets.get(excalidrawPath)
   );
   const ensureAsset = usePageRegistryStore((state) => state.ensureAsset);
+  const [iframeKey, setIframeKey] = useState(0);
+  const [hasCheckedMermaid, setHasCheckedMermaid] = useState(false);
+  const [isConverting, setIsConverting] = useState(false);
 
   useEffect(() => {
     if (!entry) {
@@ -21,13 +25,44 @@ export function ExcalidrawNodeView(props: ReactNodeViewProps) {
     }
   }, [excalidrawPath, ensureAsset, entry]);
 
-  if (!entry || !entry.synced)
+  // Check for mermaid and convert if it exists
+  useEffect(() => {
+    if (!entry || !entry.synced || hasCheckedMermaid || isConverting) {
+      return;
+    }
+
+    setHasCheckedMermaid(true);
+
+    const checkAndConvert = async () => {
+      setIsConverting(true);
+      try {
+        const convertedContent = await checkAndConvertMermaid(
+          projectId,
+          excalidrawPath
+        );
+        if (convertedContent) {
+          // Reload iframe by updating its key to force a complete reload
+          setIframeKey((prev) => prev + 1);
+        }
+      } catch {
+        // Error during mermaid conversion
+      } finally {
+        setIsConverting(false);
+      }
+    };
+
+    checkAndConvert();
+  }, [entry, projectId, excalidrawPath, isConverting, hasCheckedMermaid]);
+
+  if (!entry || !entry.synced || isConverting) {
     return (
       <NodeViewWrapper>
         <ExcalidrawLoading />
       </NodeViewWrapper>
     );
-  if (entry.error)
+  }
+
+  if (entry.error) {
     return (
       <NodeViewWrapper>
         <ExcalidrawErrorFallback
@@ -37,6 +72,7 @@ export function ExcalidrawNodeView(props: ReactNodeViewProps) {
         />
       </NodeViewWrapper>
     );
+  }
 
   // Show synced state
   return (
@@ -51,6 +87,7 @@ export function ExcalidrawNodeView(props: ReactNodeViewProps) {
         )}
       >
         <iframe
+          key={iframeKey}
           src={`/excalidraw-view/${projectId}/${excalidrawPath}`}
           className="w-full h-160"
           title="Excalidraw"

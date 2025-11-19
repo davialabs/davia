@@ -27,12 +27,7 @@ export default async function ExcalidrawViewPage({
   }
 
   // Check if the asset folder exists
-  const assetPath = join(
-    project.path,
-    ".davia",
-    "assets",
-    ...excalidrawPath
-  );
+  const assetPath = join(project.path, ".davia", "assets", ...excalidrawPath);
   if (!existsSync(assetPath)) {
     return <EmptyExcalidraw />;
   }
