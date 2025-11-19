@@ -164,12 +164,12 @@ export async function initializeDavia(
   await fs.ensureDir(path.join(daviaPath, "proposed"));
   await createPromptMd(daviaPath);
 
-  console.log(chalk.green("✓ Initialized .davia"));
-
   // Write agent config if specified
   if (options?.agent) {
     await writeAgentConfig(cwd, options.agent);
   }
+
+  console.log(chalk.green("✓ Initialized .davia"));
 
   return project;
 }
