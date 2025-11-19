@@ -57,10 +57,12 @@ Before you create, edit, or delete any files inside .davia, you **must first rea
 
 ## Helpful CLI commands (for the user)
 
-The user and also the AI has access to these Davia terminal commands:
+The user has access to these Davia terminal commands:
 
 - davia open — start the Davia web server to browse and edit documentation.
 - davia login — log the user into their Davia profile.
+
+Tip: Once you've generated the documentation, you can run the command "davia open" to display the documentation in the user's browser.
 
 Always keep all documentation work aligned with the Davia wiki structure and conventions in .davia.`;
 }

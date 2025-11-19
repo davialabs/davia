@@ -4,8 +4,8 @@ import path from "node:path";
 import chalk from "chalk";
 import { confirm } from "@inquirer/prompts";
 import { getProjectsPath } from "./paths.js";
-import { createPromptMd } from "./ai.js";
-import { writeAgentConfig } from "./agent-ide/index.js";
+import { createAgentsMd } from "./ide-agent-instruction/index.js";
+import { writeAgentConfig } from "./agentic-ide-options/index.js";
 
 export type Project = {
   id: string;
@@ -162,7 +162,7 @@ export async function initializeDavia(
   // Create .davia folder structure
   await fs.ensureDir(path.join(daviaPath, "assets"));
   await fs.ensureDir(path.join(daviaPath, "proposed"));
-  await createPromptMd(daviaPath);
+  await createAgentsMd(daviaPath);
 
   console.log(chalk.green("✓ Initialized .davia"));
 

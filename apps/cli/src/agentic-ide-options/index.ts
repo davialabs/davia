@@ -6,7 +6,7 @@ import {
   isValidAgent,
   getSupportedAgentsList,
   getTemplateContent,
-} from "./agents.js";
+} from "./agent-rule.js";
 
 /**
  * Writes agent-specific configuration file to the project root
