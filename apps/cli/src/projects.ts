@@ -92,6 +92,9 @@ export async function initializeDavia(
 ): Promise<Project> {
   const daviaPath = path.join(cwd, ".davia");
 
+  // Track if .davia already existed before we start
+  const daviaExistedBefore = await fs.pathExists(daviaPath);
+
   // Read projects.json (will create if it doesn't exist)
   const projects = await readProjects();
 
@@ -103,32 +106,43 @@ export async function initializeDavia(
     if (await fs.pathExists(daviaPath)) {
       // .davia folder exists
       if (options?.overwrite === undefined) {
-        // For init command: exit if already initialized
-        console.log(
-          chalk.yellow("Davia is already initialized in this directory.")
-        );
-        process.exit(0);
-      }
-
-      // For docs command: use overwrite logic
-      let shouldOverwrite = options.overwrite || false;
-
-      if (!shouldOverwrite) {
-        // Prompt user unless --overwrite flag is set
-        shouldOverwrite = await confirm({
-          message: "Documentation already exists. Overwrite?",
-          default: false,
-        });
-      }
-
-      if (shouldOverwrite) {
-        // Remove .davia folder
-        await fs.remove(daviaPath);
-        console.log(chalk.green("Removed existing .davia folder"));
+        // For init command: if agent is provided, continue to add agent config
+        // Otherwise, exit if already initialized
+        if (options?.agent) {
+          // Agent specified, continue to add agent configuration
+          console.log(
+            chalk.blue(
+              "Davia is already initialized. Adding agent configuration..."
+            )
+          );
+        } else {
+          // No agent specified, exit if already initialized
+          console.log(
+            chalk.yellow("Davia is already initialized in this directory.")
+          );
+          process.exit(0);
+        }
       } else {
-        // User declined, exit
-        console.log(chalk.yellow("Operation cancelled."));
-        process.exit(0);
+        // For docs command: use overwrite logic
+        let shouldOverwrite = options.overwrite || false;
+
+        if (!shouldOverwrite) {
+          // Prompt user unless --overwrite flag is set
+          shouldOverwrite = await confirm({
+            message: "Documentation already exists. Overwrite?",
+            default: false,
+          });
+        }
+
+        if (shouldOverwrite) {
+          // Remove .davia folder
+          await fs.remove(daviaPath);
+          console.log(chalk.green("Removed existing .davia folder"));
+        } else {
+          // User declined, exit
+          console.log(chalk.yellow("Operation cancelled."));
+          process.exit(0);
+        }
       }
     }
   } else {
@@ -161,6 +175,8 @@ export async function initializeDavia(
 
   // Create .davia folder structure
   await fs.ensureDir(path.join(daviaPath, "assets"));
+  await fs.ensureDir(path.join(daviaPath, "assets", "data"));
+  await fs.ensureDir(path.join(daviaPath, "assets", "mermaids"));
   await fs.ensureDir(path.join(daviaPath, "proposed"));
   await createAgentsMd(daviaPath);
 
@@ -169,7 +185,17 @@ export async function initializeDavia(
     await writeAgentConfig(cwd, options.agent);
   }
 
-  console.log(chalk.green("✓ Initialized .davia"));
+  // Show appropriate message based on whether this was a new init or adding agent config
+  const wasAddingAgentToExisting =
+    daviaExistedBefore &&
+    project &&
+    options?.overwrite === undefined &&
+    options?.agent;
+  if (wasAddingAgentToExisting) {
+    console.log(chalk.green("✓ Agent configuration added"));
+  } else {
+    console.log(chalk.green("✓ Initialized .davia"));
+  }
 
   return project;
 }

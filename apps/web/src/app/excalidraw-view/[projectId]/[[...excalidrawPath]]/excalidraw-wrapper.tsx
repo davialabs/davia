@@ -13,16 +13,19 @@ export function ExcalidrawWrapper({
   projectId,
   excalidrawPath,
   excalidrawContent,
+  isMermaid,
 }: {
   projectId: string;
   excalidrawPath: string;
   excalidrawContent: string;
+  isMermaid?: boolean;
 }) {
   return (
     <ExcalidrawView
       projectId={projectId}
       excalidrawPath={excalidrawPath}
       excalidrawContent={excalidrawContent}
+      isMermaid={isMermaid}
     />
   );
 }
