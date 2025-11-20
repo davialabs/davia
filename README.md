@@ -55,7 +55,7 @@ davia open
 
 If the page doesn't load immediately, **refresh the page** in your browser.
 
-### 5. Synchronize to Cloud
+### 5. Collaborate with Your Team
 
 Sync your local documentation to a remote workspace where you can collaborate with your team in real-time:
 
