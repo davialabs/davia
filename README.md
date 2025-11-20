@@ -28,7 +28,7 @@ Davia is an **open-source tool** designed for **AI coding agents** to generate *
 ### 1. Install Davia CLI
 
 ```bash
-npm i davia
+npm i -g davia
 ```
 
 ### 2. Initialize Davia
@@ -55,7 +55,24 @@ davia open
 
 If the page doesn't load immediately, **refresh the page** in your browser.
 
-> **💡 Pro tip:** Davia is built specifically for AI coding agents like **Cursor**, **GitHub Copilot**, and others. Your agent uses Davia's tools to create documentation—just ask it to document your codebase and watch the magic happen.
+### 5. Synchronize to Cloud
+
+Sync your local documentation to a remote workspace where you can collaborate with your team in real-time:
+
+```bash
+davia push
+```
+
+This command will:
+
+- Prompt you to log in if you haven't already (opens browser for authentication)
+- Create a new workspace for your project
+- Compress and upload your documentation to the cloud
+- Open your workspace in the browser
+
+> **📝 Note:** Currently, updating a workspace you've already pushed isn't supported yet, but we'll be adding this feature very soon!
+
+> **💡 Pro tip:** Davia is built specifically for AI coding agents like **Cursor**, **GitHub Copilot**, and others. Your agent uses Davia's tools to create documentation — just ask it to document your codebase and watch the magic happen.
 
 This is the Davia workspace view of your generated docs:
 
