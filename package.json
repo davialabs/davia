@@ -10,6 +10,17 @@
     "type": "git",
     "url": "https://github.com/davia-labs/davia.git"
   },
+  "bugs": {
+    "url": "https://github.com/davialabs/davia/issues"
+  },
+  "keywords": [
+    "davia",
+    "documentation",
+    "docs",
+    "internal-docs",
+    "ai-docs",
+    "interactive-docs"
+  ],
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",

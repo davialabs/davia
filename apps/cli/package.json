@@ -1,6 +1,6 @@
 {
   "name": "davia",
-  "version": "0.1.0-alpha.5",
+  "version": "0.1.0",
   "license": "MIT",
   "description": "Interactive internal documentation that writes itself",
   "homepage": "https://davia.ai",
@@ -13,7 +13,11 @@
   },
   "keywords": [
     "davia",
-    "cli"
+    "documentation",
+    "docs",
+    "internal-docs",
+    "ai-docs",
+    "interactive-docs"
   ],
   "publishConfig": {
     "access": "public"

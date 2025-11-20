@@ -1,6 +1,6 @@
 {
   "name": "@davia/web",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0",
   "license": "MIT",
   "description": "View Davia docs locally",
   "homepage": "https://davia.ai",
@@ -18,9 +18,9 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs"
     }
   },
   "files": [
@@ -29,7 +29,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "rm -rf dist && mkdir -p dist && rsync -av --exclude='node_modules' --exclude='package.json' .next/standalone/apps/web/ dist/ && cp -r public dist/ && cp -r .next/static dist/.next/ && node scripts/create-index.cjs",
+    "postbuild": "rm -rf dist && mkdir -p dist && cp -r .next/standalone/apps/web/.next dist/ && cp .next/standalone/apps/web/server.js dist/ && cp -r public dist/ && cp -r .next/static dist/.next/ && node scripts/create-index.cjs",
     "start": "node dist/server.js",
     "lint": "eslint",
     "check-types": "next typegen && tsc --noEmit"
