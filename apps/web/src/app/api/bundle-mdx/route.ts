@@ -24,10 +24,7 @@ export async function GET(request: NextRequest) {
   const project = findProjectById(projects, projectId);
 
   if (!project) {
-    return NextResponse.json(
-      { error: "Project not found" },
-      { status: 404 }
-    );
+    return NextResponse.json({ error: "Project not found" }, { status: 404 });
   }
 
   // Construct the file path
@@ -54,9 +51,31 @@ export async function GET(request: NextRequest) {
     // Collect data needed
     const dataCollector: DataCollector = new Set();
 
-    // Get web app source path (this file is at apps/web/src/app/api/bundle-mdx/route.ts)
-    // So we need to go up 3 levels to get to apps/web/src
-    const webAppSrcPath = join(process.cwd(), "src");
+    // Get shadcn path from public directory
+    // Try multiple possible locations to handle both dev and production builds
+    const possiblePaths = [
+      join(process.cwd(), "public", "shadcn"), // Dev: apps/web/public/shadcn
+      join(process.cwd(), "..", "..", "public", "shadcn"), // Standalone: from apps/web up to public
+      join(process.cwd(), "..", "public", "shadcn"), // Alternative standalone location
+    ];
+
+    let shadcnPath: string | undefined;
+    for (const path of possiblePaths) {
+      if (existsSync(path)) {
+        shadcnPath = path;
+        break;
+      }
+    }
+
+    if (!shadcnPath) {
+      return NextResponse.json(
+        {
+          error:
+            "shadcn directory not found. Please ensure public/shadcn exists.",
+        },
+        { status: 500 }
+      );
+    }
 
     // Set up globals
     const globals = {
@@ -74,7 +93,7 @@ export async function GET(request: NextRequest) {
 
     // Set up plugins
     const plugins: Plugin[] = [
-      createShadcnPlugin(webAppSrcPath),
+      createShadcnPlugin(shadcnPath),
       createDaviaDataPlugin(dataCollector),
     ];
 

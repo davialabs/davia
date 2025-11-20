@@ -34,25 +34,25 @@ export const createDaviaDataPlugin = (
 });
 
 /**
- * Plugin to resolve shadcn imports from local assets folder
+ * Plugin to resolve shadcn imports from public/shadcn folder
  * Resolves to local file system:
- * - @/components/ui/* -> webAppSrcPath/components/ui/<component>.tsx
- * - @/lib/utils -> webAppSrcPath/lib/utils.ts
- * - @/hooks/use-mobile -> webAppSrcPath/hooks/use-mobile.ts
+ * - @/components/ui/* -> shadcnPath/components/ui/<component>.tsx
+ * - @/lib/utils -> shadcnPath/lib/utils.ts
+ * - @/hooks/use-mobile -> shadcnPath/hooks/use-mobile.ts
  */
-export const createShadcnPlugin = (webAppSrcPath: string): Plugin => ({
+export const createShadcnPlugin = (shadcnPath: string): Plugin => ({
   name: "shadcn",
 
   setup(build) {
     // Map @/lib/utils to local utils.ts
     build.onResolve({ filter: /^@\/lib\/utils$/ }, () => ({
-      path: join(webAppSrcPath, "lib", "utils.ts"),
+      path: join(shadcnPath, "lib", "utils.ts"),
       namespace: "shadcn-fs",
     }));
 
     // Map @/hooks/use-mobile to local use-mobile.ts
     build.onResolve({ filter: /^@\/hooks\/use-mobile$/ }, () => ({
-      path: join(webAppSrcPath, "hooks", "use-mobile.ts"),
+      path: join(shadcnPath, "hooks", "use-mobile.ts"),
       namespace: "shadcn-fs",
     }));
 
@@ -60,7 +60,7 @@ export const createShadcnPlugin = (webAppSrcPath: string): Plugin => ({
     build.onResolve({ filter: /^@\/components\/ui\// }, (args) => {
       const componentName = args.path.replace(/^@\/components\/ui\//, "");
       return {
-        path: join(webAppSrcPath, "components", "ui", `${componentName}.tsx`),
+        path: join(shadcnPath, "components", "ui", `${componentName}.tsx`),
         namespace: "shadcn-fs",
       };
     });
