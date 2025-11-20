@@ -25,47 +25,37 @@ Davia is an **open-source tool** that generates **interactive internal documenta
 
 ## Quick Start
 
-### 1. Clone and Install
+### 1. Install Davia CLI
 
 ```bash
-git clone https://github.com/davialabs/davia.git
-cd davia
-pnpm i
+npm i davia
 ```
 
-### 2. Configuration
+### 2. Initialize Davia
 
-By default, Davia looks for a **`.env` file** in the root of the project path you provide. Configuration is **only optional** if there are already API keys in the project path you're generating docs from. To configure API keys in the **Davia monorepo** instead:
-
-1. Rename `.env.example` to `.env`
-2. Add your AI provider API key (we recommend **Anthropic** for best results)
-3. Davia will use the first available key in this order: Anthropic → OpenAI → Google
-
-### 3. Run Docs
+Initialize Davia with your coding agent:
 
 ```bash
-pnpm run docs
+davia init --agent=[name of your coding agent]
 ```
 
-The process involves two steps:
+Replace `[name of your coding agent]` with the name of your coding agent (e.g., `cursor`, `copilot`, etc.).
 
-1. **Enter the absolute path** when prompted:
+### 3. Generate Documentation
 
-   ```
-   Enter absolute path of the project to document: /path/to/project
-   ```
+Ask your coding agent to write the documentation for your project. Your agent will use Davia to generate interactive documentation with visualizations and editable whiteboards.
 
-2. **Provide a prompt** describing what to document (e.g., "Document the authentication system" or "Create API documentation").
+### 4. View Your Documentation
 
-Davia spins up a docs window that populates in real time, and you can edit the pages as they appear.
-
-### 4. View Results (Optional)
-
-If you stopped the process and want to view the results later, you can **launch the visualization app** manually:
+Once your agent has generated the documentation, open the Davia workspace:
 
 ```bash
-pnpm run open
+davia open
 ```
+
+If the page doesn't load immediately, **refresh the page** in your browser.
+
+> **💡 Tip:** This workflow works especially well with **Cursor** and other AI-powered coding assistants.
 
 This is the Davia workspace view of your generated docs:
 
