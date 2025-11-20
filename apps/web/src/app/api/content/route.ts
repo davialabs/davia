@@ -20,10 +20,7 @@ export async function GET(request: NextRequest) {
   const project = findProjectById(projects, projectId);
 
   if (!project) {
-    return NextResponse.json(
-      { error: "Project not found" },
-      { status: 404 }
-    );
+    return NextResponse.json({ error: "Project not found" }, { status: 404 });
   }
 
   // Construct the file path
@@ -62,10 +59,7 @@ export async function POST(request: NextRequest) {
     const project = findProjectById(projects, projectId);
 
     if (!project) {
-      return NextResponse.json(
-        { error: "Project not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
     // Construct the file path
