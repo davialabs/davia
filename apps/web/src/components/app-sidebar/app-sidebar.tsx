@@ -13,6 +13,11 @@ import {
 } from "@/components/ui/sidebar";
 import { ProjectSwitcher } from "./project-switcher";
 import { RefreshCcwIcon } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -22,15 +27,20 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <div className="flex items-center justify-between gap-1">
               <ProjectSwitcher />
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() => {
-                  window.location.reload();
-                }}
-              >
-                <RefreshCcwIcon />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={() => {
+                      window.location.reload();
+                    }}
+                  >
+                    <RefreshCcwIcon />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Reload the project</TooltipContent>
+              </Tooltip>
             </div>
           </SidebarMenuItem>
         </SidebarMenu>
