@@ -26,10 +26,11 @@ export async function openBrowser(url: string): Promise<void> {
  */
 export async function startWebServerWithBrowser(
   projectId: string,
-  options?: { noBrowser?: boolean }
+  options?: { noBrowser?: boolean; port?: number }
 ): Promise<() => Promise<void>> {
-  // Find available port starting from 3000
-  const port = await findAvailablePort(3000);
+  // Find available port starting from the specified port (default 3005)
+  const startPort = options?.port ?? 3005;
+  const port = await findAvailablePort(startPort);
 
   // Start the web server with the found port
   const serverPromise = startWebServer({ port });

@@ -5,6 +5,7 @@ import open from "open";
 import path from "node:path";
 import { capitalCase } from "change-case";
 import slug from "slug";
+import archiver from "archiver";
 import { getConfigPath } from "./paths.js";
 import { exitWithError } from "./utils.js";
 
@@ -47,6 +48,10 @@ interface CreateWorkspaceRequest {
 interface CreateWorkspaceResponse {
   id: string;
   slug: string;
+}
+
+interface SyncResponse {
+  workspace_url: string;
 }
 
 // ============================================================================
@@ -105,6 +110,33 @@ export function getServerUrl(): string {
 export function getFrontendUrl(): string {
   const isDevelopment = process.env.NODE_ENV === "development";
   return isDevelopment ? "http://localhost:3000" : "https://davia.ai";
+}
+
+// ============================================================================
+// Error Handling Helpers
+// ============================================================================
+
+/**
+ * Extracts error message from FastAPI HTTPException response.
+ * FastAPI returns errors in the format: { detail: string }
+ * @param response - The fetch Response object
+ * @returns A promise that resolves to the error message string
+ */
+async function extractFastApiError(response: Response): Promise<string> {
+  let errorMessage = `HTTP ${response.status}`;
+  try {
+    const errorData = (await response.json()) as { detail: string };
+    if (errorData.detail) {
+      errorMessage = errorData.detail;
+    }
+  } catch {
+    // If JSON parsing fails, use response text
+    const errorText = await response.text();
+    if (errorText) {
+      errorMessage = errorText;
+    }
+  }
+  return errorMessage;
 }
 
 // ============================================================================
@@ -323,11 +355,9 @@ export async function link(projectPath: string): Promise<string> {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
+      const errorMessage = await extractFastApiError(response);
       spinner.fail("Failed to create workspace");
-      throw new Error(
-        `Failed to create workspace: ${response.status} ${errorText}`
-      );
+      throw new Error(`Failed to create workspace: ${errorMessage}`);
     }
 
     const data = (await response.json()) as CreateWorkspaceResponse;
@@ -337,5 +367,124 @@ export async function link(projectPath: string): Promise<string> {
     spinner.fail("Failed to create workspace");
     const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(`Failed to create workspace: ${errorMessage}`);
+  }
+}
+
+// ============================================================================
+// Push Function
+// ============================================================================
+
+/**
+ * Pushes local documentation to the remote workspace by zipping .davia/assets
+ * and uploading it to the server.
+ * @param projectPath - The path to the project folder
+ * @param workspaceId - The workspace ID to sync to
+ */
+export async function push(
+  projectPath: string,
+  workspaceId: string
+): Promise<void> {
+  // Ensure user is logged in
+  const accessToken = await ensureLoggedIn();
+
+  // Check if .davia/assets directory exists
+  const assetsPath = path.join(projectPath, ".davia", "assets");
+  const assetsExists = await fs.pathExists(assetsPath);
+
+  if (!assetsExists) {
+    exitWithError("Documentation not found", [
+      `The .davia/assets directory does not exist at: ${assetsPath}`,
+      "",
+      "💡 Troubleshooting tips:",
+      "  • Run 'davia docs' first to generate documentation",
+      "  • Make sure you're in the correct project directory",
+      "  • Check that .davia folder exists in your project",
+    ]);
+  }
+
+  const serverUrl = getServerUrl();
+  const spinner = ora("Compressing assets 🗂️...").start();
+
+  try {
+    // Create in-memory zip using archiver
+    const chunks: Buffer[] = [];
+    const archive = archiver("zip", {
+      zlib: { level: 9 }, // Maximum compression
+    });
+
+    // Set up all event listeners BEFORE adding data or finalizing
+    const zipPromise = new Promise<Buffer>((resolve, reject) => {
+      archive.on("data", (chunk) => chunks.push(chunk));
+      archive.on("end", () => {
+        const zipBuffer = Buffer.concat(chunks);
+        resolve(zipBuffer);
+      });
+      archive.on("error", (err) => reject(err));
+    });
+
+    // Add the assets directory to the zip
+    archive.directory(assetsPath, false);
+
+    // Finalize the archive
+    await archive.finalize();
+
+    // Wait for all data to be collected
+    const zipBuffer = await zipPromise;
+
+    // Create FormData for multipart/form-data upload
+    const formData = new FormData();
+    const file = new File([zipBuffer], "assets.zip", {
+      type: "application/zip",
+    });
+    formData.append("file", file);
+    formData.append("workspace_id", workspaceId);
+
+    // Update spinner text before syncing
+    spinner.text = "Syncing local workspace to the cloud ☁️...";
+
+    // Send POST request to /sync endpoint
+    const response = await fetch(`${serverUrl}/cli/sync`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        // Don't set Content-Type, let fetch set it with boundary
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorMessage = await extractFastApiError(response);
+      spinner.fail("Failed to sync documentation");
+      throw new Error(`Failed to sync documentation: ${errorMessage}`);
+    }
+
+    // Parse response to get workspace_url
+    const data = (await response.json()) as SyncResponse;
+
+    if (!data.workspace_url) {
+      spinner.fail("Invalid response from server");
+      throw new Error("Server response missing workspace_url");
+    }
+
+    spinner.succeed("Documentation synced successfully");
+
+    // Open browser with workspace URL
+    const frontendUrl = getFrontendUrl();
+    const workspaceUrl = `${frontendUrl}/${data.workspace_url}`;
+    await open(workspaceUrl);
+    console.log(
+      chalk.green(`✓ Opened workspace in browser: ${workspaceUrl}\n`)
+    );
+  } catch (error) {
+    spinner.fail("Failed to sync documentation");
+    const errorMessage = error instanceof Error ? error.message : String(error);
+
+    // Check if it's a known error type
+    if (errorMessage.includes("Failed to sync documentation")) {
+      throw new Error(errorMessage);
+    }
+
+    // Handle other errors
+    throw new Error(`Failed to sync documentation: ${errorMessage}`);
   }
 }

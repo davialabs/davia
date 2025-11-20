@@ -19,6 +19,7 @@ import {
   readConfig,
   writeConfig,
   link,
+  push,
 } from "./sync.js";
 
 const program = new Command();
@@ -56,6 +57,7 @@ program
     "--agent <agent>",
     "Generate agent-specific configuration (cursor/windsurf/github-copilot)"
   )
+  .option("-p, --port <port>", "Port number for the web server", "3005")
   .action(async (options) => {
     const cwd = process.cwd();
 
@@ -100,7 +102,8 @@ program
 
     // Start web server and open browser if requested
     if (options.browser !== false) {
-      await startWebServerWithBrowser(project.id);
+      const port = parseInt(options.port);
+      await startWebServerWithBrowser(project.id, { port });
     }
 
     try {
@@ -145,7 +148,8 @@ program
 program
   .command("open")
   .description("Start the Davia web server")
-  .action(async () => {
+  .option("-p, --port <port>", "Port number for the web server", "3005")
+  .action(async (options) => {
     const cwd = process.cwd();
 
     // Read existing projects
@@ -173,7 +177,8 @@ program
     setupGracefulShutdown();
 
     // Start web server and open browser
-    await startWebServerWithBrowser(selectedProject.id);
+    const port = parseInt(options.port);
+    await startWebServerWithBrowser(selectedProject.id, { port });
   });
 
 program
@@ -251,8 +256,22 @@ program
       }
     }
 
-    console.log(chalk.green.bold("✅ Workspace ID:"));
-    console.log(chalk.cyan(`   ${selectedProject.workspaceId}\n`));
+    // Push documentation to workspace
+    try {
+      await push(selectedProject.path, selectedProject.workspaceId);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      exitWithError("Failed to push documentation to workspace", [
+        errorMessage,
+        "",
+        "💡 Troubleshooting tips:",
+        "  • Make sure you are logged in (run 'davia login')",
+        "  • Check that .davia/assets folder exists (run 'davia docs' first)",
+        "  • Check your internet connection",
+        "  • Try running the command again",
+      ]);
+    }
   });
 
 program.parse();
