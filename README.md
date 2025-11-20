@@ -13,6 +13,8 @@
         <img src="https://dcbadge.limes.pink/api/server/A79mEzP8me?style=flat" /></a>
     <a href="https://www.reddit.com/r/davia_ai/" alt="Reddit">
         <img src="https://img.shields.io/reddit/subreddit-subscribers/davia_ai?style=social&label=r/davia_ai" /></a>
+    <a href="https://docs.davia.ai/" alt="Documentation">
+        <img src="https://img.shields.io/badge/docs-davia.ai-blue?style=flat" /></a>
 </p>
 
 ## What is Davia?
@@ -24,6 +26,8 @@ Davia is an **open-source tool** designed for **AI coding agents** to generate *
 ---
 
 ## Quick Start
+
+> 📚 For detailed documentation, visit [docs.davia.ai](https://docs.davia.ai/)
 
 ### 1. Install Davia CLI
 
