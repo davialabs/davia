@@ -207,7 +207,7 @@ program
 
 program
   .command("push")
-  .description("Link the current project to a workspace")
+  .description("Push local documentation to your remote workspace")
   .action(async () => {
     const cwd = process.cwd();
 

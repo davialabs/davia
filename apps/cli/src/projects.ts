@@ -6,6 +6,7 @@ import { confirm } from "@inquirer/prompts";
 import { getProjectsPath } from "./paths.js";
 import { createAgentsMd } from "./ide-agent-instruction/index.js";
 import { writeAgentConfig } from "./agentic-ide-options/index.js";
+import { SUPPORTED_AGENTS } from "./agentic-ide-options/agent-rule.js";
 
 export type Project = {
   id: string;
@@ -93,6 +94,82 @@ export async function setWorkspaceId(
 }
 
 /**
+ * Updates .gitignore to include .davia/ and optionally agent-specific files
+ * @param cwd - Current working directory
+ * @param agentFilePath - Optional agent-specific file path to add
+ */
+async function updateGitignore(
+  cwd: string,
+  agentFilePath?: string
+): Promise<void> {
+  const gitignorePath = path.join(cwd, ".gitignore");
+
+  if (await fs.pathExists(gitignorePath)) {
+    const gitignoreContent = await fs.readFile(gitignorePath, "utf-8");
+    let needsUpdate = false;
+    const entriesToAdd: string[] = [];
+
+    // Always ensure .davia/ is in gitignore
+    if (!gitignoreContent.includes(".davia/")) {
+      needsUpdate = true;
+      entriesToAdd.push(".davia/");
+    }
+
+    // Add agent-specific file if agent is specified and not already present
+    if (agentFilePath && !gitignoreContent.includes(agentFilePath)) {
+      needsUpdate = true;
+      entriesToAdd.push(agentFilePath);
+    }
+
+    if (needsUpdate) {
+      const lines = gitignoreContent.split("\n");
+
+      // Check if there's already a "# Davia" section
+      const daviaSectionIndex = lines.findIndex((line) =>
+        line.trim().startsWith("# Davia")
+      );
+
+      if (daviaSectionIndex !== -1) {
+        // Davia section exists, find .davia/ line and add entries after it
+        const daviaIndex = lines.findIndex((line) =>
+          line.trim().startsWith(".davia/")
+        );
+
+        if (daviaIndex !== -1) {
+          // .davia/ exists, add agent file after it if needed
+          if (agentFilePath && !gitignoreContent.includes(agentFilePath)) {
+            lines.splice(daviaIndex + 1, 0, agentFilePath);
+          }
+        } else {
+          // # Davia section exists but .davia/ is missing, add it
+          lines.splice(daviaSectionIndex + 1, 0, ".davia/");
+          if (agentFilePath) {
+            lines.splice(daviaSectionIndex + 2, 0, agentFilePath);
+          }
+        }
+      } else {
+        // No Davia section, add it at the end
+        const daviaSection = `# Davia\n${entriesToAdd.join("\n")}`;
+        lines.push("", daviaSection);
+      }
+
+      const updatedContent = lines.join("\n");
+      await fs.writeFile(gitignorePath, updatedContent);
+      console.log(chalk.green("Updated .gitignore to include Davia files"));
+    }
+  } else {
+    // Create .gitignore with Davia section
+    const entries = [".davia/"];
+    if (agentFilePath) {
+      entries.push(agentFilePath);
+    }
+    const daviaSection = `# Davia\n${entries.join("\n")}`;
+    await fs.writeFile(gitignorePath, daviaSection + "\n", "utf-8");
+    console.log(chalk.green("Created .gitignore with Davia files"));
+  }
+}
+
+/**
  * Initializes Davia in the current working directory.
  * Creates .davia folder structure, registers project, and updates .gitignore.
  * @param cwd - Current working directory
@@ -171,21 +248,6 @@ export async function initializeDavia(
     if (await fs.pathExists(daviaPath)) {
       await fs.remove(daviaPath);
     }
-
-    // Check and update .gitignore
-    const gitignorePath = path.join(cwd, ".gitignore");
-    if (await fs.pathExists(gitignorePath)) {
-      const gitignoreContent = await fs.readFile(gitignorePath, "utf-8");
-      const daviaSection = "# Davia\n.davia/";
-
-      if (!gitignoreContent.includes(daviaSection)) {
-        // Add Davia section at the end with a space before # Davia
-        const updatedContent =
-          gitignoreContent.trimEnd() + "\n\n" + daviaSection + "\n";
-        await fs.writeFile(gitignorePath, updatedContent);
-        console.log(chalk.green("Updated .gitignore to include .davia/"));
-      }
-    }
   }
 
   // Create .davia folder structure
@@ -195,9 +257,18 @@ export async function initializeDavia(
   await createAgentsMd(daviaPath);
 
   // Write agent config if specified
+  let agentFilePath: string | undefined;
   if (options?.agent) {
     await writeAgentConfig(cwd, options.agent);
+    // Get agent-specific file path for gitignore
+    if (SUPPORTED_AGENTS[options.agent]) {
+      const agentConfig = SUPPORTED_AGENTS[options.agent]!;
+      agentFilePath = path.join(agentConfig.folderPath, agentConfig.fileName);
+    }
   }
+
+  // Update .gitignore (for both new and existing projects)
+  await updateGitignore(cwd, agentFilePath);
 
   // Show appropriate message based on whether this was a new init or adding agent config
   const wasAddingAgentToExisting =
