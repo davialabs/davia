@@ -192,7 +192,6 @@ export async function initializeDavia(
   await fs.ensureDir(path.join(daviaPath, "assets"));
   await fs.ensureDir(path.join(daviaPath, "assets", "data"));
   await fs.ensureDir(path.join(daviaPath, "assets", "mermaids"));
-  await fs.ensureDir(path.join(daviaPath, "proposed"));
   await createAgentsMd(daviaPath);
 
   // Write agent config if specified
