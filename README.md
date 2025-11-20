@@ -72,9 +72,9 @@ This command will:
 
 > **📝 Note:** Currently, updating a workspace you've already pushed isn't supported yet, but we'll be adding this feature very soon!
 
-This is the view you'll have when opening your generated docs:
+This is the view you'll have after sending your docs to the workspace:
 
-<img src="https://storage.googleapis.com/davia-public-assets/landing-gif/workspace-view" alt="Design Agent Example" style="border-radius: 20px; width: 100%; max-width: 1200px; display: block; margin: 20px auto;" />
+<img src="https://storage.googleapis.com/davia-public-assets/landing-gif/workspace-view.png" alt="Design Agent Example" style="border-radius: 20px; width: 100%; max-width: 1200px; display: block; margin: 20px auto;" />
 
 ---
 
