@@ -63,7 +63,7 @@ The user has access to these Davia terminal commands:
 - davia open — start the Davia web server to browse and edit documentation.
 - davia login — log the user into their Davia profile.
 
-Tip: Once you've generated the documentation, you can run the command (using the right tools at your disposal) "davia open" to display the documentation in the user's browser.
+After you have generated documentation, you should **run the \`davia open\` command** to display the documentation in the user's browser.
 
 Always keep all documentation work aligned with the Davia wiki structure and conventions in .davia.`;
 }

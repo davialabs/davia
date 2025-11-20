@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/empty";
 import { FolderCodeIcon } from "lucide-react";
 import { readProjects } from "@/lib/projects";
+import { EmptyDocumentationClient } from "./empty-documentation-client";
 
 export default async function NoProjectIdPage() {
   // Read projects from env-paths
@@ -25,12 +26,7 @@ export default async function NoProjectIdPage() {
             </EmptyMedia>
             <EmptyTitle>No Documentation Yet</EmptyTitle>
             <EmptyDescription>
-              You haven&apos;t generated any documentation yet. Get started by
-              doing{" "}
-              <code className="bg-muted p-1 text-xs rounded-md">
-                pnpm run docs
-              </code>{" "}
-              in the terminal.
+              <EmptyDocumentationClient />
             </EmptyDescription>
           </EmptyHeader>
         </Empty>
