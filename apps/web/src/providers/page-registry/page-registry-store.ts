@@ -1,6 +1,7 @@
 import { createStore } from "zustand/vanilla";
 import { devtools } from "zustand/middleware";
 import { toast } from "sonner";
+import { convertMermaidToExcalidraw } from "@/lib/mermaid-converter";
 
 export type AssetEntry = {
   content: string | null;
@@ -65,10 +66,65 @@ export const createPageRegistryStore = ({
               };
             } else {
               const data = await response.json();
-              entry = {
-                content: data.content ?? null,
-                synced: true,
-              };
+
+              // Check if this is mermaid content that needs conversion
+              if (data.isMermaid && data.content) {
+                try {
+                  // Convert mermaid to excalidraw JSON
+                  const jsonContent = await convertMermaidToExcalidraw(
+                    data.content
+                  );
+
+                  // Save the converted JSON and delete the mermaid file
+                  const saveResponse = await fetch("/api/mermaid", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      projectId,
+                      excalidrawPath: data.targetPath,
+                      jsonContent,
+                      mermaidPath: data.mermaidPath,
+                    }),
+                  });
+
+                  if (saveResponse.ok) {
+                    entry = {
+                      content: jsonContent,
+                      synced: true,
+                    };
+                  } else {
+                    const errorData = await saveResponse
+                      .json()
+                      .catch(() => ({}));
+                    console.error("[PageRegistry] Save failed:", errorData);
+                    throw new Error(
+                      `Failed to save converted file: ${errorData.error || saveResponse.statusText}`
+                    );
+                  }
+                } catch (error) {
+                  console.error(
+                    "[PageRegistry] ✗ Error converting mermaid:",
+                    error
+                  );
+                  console.error(
+                    "[PageRegistry] Error stack:",
+                    error instanceof Error ? error.stack : "N/A"
+                  );
+                  entry = {
+                    content: null,
+                    synced: false,
+                    error: `Failed to convert mermaid: ${error instanceof Error ? error.message : String(error)}`,
+                  };
+                }
+              } else {
+                // Regular content
+                entry = {
+                  content: data.content ?? null,
+                  synced: true,
+                };
+              }
             }
 
             set((s) => {

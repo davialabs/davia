@@ -1,4 +1,4 @@
-import { promises as fs } from "fs";
+import fs from "fs-extra";
 import * as path from "path";
 import ignore from "ignore";
 import {
@@ -134,8 +134,86 @@ export async function readRepositoryContent(
     // No .gitignore file or can't read it, continue without it
   }
 
-  // Always ignore common directories
-  ig.add([".git", "node_modules", ".next", "dist", "build", ".turbo"]);
+  // Always ignore common directories from all languages and frameworks
+  ig.add([
+    // Version control
+    ".git",
+    ".svn",
+    ".hg",
+    // Node.js / JavaScript
+    "node_modules",
+    ".next",
+    ".turbo",
+    ".cache",
+    ".parcel-cache",
+    ".yarn",
+    ".pnp",
+    ".pnpm-store",
+    // Python
+    ".venv",
+    "venv",
+    "env",
+    "ENV",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".tox",
+    ".coverage",
+    "htmlcov",
+    ".hypothesis",
+    // Ruby
+    ".bundle",
+    "vendor/bundle",
+    ".rbenv",
+    // Java / JVM
+    "target",
+    ".gradle",
+    ".mvn",
+    "build",
+    "out",
+    // Go
+    "vendor",
+    ".go",
+    // Rust
+    "Cargo.lock",
+    // PHP
+    "vendor",
+    ".composer",
+    // .NET
+    "bin",
+    "obj",
+    ".vs",
+    // Build outputs
+    "dist",
+    "build",
+    ".output",
+    // Framework-specific
+    ".nuxt",
+    ".vuepress/dist",
+    ".serverless",
+    // Infrastructure
+    ".terraform",
+    ".terraform.lock.hcl",
+    ".vagrant",
+    ".docker",
+    // Testing / Coverage
+    "coverage",
+    ".nyc_output",
+    ".jest",
+    // IDE / Editor
+    ".idea",
+    ".vscode",
+    "*.swp",
+    "*.swo",
+    ".sublime-project",
+    ".sublime-workspace",
+    // OS
+    ".DS_Store",
+    "Thumbs.db",
+    // Logs
+    "*.log",
+    "logs",
+  ]);
 
   // Recursively read all files
   const allFiles: string[] = [];

@@ -4,34 +4,103 @@ import { Excalidraw, serializeAsJSON } from "@excalidraw/excalidraw";
 import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import type { AppState, BinaryFiles } from "@excalidraw/excalidraw/types";
 import "@excalidraw/excalidraw/index.css";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
 import { useHasMounted } from "@/hooks/use-has-mounted";
 import { useDebounceCallback } from "usehooks-ts";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
+import { convertMermaidToExcalidraw } from "@/lib/mermaid-converter";
 
 export function ExcalidrawView({
   projectId,
   excalidrawPath,
   excalidrawContent,
+  isMermaid,
 }: {
   projectId: string;
   excalidrawPath: string;
   excalidrawContent: string;
+  isMermaid?: boolean;
 }) {
   const mounted = useHasMounted();
   const { resolvedTheme } = useTheme();
   const [excalidrawAPI, setExcalidrawAPI] =
     useState<ExcalidrawImperativeAPI | null>(null);
+  const [convertedContent, setConvertedContent] = useState<string | null>(null);
+  const isConvertingRef = useRef(false);
+
+  // Convert mermaid to excalidraw JSON if needed
+  useEffect(() => {
+    if (
+      !isMermaid ||
+      !excalidrawContent ||
+      convertedContent ||
+      isConvertingRef.current
+    ) {
+      return;
+    }
+
+    let cancelled = false;
+    isConvertingRef.current = true;
+
+    convertMermaidToExcalidraw(excalidrawContent)
+      .then((jsonContent) => {
+        if (cancelled) return;
+
+        setConvertedContent(jsonContent);
+        isConvertingRef.current = false;
+
+        // Extract basename from excalidrawPath (e.g., "data/diagram.json" -> "diagram")
+        const pathParts = excalidrawPath.split("/");
+        const filename = pathParts[pathParts.length - 1];
+        if (!filename) return;
+
+        const basename = filename.replace(/\.json$/, "");
+        const mermaidPath = `mermaids/${basename}.mmd`;
+
+        // Save the converted JSON
+        return fetch("/api/mermaid", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            projectId,
+            excalidrawPath,
+            jsonContent,
+            mermaidPath,
+          }),
+        });
+      })
+      .catch((error) => {
+        if (cancelled) return;
+        console.error("Error converting mermaid:", error);
+        isConvertingRef.current = false;
+      });
+
+    return () => {
+      cancelled = true;
+      isConvertingRef.current = false;
+    };
+  }, [
+    isMermaid,
+    excalidrawContent,
+    convertedContent,
+    projectId,
+    excalidrawPath,
+  ]);
 
   const sceneData = useMemo(() => {
-    const data = JSON.parse(excalidrawContent);
-    return {
+    // Use converted content if available, otherwise parse the original content
+    const contentToParse = convertedContent || excalidrawContent;
+    const data = JSON.parse(contentToParse);
+    const parsed = {
       elements: data?.elements ?? [],
       files: data?.files ?? {},
       appState: data?.appState,
     };
-  }, [excalidrawContent]);
+    return parsed;
+  }, [excalidrawContent, convertedContent]);
 
   // Map resolvedTheme to Excalidraw's theme format
   // resolvedTheme is "light" | "dark" | undefined
@@ -43,18 +112,21 @@ export function ExcalidrawView({
     if (excalidrawAPI) {
       // Wait for the canvas to be fully initialized
       const timeoutId = setTimeout(() => {
-        // Update the scene with the parsed data
-        excalidrawAPI.updateScene(sceneData);
-        // Enable zen mode and set background color for light mode
-        if (excalidrawTheme === "light") {
-          excalidrawAPI.updateScene({
-            appState: { zenModeEnabled: true, viewBackgroundColor: "#fafafa" },
-          });
-        } else {
-          excalidrawAPI.updateScene({
-            appState: { zenModeEnabled: true },
-          });
-        }
+        // Prepare appState with zen mode and background color
+        const appState = {
+          zenModeEnabled: true,
+          ...(excalidrawTheme === "light" && {
+            viewBackgroundColor: "#fafafa",
+          }),
+          ...sceneData.appState,
+        };
+
+        // Update the scene with all data at once (this cleans and reloads the scene)
+        excalidrawAPI.updateScene({
+          elements: sceneData.elements || [],
+          appState,
+        });
+
         // Only scroll to content if there are elements
         if (sceneData.elements && sceneData.elements.length > 0) {
           excalidrawAPI.scrollToContent(undefined, {
@@ -99,12 +171,11 @@ export function ExcalidrawView({
         });
 
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          console.error("Failed to update content:", errorData.error);
+          await response.json().catch(() => ({}));
           return;
         }
-      } catch (error) {
-        console.error("Error updating content:", error);
+      } catch {
+        // Error updating content
       }
     },
     300 // 300ms debounce delay

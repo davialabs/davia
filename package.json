@@ -1,22 +1,33 @@
 {
-  "name": "davia",
+  "name": "davia-monorepo",
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
   "description": "Interactive internal documentation that writes itself",
+  "author": "Davia Labs, Inc.",
   "homepage": "https://davia.ai",
   "repository": {
     "type": "git",
     "url": "https://github.com/davia-labs/davia.git"
   },
+  "bugs": {
+    "url": "https://github.com/davialabs/davia/issues"
+  },
+  "keywords": [
+    "davia",
+    "documentation",
+    "docs",
+    "internal-docs",
+    "ai-docs",
+    "interactive-docs"
+  ],
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "test": "turbo run test",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types",
-    "docs": "pnpm --filter @davia/cli docs",
-    "open": "pnpm --filter @davia/cli open"
+    "check-types": "turbo run check-types"
   },
   "devDependencies": {
     "prettier": "^3.6.2",

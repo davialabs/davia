@@ -1,12 +1,27 @@
 {
   "name": "@davia/agent",
   "version": "0.1.0",
-  "private": true,
+  "license": "MIT",
+  "description": "AI agent for Davia documentation",
+  "homepage": "https://davia.ai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/davia-labs/davia.git"
+  },
+  "bugs": {
+    "url": "https://github.com/davialabs/davia/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
   },
   "files": [
     "dist"
@@ -21,16 +36,19 @@
     "@langchain/anthropic": "^1.1.0",
     "@langchain/core": "^1.0.6",
     "@langchain/google-genai": "^1.0.2",
-    "@langchain/langgraph": "^1.0.1",
-    "@langchain/openai": "^1.0.0",
+    "@langchain/langgraph": "^1.0.2",
+    "@langchain/openai": "^1.1.2",
+    "chalk": "^5.6.2",
+    "fs-extra": "^11.3.2",
     "ignore": "^7.0.5",
-    "langchain": "^1.0.5",
+    "langchain": "^1.0.6",
     "puppeteer": "^24.29.1",
     "zod": "^4.1.12"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.15.3",
     "eslint": "^9.38.0",
     "tsx": "^4.19.2",

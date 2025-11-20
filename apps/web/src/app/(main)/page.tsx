@@ -1,6 +1,4 @@
-import { readFileSync } from "fs";
 import { redirect } from "next/navigation";
-import { join } from "path";
 import {
   Empty,
   EmptyDescription,
@@ -9,25 +7,15 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { FolderCodeIcon } from "lucide-react";
+import { readProjects } from "@/lib/projects";
+import { EmptyDocumentationClient } from "./empty-documentation-client";
 
-export default function NoProjectIdPage() {
-  // Get monorepo root from environment variable
-  const monorepoRoot = process.env.DAVIA_MONOREPO_ROOT!;
+export default async function NoProjectIdPage() {
+  // Read projects from env-paths
+  const projects = await readProjects();
 
-  // Read state.json
-  const projectsJsonPath = join(monorepoRoot, ".davia", "projects.json");
-  let projects = {};
-  try {
-    const projectsContent = readFileSync(projectsJsonPath, "utf-8");
-    if (projectsContent.trim()) {
-      projects = JSON.parse(projectsContent);
-    }
-  } catch (error) {
-    console.error("Error reading projects.json:", error);
-  }
-
-  if (Object.keys(projects).length > 0) {
-    redirect(`/${Object.keys(projects)[0]}`);
+  if (projects.length > 0) {
+    redirect(`/${projects[0]!.id}`);
   } else {
     return (
       <div className="flex flex-1 items-center justify-center h-full p-4">
@@ -38,12 +26,7 @@ export default function NoProjectIdPage() {
             </EmptyMedia>
             <EmptyTitle>No Documentation Yet</EmptyTitle>
             <EmptyDescription>
-              You haven&apos;t generated any documentation yet. Get started by
-              doing{" "}
-              <code className="bg-muted p-1 text-xs rounded-md">
-                pnpm run docs
-              </code>{" "}
-              in the terminal.
+              <EmptyDocumentationClient />
             </EmptyDescription>
           </EmptyHeader>
         </Empty>

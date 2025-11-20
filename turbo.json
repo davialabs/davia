@@ -1,25 +1,25 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
-  "globalEnv": [
-    "ANTHROPIC_API_KEY",
-    "OPENAI_API_KEY",
-    "GOOGLE_API_KEY",
-    "DAVIA_MONOREPO_ROOT"
-  ],
+  "globalEnv": ["NODE_ENV"],
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "dependsOn": ["^build"],
+      "outputs": ["build/**", "dist/**", ".next/**", "!.next/cache/**"]
+    },
+    "test": {
+      "outputs": ["coverage/**"],
+      "dependsOn": []
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^build", "^lint"]
     },
     "check-types": {
-      "dependsOn": ["^check-types"]
+      "dependsOn": ["^build", "^check-types"]
     },
     "dev": {
+      "dependsOn": ["^build"],
       "cache": false,
       "persistent": true
     }

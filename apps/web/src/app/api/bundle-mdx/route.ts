@@ -5,6 +5,7 @@ import { bundleMDX } from "mdx-bundler";
 import type { Plugin } from "esbuild";
 import { createShadcnPlugin, createDaviaDataPlugin } from "./plugins";
 import type { DataCollector, BundlingResult } from "./types";
+import { readProjects, findProjectById } from "@/lib/projects";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -18,18 +19,16 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Get monorepo root from environment variable
-  const monorepoRoot = process.env.DAVIA_MONOREPO_ROOT;
+  // Read projects and find project by id
+  const projects = await readProjects();
+  const project = findProjectById(projects, projectId);
 
-  if (!monorepoRoot) {
-    return NextResponse.json(
-      { error: "DAVIA_MONOREPO_ROOT environment variable is not set" },
-      { status: 500 }
-    );
+  if (!project) {
+    return NextResponse.json({ error: "Project not found" }, { status: 404 });
   }
 
   // Construct the file path
-  const assetsPath = join(monorepoRoot, ".davia", "assets", projectId);
+  const assetsPath = join(project.path, ".davia", "assets");
   const filePath = join(assetsPath, path);
 
   // Check if the file exists
@@ -52,6 +51,32 @@ export async function GET(request: NextRequest) {
     // Collect data needed
     const dataCollector: DataCollector = new Set();
 
+    // Get shadcn path from public directory
+    // Try multiple possible locations to handle both dev and production builds
+    const possiblePaths = [
+      join(process.cwd(), "public", "shadcn"), // Dev: apps/web/public/shadcn
+      join(process.cwd(), "..", "..", "public", "shadcn"), // Standalone: from apps/web up to public
+      join(process.cwd(), "..", "public", "shadcn"), // Alternative standalone location
+    ];
+
+    let shadcnPath: string | undefined;
+    for (const path of possiblePaths) {
+      if (existsSync(path)) {
+        shadcnPath = path;
+        break;
+      }
+    }
+
+    if (!shadcnPath) {
+      return NextResponse.json(
+        {
+          error:
+            "shadcn directory not found. Please ensure public/shadcn exists.",
+        },
+        { status: 500 }
+      );
+    }
+
     // Set up globals
     const globals = {
       "@mdx-js/react": {
@@ -68,7 +93,7 @@ export async function GET(request: NextRequest) {
 
     // Set up plugins
     const plugins: Plugin[] = [
-      createShadcnPlugin(),
+      createShadcnPlugin(shadcnPath),
       createDaviaDataPlugin(dataCollector),
     ];
 

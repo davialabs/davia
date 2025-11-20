@@ -17,7 +17,7 @@
 
 ## What is Davia?
 
-Davia is an **open-source tool** that generates **interactive internal documentation** for your local codebase. Point it at a project path and it writes documentation files locally with **interactive visualizations** and **editable whiteboards** that you can edit in a **Notion-like platform** or locally in your **IDE**.
+Davia is an **open-source tool** designed for **AI coding agents** to generate **interactive internal documentation** for your codebase. When your AI coding agent uses Davia, it writes documentation files locally with **interactive visualizations** and **editable whiteboards** that you can edit in a **Notion-like platform** or locally in your **IDE**.
 
 <img src="https://storage.googleapis.com/davia-public-assets/landing-gif/excalidraw.png" alt="Excalidraw Example" style="border-radius: 20px; width: 100%; max-width: 400px; display: block; margin: 20px auto;" />
 
@@ -25,47 +25,54 @@ Davia is an **open-source tool** that generates **interactive internal documenta
 
 ## Quick Start
 
-### 1. Clone and Install
+### 1. Install Davia CLI
 
 ```bash
-git clone https://github.com/davialabs/davia.git
-cd davia
-pnpm i
+npm i -g davia
 ```
 
-### 2. Configuration
+### 2. Initialize Davia
 
-By default, Davia looks for a **`.env` file** in the root of the project path you provide. Configuration is **only optional** if there are already API keys in the project path you're generating docs from. To configure API keys in the **Davia monorepo** instead:
-
-1. Rename `.env.example` to `.env`
-2. Add your AI provider API key (we recommend **Anthropic** for best results)
-3. Davia will use the first available key in this order: Anthropic → OpenAI → Google
-
-### 3. Run Docs
+Initialize Davia with your coding agent:
 
 ```bash
-pnpm run docs
+davia init --agent=[name of your coding agent]
 ```
 
-The process involves two steps:
+Replace `[name of your coding agent]` with the name of your coding agent (e.g., `cursor`, `copilot`, etc.).
 
-1. **Enter the absolute path** when prompted:
+### 3. Generate Documentation
 
-   ```
-   Enter absolute path of the project to document: /path/to/project
-   ```
+Ask your AI coding agent to write the documentation for your project. Your agent will use Davia's tools to generate interactive documentation with visualizations and editable whiteboards.
 
-2. **Provide a prompt** describing what to document (e.g., "Document the authentication system" or "Create API documentation").
+### 4. View Your Documentation
 
-Davia spins up a docs window that populates in real time, and you can edit the pages as they appear.
-
-### 4. View Results (Optional)
-
-If you stopped the process and want to view the results later, you can **launch the visualization app** manually:
+Once your agent has generated the documentation, open the Davia workspace:
 
 ```bash
-pnpm run open
+davia open
 ```
+
+If the page doesn't load immediately, **refresh the page** in your browser.
+
+### 5. Synchronize to Cloud
+
+Sync your local documentation to a remote workspace where you can collaborate with your team in real-time:
+
+```bash
+davia push
+```
+
+This command will:
+
+- Ask you to log in if you haven't already (opens browser for authentication)
+- Create a new workspace for your project
+- Upload your documentation to the cloud
+- Open your workspace in the browser
+
+> **📝 Note:** Currently, updating a workspace you've already pushed isn't supported yet, but we'll be adding this feature very soon!
+
+> **💡 Pro tip:** Davia is built specifically for AI coding agents like **Cursor**, **GitHub Copilot**, and others. Your agent uses Davia's tools to create documentation — just ask it to document your codebase and watch the magic happen.
 
 This is the Davia workspace view of your generated docs:
 

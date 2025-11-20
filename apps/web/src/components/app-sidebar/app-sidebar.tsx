@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { NavTree, NavTreeFallback } from "./nav-tree";
 import { ErrorBoundary } from "react-error-boundary";
@@ -16,8 +15,6 @@ import { ProjectSwitcher } from "./project-switcher";
 import { RefreshCcwIcon } from "lucide-react";
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
-  const router = useRouter();
-
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -29,7 +26,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
                 variant="ghost"
                 size="icon-sm"
                 onClick={() => {
-                  router.refresh();
+                  window.location.reload();
                 }}
               >
                 <RefreshCcwIcon />

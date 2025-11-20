@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync, statSync } from "fs";
 import { join, relative } from "path";
 import { extractTitle } from "@/lib/utils";
-import type { AssetTrees, FlatTree } from "@/lib/types";
+import type { AssetTrees, FlatTree, Project } from "@/lib/types";
 
 /**
  * Recursively finds all HTML files in a directory
@@ -28,14 +28,10 @@ export function findHtmlFiles(
 }
 
 /**
- * Builds a flat tree structure for a single asset folder
+ * Builds a flat tree structure for a project's assets
  */
-function buildTreeForAsset(
-  monorepoRoot: string,
-  assetFolder: string
-): FlatTree {
-  const assetsPath = join(monorepoRoot, ".davia", "assets");
-  const assetPath = join(assetsPath, assetFolder);
+function buildTreeForAsset(projectPath: string): FlatTree {
+  const assetPath = join(projectPath, ".davia", "assets");
 
   // Find all HTML files in this asset folder
   const htmlFiles = findHtmlFiles(assetPath, assetPath);
@@ -104,22 +100,20 @@ function buildTreeForAsset(
 }
 
 /**
- * Builds flat tree structures for all asset folders
+ * Builds flat tree structures for all projects
  */
-export function buildAssetTrees(monorepoRoot: string): AssetTrees {
-  const assetsPath = join(monorepoRoot, ".davia", "assets");
+export function buildAssetTrees(projects: Project[]): AssetTrees {
   const trees: AssetTrees = {};
 
-  try {
-    const assetFolders = readdirSync(assetsPath, { withFileTypes: true })
-      .filter((dirent) => dirent.isDirectory())
-      .map((dirent) => dirent.name);
-
-    for (const assetFolder of assetFolders) {
-      trees[assetFolder] = buildTreeForAsset(monorepoRoot, assetFolder);
+  for (const project of projects) {
+    try {
+      trees[project.id] = buildTreeForAsset(project.path);
+    } catch (error) {
+      console.error(
+        `Error building asset tree for project ${project.id}:`,
+        error
+      );
     }
-  } catch (error) {
-    console.error("Error building asset trees:", error);
   }
 
   return trees;
