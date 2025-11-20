@@ -90,7 +90,7 @@ Contributions are welcome! We'd love your help to make Davia better:
 
 ## Example
 
-https://storage.googleapis.com/davia-public-assets/landing-gif/davia-demo-cli.mp4
+https://github.com/user-attachments/assets/dc2121c3-811d-47da-8762-0d5afd5c845d
 
 Another example with flows:
 
