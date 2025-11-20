@@ -72,11 +72,9 @@ This command will:
 
 > **📝 Note:** Currently, updating a workspace you've already pushed isn't supported yet, but we'll be adding this feature very soon!
 
-> **💡 Pro tip:** Davia is built specifically for AI coding agents like **Cursor**, **GitHub Copilot**, and others. Your agent uses Davia's tools to create documentation — just ask it to document your codebase and watch the magic happen.
+This is the view you'll have when opening your generated docs:
 
-This is the Davia workspace view of your generated docs:
-
-<img src="https://storage.googleapis.com/davia-public-assets/landing-gif/agent-example.png" alt="Design Agent Example" style="border-radius: 20px; width: 100%; max-width: 1200px; display: block; margin: 20px auto;" />
+<img src="https://storage.googleapis.com/davia-public-assets/landing-gif/workspace-view" alt="Design Agent Example" style="border-radius: 20px; width: 100%; max-width: 1200px; display: block; margin: 20px auto;" />
 
 ---
 
@@ -86,13 +84,13 @@ Contributions are welcome! We'd love your help to make Davia better:
 
 - **Report bugs or request features** — Open an issue to let us know what's not working or what you'd like to see
 - **Improve the codebase** — Submit pull requests with bug fixes, new features, or optimizations
-- **Share feedback** — Tell us what you think and help shape Davia's future
+- **Share feedback** — Share your feedback on [Discord](https://discord.gg/A79mEzP8me) and help shape Davia's future
 
 ---
 
 ## Example
 
-https://github.com/user-attachments/assets/1b9ed809-81e5-474b-995f-e38eb5a672e7
+https://storage.googleapis.com/davia-public-assets/landing-gif/davia-demo-cli.mp4
 
 Another example with flows:
 
