@@ -17,7 +17,7 @@
 
 ## What is Davia?
 
-Davia is an **open-source tool** that generates **interactive internal documentation** for your local codebase. Point it at a project path and it writes documentation files locally with **interactive visualizations** and **editable whiteboards** that you can edit in a **Notion-like platform** or locally in your **IDE**.
+Davia is an **open-source tool** designed for **AI coding agents** to generate **interactive internal documentation** for your codebase. When your AI coding agent uses Davia, it writes documentation files locally with **interactive visualizations** and **editable whiteboards** that you can edit in a **Notion-like platform** or locally in your **IDE**.
 
 <img src="https://storage.googleapis.com/davia-public-assets/landing-gif/excalidraw.png" alt="Excalidraw Example" style="border-radius: 20px; width: 100%; max-width: 400px; display: block; margin: 20px auto;" />
 
@@ -43,7 +43,7 @@ Replace `[name of your coding agent]` with the name of your coding agent (e.g., 
 
 ### 3. Generate Documentation
 
-Ask your coding agent to write the documentation for your project. Your agent will use Davia to generate interactive documentation with visualizations and editable whiteboards.
+Ask your AI coding agent to write the documentation for your project. Your agent will use Davia's tools to generate interactive documentation with visualizations and editable whiteboards.
 
 ### 4. View Your Documentation
 
@@ -55,7 +55,7 @@ davia open
 
 If the page doesn't load immediately, **refresh the page** in your browser.
 
-> **💡 Tip:** This workflow works especially well with **Cursor** and other AI-powered coding assistants.
+> **💡 Pro tip:** Davia is built specifically for AI coding agents like **Cursor**, **GitHub Copilot**, and others. Your agent uses Davia's tools to create documentation—just ask it to document your codebase and watch the magic happen.
 
 This is the Davia workspace view of your generated docs:
 
