@@ -65,9 +65,9 @@ davia push
 
 This command will:
 
-- Prompt you to log in if you haven't already (opens browser for authentication)
+- Ask you to log in if you haven't already (opens browser for authentication)
 - Create a new workspace for your project
-- Compress and upload your documentation to the cloud
+- Upload your documentation to the cloud
 - Open your workspace in the browser
 
 > **📝 Note:** Currently, updating a workspace you've already pushed isn't supported yet, but we'll be adding this feature very soon!
