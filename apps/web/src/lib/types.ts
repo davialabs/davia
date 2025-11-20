@@ -4,7 +4,7 @@ export type Project = {
   id: string;
   path: string;
   running: boolean;
-  workspace_id?: string;
+  workspaceId?: string;
 };
 
 export type FlatTreeNode = {

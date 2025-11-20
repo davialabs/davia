@@ -11,7 +11,7 @@ export type Project = {
   id: string;
   path: string;
   running: boolean;
-  workspace_id?: string;
+  workspaceId?: string;
 };
 
 /**
@@ -73,6 +73,21 @@ export async function setRunning(
   const project = projects.find((p) => p.id === projectId);
   if (project) {
     project.running = running;
+    await writeProjects(projects);
+  }
+}
+
+/**
+ * Sets the workspace ID for a project by ID
+ */
+export async function setWorkspaceId(
+  projectId: string,
+  workspaceId: string
+): Promise<void> {
+  const projects = await readProjects();
+  const project = projects.find((p) => p.id === projectId);
+  if (project) {
+    project.workspaceId = workspaceId;
     await writeProjects(projects);
   }
 }
