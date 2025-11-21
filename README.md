@@ -9,7 +9,7 @@
 [![Docs](https://storage.googleapis.com/davia-public-assets/open-package/badges/docs-badge.svg?v=1)](https://docs.davia.ai?utm_source=github-readme)
 &nbsp;
 [![Package](https://storage.googleapis.com/davia-public-assets/open-package/badges/package-badge.svg?v=1)](https://www.npmjs.com/package/davia?utm_source=github-readme)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [![Discord](https://storage.googleapis.com/davia-public-assets/open-package/badges/discord-badge.svg?v=1)](https://discord.gg/A79mEzP8me)
 &nbsp;
 [![Cloud](https://storage.googleapis.com/davia-public-assets/open-package/badges/cloud-badge.svg?v=1)](https://davia.ai/login?utm_source=github-readme)
