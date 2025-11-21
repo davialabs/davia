@@ -1,60 +1,7 @@
-import { existsSync, readFileSync, writeFileSync, unlinkSync } from "fs";
-import { join, basename } from "path";
+import fs from "fs-extra";
+import { join } from "path";
 import { NextRequest, NextResponse } from "next/server";
 import { readProjects, findProjectById } from "@/lib/projects";
-
-/**
- * GET /api/mermaid?projectId=xxx&excalidrawPath=data/diagram.json
- * Checks if a mermaid file exists and returns its content
- */
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const projectId = searchParams.get("projectId");
-  const excalidrawPath = searchParams.get("excalidrawPath");
-
-  if (!projectId || !excalidrawPath) {
-    return NextResponse.json(
-      { error: "Missing projectId or excalidrawPath parameter" },
-      { status: 400 }
-    );
-  }
-
-  // Read projects and find project by id
-  const projects = await readProjects();
-  const project = findProjectById(projects, projectId);
-
-  if (!project) {
-    return NextResponse.json({ error: "Project not found" }, { status: 404 });
-  }
-
-  // Extract the filename without extension from the excalidraw path
-  const excalidrawBasename = basename(excalidrawPath, ".json");
-
-  // Construct the mermaid file path in assets/mermaids/
-  const assetsPath = join(project.path, ".davia", "assets");
-  const mermaidPath = join(assetsPath, "mermaids", `${excalidrawBasename}.mmd`);
-
-  // Check if mermaid file exists
-  if (!existsSync(mermaidPath)) {
-    return NextResponse.json({ exists: false });
-  }
-
-  try {
-    // Read the mermaid content
-    const mermaidContent = readFileSync(mermaidPath, "utf-8");
-    return NextResponse.json({
-      exists: true,
-      content: mermaidContent,
-      mermaidPath: `mermaids/${excalidrawBasename}.mmd`,
-    });
-  } catch (error) {
-    console.error(`Error reading mermaid file ${mermaidPath}:`, error);
-    return NextResponse.json(
-      { error: "Failed to read mermaid file" },
-      { status: 500 }
-    );
-  }
-}
 
 /**
  * POST /api/mermaid
@@ -63,9 +10,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { projectId, excalidrawPath, jsonContent, mermaidPath } = body;
+    const { projectId, originalPath, mermaidAbsolutePath, content } = body;
 
-    if (!projectId || !excalidrawPath || !jsonContent || !mermaidPath) {
+    if (!projectId || !originalPath || !content || !mermaidAbsolutePath) {
       return NextResponse.json(
         { error: "Missing required parameters" },
         { status: 400 }
@@ -82,15 +29,14 @@ export async function POST(request: NextRequest) {
 
     const assetsPath = join(project.path, ".davia", "assets");
 
-    // Save the JSON file
-    const targetJsonPath = join(assetsPath, excalidrawPath);
-    writeFileSync(targetJsonPath, jsonContent, "utf-8");
-
-    // Delete the mermaid file
-    const fullMermaidPath = join(assetsPath, mermaidPath);
-    if (existsSync(fullMermaidPath)) {
-      unlinkSync(fullMermaidPath);
+    // Delete the mermaid file (mermaidAbsolutePath is already absolute)
+    if (await fs.pathExists(mermaidAbsolutePath)) {
+      await fs.remove(mermaidAbsolutePath);
     }
+
+    // Write/replace the content at original path
+    const targetPath = join(assetsPath, originalPath);
+    await fs.outputFile(targetPath, content, "utf-8");
 
     return NextResponse.json({ success: true });
   } catch (error) {

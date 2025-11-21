@@ -1,6 +1,6 @@
 {
   "name": "@davia/web",
-  "version": "0.1.0",
+  "version": "0.1.2-alpha.1",
   "license": "MIT",
   "description": "View Davia docs locally",
   "homepage": "https://davia.ai",
@@ -43,6 +43,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@excalidraw/excalidraw": "^0.18.0",
+    "@excalidraw/mermaid-to-excalidraw": "^1.1.3",
     "@floating-ui/react": "^0.27.16",
     "@headless-tree/core": "^1.5.1",
     "@headless-tree/react": "^1.5.1",

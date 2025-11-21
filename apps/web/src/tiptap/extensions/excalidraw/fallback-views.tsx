@@ -1,110 +1,99 @@
 "use client";
 
-import { useTransition } from "react";
-import type { ReactNodeViewProps } from "@tiptap/react";
+import { useState, useEffect } from "react";
+import type { Project } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, CopyIcon, CheckIcon } from "lucide-react";
+import { useCopyToClipboard } from "usehooks-ts";
 
 export function ExcalidrawErrorFallback({
   error,
-  props,
+  project,
+  path,
   content,
 }: {
   error: string;
-  props: ReactNodeViewProps;
-  content?: string;
+  project: Project | null;
+  path: string;
+  content: string | null;
 }) {
-  const [isPendingDelete, startTransition] = useTransition();
+  const [, copy] = useCopyToClipboard();
+  const [copied, setCopied] = useState(false);
 
-  const handleDeleteCurrentNodeAndRefresh = () => {
-    startTransition(async () => {
-      try {
-        props.deleteNode();
-      } catch {
-        // no-op: best-effort deletion
-      }
+  const errorMessage = `An error occurred while rendering an Excalidraw whiteboard. Fix it:
 
-      const waitForSave = () =>
-        new Promise<void>((resolve) => setTimeout(resolve, 1000));
+Error: \`${error}\`
 
-      await waitForSave();
-      if (typeof window !== "undefined") {
-        window.location.reload();
-      }
-    });
+File path: \`${project ? `${project.path}/.davia/assets/${path}` : path}\`${
+    content
+      ? `
+
+Content:
+
+\`\`\`
+${content}
+\`\`\``
+      : ""
+  }`;
+
+  const handleCopy = async () => {
+    await copy(errorMessage);
+    setCopied(true);
   };
 
+  useEffect(() => {
+    if (copied) {
+      const timer = setTimeout(() => {
+        setCopied(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [copied]);
+
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle>An error occurred</CardTitle>
-        <CardDescription>
-          We are having trouble with this Excalidraw diagram.
+        <CardTitle>An error occurred with a whiteboard</CardTitle>
+        <CardDescription className="text-card-foreground">
+          Copy the error details below and send them to your favorite AI agent
+          to help fix the issue.
         </CardDescription>
         <CardAction>
           <AlertCircle className="size-5 text-destructive" />
         </CardAction>
       </CardHeader>
-      <CardContent>
-        <div className="flex flex-col gap-2 max-w-full">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full md:flex-1"
-                disabled={isPendingDelete}
-              >
-                Show details
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Error details</DialogTitle>
-                <DialogDescription>{error}</DialogDescription>
-                {content && (
-                  <pre className="overflow-y-auto max-h-48 text-xs">
-                    <code className="whitespace-pre-wrap break-all">
-                      {content}
-                    </code>
-                  </pre>
-                )}
-              </DialogHeader>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outline">Close</Button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-          <Button
-            variant="destructive"
-            onClick={handleDeleteCurrentNodeAndRefresh}
-            className="w-full"
-            disabled={isPendingDelete}
-          >
-            Delete this element and refresh
-          </Button>
-        </div>
+      <CardContent className="flex w-full">
+        <code className="flex-1 max-h-40 overflow-y-auto whitespace-pre-wrap">
+          {errorMessage}
+        </code>
       </CardContent>
+      <CardFooter>
+        <Button variant="outline" className="w-full" onClick={handleCopy}>
+          <div className="relative w-4 h-4">
+            <CopyIcon
+              className={`absolute inset-0 w-4 h-4 transition-all duration-300 ${
+                copied ? "opacity-0 scale-0" : "opacity-100 scale-100"
+              }`}
+            />
+            <CheckIcon
+              className={`absolute inset-0 w-4 h-4 transition-all duration-300 ${
+                copied ? "opacity-100 scale-100" : "opacity-0 scale-0"
+              }`}
+            />
+          </div>
+          {copied ? "Copied" : "Copy to clipboard"}
+        </Button>
+      </CardFooter>
     </Card>
   );
 }

@@ -1,7 +1,7 @@
 import { createStore } from "zustand/vanilla";
 import { devtools } from "zustand/middleware";
 import { toast } from "sonner";
-import { convertMermaidToExcalidraw } from "@/lib/mermaid-converter";
+import { checkAndConvertMermaid } from "@/tiptap/extensions/excalidraw/mermaid-converter";
 
 export type AssetEntry = {
   content: string | null;
@@ -16,7 +16,10 @@ export type PageRegistryState = {
 };
 
 export type PageRegistryActions = {
-  ensureAsset(path: string): Promise<AssetEntry>;
+  ensureAsset(
+    path: string,
+    options?: { isExcalidraw?: boolean }
+  ): Promise<AssetEntry>;
   updateAssetContent(path: string, nextContent: string): void; // local update only
   cleanup(): void;
 };
@@ -35,7 +38,10 @@ export const createPageRegistryStore = ({
         assets: new Map(),
         pendingAssetFetches: new Map(),
 
-        ensureAsset: async (path: string) => {
+        ensureAsset: async (
+          path: string,
+          options?: { isExcalidraw?: boolean }
+        ) => {
           const existing = get().assets.get(path);
           if (existing && existing.synced) {
             return existing;
@@ -52,6 +58,9 @@ export const createPageRegistryStore = ({
               projectId,
               path,
             });
+            if (options?.isExcalidraw) {
+              params.set("isExcalidraw", "true");
+            }
             const response = await fetch(`/api/content?${params.toString()}`);
 
             let entry: AssetEntry;
@@ -59,7 +68,7 @@ export const createPageRegistryStore = ({
               const errorData = await response.json().catch(() => ({}));
               entry = {
                 content: null,
-                synced: false,
+                synced: true,
                 error:
                   errorData.error ||
                   `Failed to fetch content: ${response.statusText}`,
@@ -67,59 +76,38 @@ export const createPageRegistryStore = ({
             } else {
               const data = await response.json();
 
-              // Check if this is mermaid content that needs conversion
-              if (data.isMermaid && data.content) {
+              // Handle Excalidraw with mermaid conversion
+              if (options?.isExcalidraw) {
                 try {
-                  // Convert mermaid to excalidraw JSON
-                  const jsonContent = await convertMermaidToExcalidraw(
-                    data.content
-                  );
-
-                  // Save the converted JSON and delete the mermaid file
-                  const saveResponse = await fetch("/api/mermaid", {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                      projectId,
-                      excalidrawPath: data.targetPath,
-                      jsonContent,
-                      mermaidPath: data.mermaidPath,
-                    }),
-                  });
-
-                  if (saveResponse.ok) {
-                    entry = {
-                      content: jsonContent,
-                      synced: true,
-                    };
-                  } else {
-                    const errorData = await saveResponse
-                      .json()
-                      .catch(() => ({}));
-                    console.error("[PageRegistry] Save failed:", errorData);
-                    throw new Error(
-                      `Failed to save converted file: ${errorData.error || saveResponse.statusText}`
-                    );
-                  }
-                } catch (error) {
-                  console.error(
-                    "[PageRegistry] ✗ Error converting mermaid:",
-                    error
-                  );
-                  console.error(
-                    "[PageRegistry] Error stack:",
-                    error instanceof Error ? error.stack : "N/A"
+                  const convertedContent = await checkAndConvertMermaid(
+                    data,
+                    projectId,
+                    path
                   );
                   entry = {
-                    content: null,
-                    synced: false,
-                    error: `Failed to convert mermaid: ${error instanceof Error ? error.message : String(error)}`,
+                    content: convertedContent ?? data.content ?? null,
+                    synced: true,
+                  };
+                } catch (error) {
+                  console.error(error);
+                  const errorMessage =
+                    error instanceof Error
+                      ? error.message
+                      : "Failed to convert mermaid to excalidraw";
+                  // If error starts with "Error converting Mermaid to Excalidraw", set content to null
+                  const content = errorMessage.startsWith(
+                    "Error converting Mermaid to Excalidraw"
+                  )
+                    ? null
+                    : (data.content ?? null);
+                  entry = {
+                    content,
+                    synced: true,
+                    error: errorMessage,
                   };
                 }
               } else {
-                // Regular content
+                // Regular file handling
                 entry = {
                   content: data.content ?? null,
                   synced: true,
