@@ -1,59 +1,103 @@
-# Davia CLI
+<img src="https://storage.googleapis.com/davia-public-assets/open-package/davia_open_repo_banner.png" alt="Davia Banner" style="border-radius: 20px; width: 100%;" />
 
-A CLI tool for Davia, installable globally via npm, pnpm, yarn, or bun.
+<p align="center">
+    <a href="https://github.com/davialabs/davia/stargazers" alt="GitHub stars">
+        <img src="https://img.shields.io/github/stars/davialabs/davia?style=social" /></a>
+    <a href="https://github.com/davialabs/davia/blob/main/LICENSE" alt="License">
+        <img src="https://img.shields.io/github/license/davialabs/davia?style=flat&cacheSeconds=0" /></a>
+    <a href="https://github.com/davialabs/davia/issues" alt="GitHub Issues">
+        <img src="https://img.shields.io/github/issues/davialabs/davia" /></a>
+    <a href="https://x.com/DaviaLabs" alt="X follow DaviaLabs">
+        <img src="https://img.shields.io/twitter/follow/DaviaLabs?style=social" /></a>
+    <a href="https://discord.gg/A79mEzP8me" alt="Discord">
+        <img src="https://dcbadge.limes.pink/api/server/A79mEzP8me?style=flat" /></a>
+    <a href="https://www.reddit.com/r/davia_ai/" alt="Reddit">
+        <img src="https://img.shields.io/reddit/subreddit-subscribers/davia_ai?style=social&label=r/davia_ai" /></a>
+</p>
 
-## Development
+## What is Davia?
 
-```bash
-# Install dependencies
-pnpm install
+Davia is an **open-source tool** designed for **AI coding agents** to generate **interactive internal documentation** for your codebase. When your AI coding agent uses Davia, it writes documentation files locally with **interactive visualizations** and **editable whiteboards** that you can edit in a **Notion-like platform** or locally in your **IDE**.
 
-# Run in development mode (with watch)
-pnpm dev
+<img src="https://storage.googleapis.com/davia-public-assets/landing-gif/excalidraw.png" alt="Excalidraw Example" style="border-radius: 20px; width: 100%; max-width: 400px; display: block; margin: 20px auto;" />
 
-# Build for production
-pnpm build
+---
 
-# Run the built CLI locally
-pnpm start
-```
+## Quick Start
 
-## Publishing
-
-To publish this CLI globally:
-
-1. Build the package:
-
-   ```bash
-   pnpm build --filter=cli
-   ```
-
-2. Publish to npm:
-   ```bash
-   cd apps/cli
-   npm publish
-   ```
-
-## Installation
-
-After publishing, users can install globally:
+### 1. Install Davia CLI
 
 ```bash
-# npm
-npm install -g davia
-
-# pnpm
-pnpm add -g davia
-
-# yarn
-yarn global add davia
-
-# bun
-bun install -g davia
+npm i -g davia
 ```
 
-Once installed, users can run:
+### 2. Initialize Davia
+
+Initialize Davia with your coding agent:
 
 ```bash
-davia
+davia init --agent=[name of your coding agent]
 ```
+
+Replace `[name of your coding agent]` with the name of your coding agent (e.g., `cursor`, `github-copilot`, `windsurf`).
+
+### 3. Generate Documentation
+
+Ask your AI coding agent to write the documentation for your project. Your agent will use Davia's tools to generate interactive documentation with visualizations and editable whiteboards.
+
+### 4. View Your Documentation
+
+Once your agent has generated the documentation, open the Davia workspace:
+
+```bash
+davia open
+```
+
+If the page doesn't load immediately, **refresh the page** in your browser.
+
+### 5. Collaborate with Your Team
+
+Sync your local documentation to a remote workspace where you can collaborate with your team in real-time:
+
+```bash
+davia push
+```
+
+This command will:
+
+- Ask you to log in if you haven't already (opens browser for authentication)
+- Create a new workspace for your project
+- Upload your documentation to the cloud
+- Open your workspace in the browser
+
+> **📝 Note:** Currently, updating a workspace you've already pushed isn't supported yet, but we'll be adding this feature very soon!
+
+This is the view you'll have after sending your docs to the workspace:
+
+<img src="https://storage.googleapis.com/davia-public-assets/landing-gif/workspace-view.png" alt="Design Agent Example" style="border-radius: 20px; width: 100%; max-width: 1200px; display: block; margin: 20px auto;" />
+
+---
+
+## Contributing
+
+Contributions are welcome! We'd love your help to make Davia better:
+
+- **Report bugs or request features** — Open an issue to let us know what's not working or what you'd like to see
+- **Improve the codebase** — Submit pull requests with bug fixes, new features, or optimizations
+- **Share feedback** — Share your feedback on [Discord](https://discord.gg/A79mEzP8me) and help shape Davia's future
+
+---
+
+## Example
+
+https://github.com/user-attachments/assets/dc2121c3-811d-47da-8762-0d5afd5c845d
+
+Another example with flows:
+
+https://github.com/user-attachments/assets/6eecb62f-3c13-434a-9aa0-a8dd3840bf49
+
+---
+
+## License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.

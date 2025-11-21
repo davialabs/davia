@@ -13,6 +13,8 @@
         <img src="https://dcbadge.limes.pink/api/server/A79mEzP8me?style=flat" /></a>
     <a href="https://www.reddit.com/r/davia_ai/" alt="Reddit">
         <img src="https://img.shields.io/reddit/subreddit-subscribers/davia_ai?style=social&label=r/davia_ai" /></a>
+    <a href="https://docs.davia.ai/" alt="Documentation">
+        <img src="https://img.shields.io/badge/docs-davia.ai-blue?style=flat" /></a>
 </p>
 
 ## What is Davia?
@@ -24,6 +26,8 @@ Davia is an **open-source tool** designed for **AI coding agents** to generate *
 ---
 
 ## Quick Start
+
+> 📚 For detailed documentation, visit [docs.davia.ai](https://docs.davia.ai/)
 
 ### 1. Install Davia CLI
 
@@ -55,7 +59,7 @@ davia open
 
 If the page doesn't load immediately, **refresh the page** in your browser.
 
-### 5. Synchronize to Cloud
+### 5. Collaborate with Your Team
 
 Sync your local documentation to a remote workspace where you can collaborate with your team in real-time:
 
@@ -72,11 +76,9 @@ This command will:
 
 > **📝 Note:** Currently, updating a workspace you've already pushed isn't supported yet, but we'll be adding this feature very soon!
 
-> **💡 Pro tip:** Davia is built specifically for AI coding agents like **Cursor**, **GitHub Copilot**, and others. Your agent uses Davia's tools to create documentation — just ask it to document your codebase and watch the magic happen.
+This is the view you'll have after sending your docs to the workspace:
 
-This is the Davia workspace view of your generated docs:
-
-<img src="https://storage.googleapis.com/davia-public-assets/landing-gif/agent-example.png" alt="Design Agent Example" style="border-radius: 20px; width: 100%; max-width: 1200px; display: block; margin: 20px auto;" />
+<img src="https://storage.googleapis.com/davia-public-assets/landing-gif/workspace-view.png" alt="Design Agent Example" style="border-radius: 20px; width: 100%; max-width: 1200px; display: block; margin: 20px auto;" />
 
 ---
 
@@ -86,13 +88,13 @@ Contributions are welcome! We'd love your help to make Davia better:
 
 - **Report bugs or request features** — Open an issue to let us know what's not working or what you'd like to see
 - **Improve the codebase** — Submit pull requests with bug fixes, new features, or optimizations
-- **Share feedback** — Tell us what you think and help shape Davia's future
+- **Share feedback** — Share your feedback on [Discord](https://discord.gg/A79mEzP8me) and help shape Davia's future
 
 ---
 
 ## Example
 
-https://github.com/user-attachments/assets/1b9ed809-81e5-474b-995f-e38eb5a672e7
+https://github.com/user-attachments/assets/dc2121c3-811d-47da-8762-0d5afd5c845d
 
 Another example with flows:
 

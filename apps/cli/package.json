@@ -2,7 +2,7 @@
   "name": "davia",
   "version": "0.1.2",
   "license": "MIT",
-  "description": "Interactive internal documentation that writes itself",
+  "description": "Interactive, editable docs designed for coding agents",
   "homepage": "https://davia.ai",
   "repository": {
     "type": "git",
