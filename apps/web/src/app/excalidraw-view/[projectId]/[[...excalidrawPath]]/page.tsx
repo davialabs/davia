@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from "fs";
-import { join, basename } from "path";
+import { join } from "path";
 import { ExcalidrawWrapper } from "./excalidraw-wrapper";
 import {
   Empty,
@@ -26,38 +26,9 @@ export default async function ExcalidrawViewPage({
     return <EmptyExcalidraw />;
   }
 
-  const assetsPath = join(project.path, ".davia", "assets");
-  const assetPath = join(assetsPath, ...excalidrawPath);
-
-  // Check if the JSON file exists
+  // Check if the asset folder exists
+  const assetPath = join(project.path, ".davia", "assets", ...excalidrawPath);
   if (!existsSync(assetPath)) {
-    // If JSON doesn't exist, check if there's a corresponding mermaid file
-    const pathString = excalidrawPath.join("/");
-    if (pathString.startsWith("data/") && pathString.endsWith(".json")) {
-      const fileBasename = basename(pathString, ".json");
-      const mermaidPath = join(assetsPath, "mermaids", `${fileBasename}.mmd`);
-
-      if (existsSync(mermaidPath)) {
-        // Read the mermaid content
-        let mermaidContent: string;
-        try {
-          mermaidContent = readFileSync(mermaidPath, "utf-8");
-        } catch (error) {
-          console.error(`Error reading mermaid file ${mermaidPath}:`, error);
-          return <EmptyExcalidraw />;
-        }
-
-        // Pass mermaid content with a flag to indicate it needs conversion
-        return (
-          <ExcalidrawWrapper
-            projectId={projectId}
-            excalidrawPath={excalidrawPath.join("/")}
-            excalidrawContent={mermaidContent}
-            isMermaid={true}
-          />
-        );
-      }
-    }
     return <EmptyExcalidraw />;
   }
 

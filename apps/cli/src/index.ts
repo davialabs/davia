@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { createRequire } from "module";
 import { Command } from "commander";
 import { select, input } from "@inquirer/prompts";
 import chalk from "chalk";
@@ -22,12 +23,15 @@ import {
   push,
 } from "./sync.js";
 
+const require = createRequire(import.meta.url);
+const { version } = require("../package.json");
+
 const program = new Command();
 
 program
   .name("davia")
   .description("Interactive internal documentation that writes itself")
-  .version("0.1.0-alpha.5")
+  .version(version)
   .action(async () => {
     // Show help by default when no command is provided
     program.help();

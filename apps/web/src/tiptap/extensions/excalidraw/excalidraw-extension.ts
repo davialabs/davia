@@ -5,7 +5,7 @@ import { ExcalidrawNodeView } from "./node-view";
 export const ExcalidrawExtension = Node.create({
   name: "excalidraw",
   group: "block",
-  atom: true,
+  content: "inline*",
 
   addAttributes() {
     return {
@@ -38,6 +38,8 @@ export const ExcalidrawExtension = Node.create({
   },
 
   addNodeView(this) {
-    return ReactNodeViewRenderer(ExcalidrawNodeView);
+    return ReactNodeViewRenderer(ExcalidrawNodeView, {
+      attrs: { contentEditable: "false" },
+    });
   },
 });
