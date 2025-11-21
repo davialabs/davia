@@ -3,24 +3,24 @@
 ---
 
 <p align="center">
-  <a href="https://davia.ai?utm_source=github-readme">
-    <img src="https://storage.googleapis.com/davia-public-assets/open-package/badges/website-badge.svg?v=1" alt="Website" height="36"/>
+  <a href="https://davia.ai?utm_source=github-readme" style="text-decoration:none;">
+    <img src="https://storage.googleapis.com/davia-public-assets/open-package/badges/website-badge.svg?v=1" alt="Website" height="36" style="border:0;"/>
   </a>
   &nbsp;
-  <a href="https://docs.davia.ai?utm_source=github-readme">
-    <img src="https://storage.googleapis.com/davia-public-assets/open-package/badges/docs-badge.svg?v=1" alt="Docs" height="36"/>
+  <a href="https://docs.davia.ai?utm_source=github-readme" style="text-decoration:none;">
+    <img src="https://storage.googleapis.com/davia-public-assets/open-package/badges/docs-badge.svg?v=1" alt="Docs" height="36" style="border:0;"/>
   </a>
   &nbsp;
-  <a href="https://www.npmjs.com/package/davia?utm_source=github-readme">
-    <img src="https://storage.googleapis.com/davia-public-assets/open-package/badges/package-badge.svg?v=1" alt="Package" height="36"/>
+  <a href="https://www.npmjs.com/package/davia?utm_source=github-readme" style="text-decoration:none;">
+    <img src="https://storage.googleapis.com/davia-public-assets/open-package/badges/package-badge.svg?v=1" alt="Package" height="36" style="border:0;"/>
   </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://discord.gg/A79mEzP8me">
-    <img src="https://storage.googleapis.com/davia-public-assets/open-package/badges/discord-badge.svg?v=1" alt="Discord" height="36"/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://discord.gg/A79mEzP8me" style="text-decoration:none;">
+    <img src="https://storage.googleapis.com/davia-public-assets/open-package/badges/discord-badge.svg?v=1" alt="Discord" height="36" style="border:0;"/>
   </a>
   &nbsp;
-  <a href="https://davia.ai/login?utm_source=github-readme">
-    <img src="https://storage.googleapis.com/davia-public-assets/open-package/badges/cloud-badge.svg?v=1" alt="Cloud" height="36"/>
+  <a href="https://davia.ai/login?utm_source=github-readme" style="text-decoration:none;">
+    <img src="https://storage.googleapis.com/davia-public-assets/open-package/badges/cloud-badge.svg?v=1" alt="Cloud" height="36" style="border:0;"/>
   </a>
 </p>
 
