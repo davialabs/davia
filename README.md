@@ -1,23 +1,34 @@
 <img src="https://storage.googleapis.com/davia-public-assets/open-package/davia_open_repo_banner.png" alt="Davia Banner" style="border-radius: 20px; width: 100%;" />
 
-<p align="center">
-    <a href="https://github.com/davialabs/davia/stargazers" alt="GitHub stars">
-        <img src="https://img.shields.io/github/stars/davialabs/davia?style=social" /></a>
-    <a href="https://github.com/davialabs/davia/blob/main/LICENSE" alt="License">
-        <img src="https://img.shields.io/github/license/davialabs/davia?style=flat&cacheSeconds=0" /></a>
-    <a href="https://github.com/davialabs/davia/issues" alt="GitHub Issues">
-        <img src="https://img.shields.io/github/issues/davialabs/davia" /></a>
-    <a href="https://www.npmjs.com/package/davia" alt="npm">
-        <img src="https://img.shields.io/npm/v/davia" /></a>
-    <a href="https://x.com/DaviaLabs" alt="X follow DaviaLabs">
-        <img src="https://img.shields.io/twitter/follow/DaviaLabs?style=social" /></a>
-    <a href="https://discord.gg/A79mEzP8me" alt="Discord">
-        <img src="https://dcbadge.limes.pink/api/server/A79mEzP8me?style=flat" /></a>
-    <a href="https://www.reddit.com/r/davia_ai/" alt="Reddit">
-        <img src="https://img.shields.io/reddit/subreddit-subscribers/davia_ai?style=social&label=r/davia_ai" /></a>
-    <a href="https://docs.davia.ai/" alt="Documentation">
-        <img src="https://img.shields.io/badge/docs-davia.ai-blue?style=flat" /></a>
-</p>
+---
+
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;max-width:900px;margin:auto;">
+  <!-- left badges -->
+  <div style="display:flex;align-items:center;">
+    <a href="https://davia.ai?utm_source=github-readme">
+      <img src="https://storage.googleapis.com/davia-public-assets/open-package/badges/website-badge.svg?v=1" alt="Website" height="36"/>
+    </a>
+    <span style="width:8px;display:inline-block"></span>
+    <a href="https://docs.davia.ai?utm_source=github-readme">
+      <img src="https://storage.googleapis.com/davia-public-assets/open-package/badges/docs-badge.svg?v=1" alt="Docs" height="36"/>
+    </a>
+    <span style="width:8px;display:inline-block"></span>
+    <a href="https://www.npmjs.com/package/davia?utm_source=github-readme">
+      <img src="https://storage.googleapis.com/davia-public-assets/open-package/badges/package-badge.svg?v=1" alt="Package" height="36"/>
+    </a>
+  </div>
+
+  <!-- right badges -->
+  <div style="display:flex;align-items:center;">
+    <a href="https://discord.gg/A79mEzP8me">
+      <img src="https://storage.googleapis.com/davia-public-assets/open-package/badges/discord-badge.svg?v=1" alt="Discord" height="36"/>
+    </a>
+    <span style="width:8px;display:inline-block"></span>
+    <a href="https://davia.ai/login?utm_source=github-readme">
+      <img src="https://storage.googleapis.com/davia-public-assets/open-package/badges/cloud-badge.svg?v=1" alt="Cloud" height="36"/>
+    </a>
+  </div>
+</div>
 
 ## What is Davia?
 
@@ -107,3 +118,24 @@ https://github.com/user-attachments/assets/6eecb62f-3c13-434a-9aa0-a8dd3840bf49
 ## License
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+---
+
+<p align="center">
+    <a href="https://github.com/davialabs/davia/stargazers" alt="GitHub stars">
+        <img src="https://img.shields.io/github/stars/davialabs/davia?style=social" /></a>
+    <a href="https://github.com/davialabs/davia/blob/main/LICENSE" alt="License">
+        <img src="https://img.shields.io/github/license/davialabs/davia?style=flat&cacheSeconds=0" /></a>
+    <a href="https://github.com/davialabs/davia/issues" alt="GitHub Issues">
+        <img src="https://img.shields.io/github/issues/davialabs/davia" /></a>
+    <a href="https://www.npmjs.com/package/davia" alt="npm">
+        <img src="https://img.shields.io/npm/v/davia" /></a>
+    <a href="https://x.com/DaviaLabs" alt="X follow DaviaLabs">
+        <img src="https://img.shields.io/twitter/follow/DaviaLabs?style=social" /></a>
+    <a href="https://discord.gg/A79mEzP8me" alt="Discord">
+        <img src="https://dcbadge.limes.pink/api/server/A79mEzP8me?style=flat" /></a>
+    <a href="https://www.reddit.com/r/davia_ai/" alt="Reddit">
+        <img src="https://img.shields.io/reddit/subreddit-subscribers/davia_ai?style=social&label=r/davia_ai" /></a>
+    <a href="https://docs.davia.ai/" alt="Documentation">
+        <img src="https://img.shields.io/badge/docs-davia.ai-blue?style=flat" /></a>
+</p>
