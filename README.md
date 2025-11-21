@@ -7,6 +7,8 @@
         <img src="https://img.shields.io/github/license/davialabs/davia?style=flat&cacheSeconds=0" /></a>
     <a href="https://github.com/davialabs/davia/issues" alt="GitHub Issues">
         <img src="https://img.shields.io/github/issues/davialabs/davia" /></a>
+    <a href="https://www.npmjs.com/package/davia" alt="npm">
+        <img src="https://img.shields.io/npm/v/davia" /></a>
     <a href="https://x.com/DaviaLabs" alt="X follow DaviaLabs">
         <img src="https://img.shields.io/twitter/follow/DaviaLabs?style=social" /></a>
     <a href="https://discord.gg/A79mEzP8me" alt="Discord">
