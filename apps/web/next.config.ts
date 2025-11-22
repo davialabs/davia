@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
   output: "standalone",
   reactCompiler: true,
   outputFileTracingRoot: path.join(__dirname, "../../"),
+  serverExternalPackages: ["mdx-bundler", "esbuild"],
 };
 
 export default nextConfig;
