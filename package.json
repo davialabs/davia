@@ -8,7 +8,7 @@
   "homepage": "https://davia.ai",
   "repository": {
     "type": "git",
-    "url": "https://github.com/davia-labs/davia.git"
+    "url": "https://github.com/davialabs/davia.git"
   },
   "bugs": {
     "url": "https://github.com/davialabs/davia/issues"
