@@ -1,8 +1,15 @@
+export interface AdditionalFile {
+  folderPath: string;
+  fileName: string;
+  content: string;
+}
+
 export interface AgentConfig {
   name: string;
   folderPath: string;
   fileName: string;
   frontmatter: string;
+  additionalFiles?: AdditionalFile[];
 }
 
 export const SUPPORTED_AGENTS: Record<string, AgentConfig> = {
@@ -29,7 +36,24 @@ export const SUPPORTED_AGENTS: Record<string, AgentConfig> = {
     folderPath: ".claude/skills/davia-documentation",
     fileName: "SKILL.md",
     frontmatter:
-      "---\nname: davia-documentation\ndescription: You are working in a project that uses **Davia** for all internal documentation. Whenever the user asks you to create, update, or read _documentation_ (docs, specs, design notes, API docs, READMEs, etc.), you **must** handle it using the Davia paradigm.\n---\n\n",
+      "---\nname: davia-documentation\ndescription: Use whenever the user asks you to create, update, or read *documentation*/*Wiki* (docs, specs, design notes, API docs, etc.).\n---\n\n",
+    additionalFiles: [
+      {
+        folderPath: ".claude",
+        fileName: "settings.local.json",
+        content: JSON.stringify(
+          {
+            permissions: {
+              allow: ["Skill(davia-documentation)"],
+              deny: [],
+              ask: [],
+            },
+          },
+          null,
+          2
+        ),
+      },
+    ],
   },
 };
 

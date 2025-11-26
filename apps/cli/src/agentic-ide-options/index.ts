@@ -60,6 +60,36 @@ export async function writeAgentConfig(
         `✓ Created ${agentConfig.name} configuration at ${path.relative(projectRoot, targetFile)}`
       )
     );
+
+    // Write additional files if any
+    if (agentConfig.additionalFiles) {
+      for (const additionalFile of agentConfig.additionalFiles) {
+        const additionalDir = path.join(projectRoot, additionalFile.folderPath);
+        const additionalFilePath = path.join(
+          additionalDir,
+          additionalFile.fileName
+        );
+
+        // Check if additional file already exists
+        if (await fs.pathExists(additionalFilePath)) {
+          console.log(
+            chalk.yellow(
+              `⚠️  ${additionalFile.fileName} already exists at ${path.relative(projectRoot, additionalFilePath)}`
+            )
+          );
+          continue;
+        }
+
+        await fs.ensureDir(additionalDir);
+        await fs.writeFile(additionalFilePath, additionalFile.content, "utf-8");
+
+        console.log(
+          chalk.green(
+            `✓ Created ${additionalFile.fileName} at ${path.relative(projectRoot, additionalFilePath)}`
+          )
+        );
+      }
+    }
   } catch (error) {
     console.error(
       chalk.red(
