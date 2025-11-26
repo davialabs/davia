@@ -24,6 +24,13 @@ export const SUPPORTED_AGENTS: Record<string, AgentConfig> = {
     fileName: "davia-documentation.md",
     frontmatter: "---\nagent: 'agent'\n---\n\n",
   },
+  "claude-code": {
+    name: "Claude Code",
+    folderPath: ".claude/skills/davia-documentation",
+    fileName: "SKILL.md",
+    frontmatter:
+      "---\nname: davia-documentation\ndescription: You are working in a project that uses **Davia** for all internal documentation. Whenever the user asks you to create, update, or read _documentation_ (docs, specs, design notes, API docs, READMEs, etc.), you **must** handle it using the Davia paradigm.\n---\n\n",
+  },
 };
 
 export function isValidAgent(agentType: string): boolean {
