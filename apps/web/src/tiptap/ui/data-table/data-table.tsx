@@ -25,17 +25,7 @@ import {
   type ColumnDef,
   flexRender,
 } from "@tanstack/react-table";
-import {
-  DndContext,
-  KeyboardSensor,
-  MouseSensor,
-  TouchSensor,
-  closestCenter,
-  type DragEndEvent,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
+import { useDndMonitor, type DragEndEvent } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
@@ -153,8 +143,14 @@ export function DataTable<TData, TValue>({
   });
 
   // Reorder columns after drag & drop
+  // Only handle events for columns that belong to this table
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
+
+    // Check if this drag event is for this table's columns
+    const isOurColumn = columnOrder.includes(active.id as string);
+    if (!isOurColumn) return;
+
     if (active && over && active.id !== over.id) {
       setColumnOrder((order) => {
         const without = order.filter((id) => id !== PHANTOM_COLUMN_ID);
@@ -166,11 +162,10 @@ export function DataTable<TData, TValue>({
     }
   }
 
-  const sensors = useSensors(
-    useSensor(MouseSensor, {}),
-    useSensor(TouchSensor, {}),
-    useSensor(KeyboardSensor, {})
-  );
+  // Listen to drag events from parent DndContext
+  useDndMonitor({
+    onDragEnd: handleDragEnd,
+  });
 
   return (
     <div className="flex flex-col gap-2">
@@ -200,120 +195,113 @@ export function DataTable<TData, TValue>({
           setHoveredRowIndex={setHoveredRowIndex}
           rowHeights={rowHeights}
         />
-        <DndContext
-          collisionDetection={closestCenter}
-          modifiers={[restrictToHorizontalAxis]}
-          onDragEnd={handleDragEnd}
-          sensors={sensors}
+        <CellStateProvider
+          cellState={cellState}
+          updateCellData={handleCellUpdate}
         >
-          <CellStateProvider
-            cellState={cellState}
-            updateCellData={handleCellUpdate}
+          <Table
+            ref={containerRef}
+            tabIndex={0}
+            onKeyDown={handleKeyDown}
+            onBlur={(e) => {
+              if (
+                !e.currentTarget.contains(e.relatedTarget as Node) &&
+                !cellState.editingCell
+              ) {
+                cellState.setFocusedCell(null);
+              }
+            }}
+            style={{ minWidth: table.getTotalSize() }}
+            className="not-prose w-full outline-none border-b"
           >
-            <Table
-              ref={containerRef}
-              tabIndex={0}
-              onKeyDown={handleKeyDown}
-              onBlur={(e) => {
-                if (
-                  !e.currentTarget.contains(e.relatedTarget as Node) &&
-                  !cellState.editingCell
-                ) {
-                  cellState.setFocusedCell(null);
-                }
-              }}
-              style={{ minWidth: table.getTotalSize() }}
-              className="not-prose w-full outline-none border-b"
-            >
-              <TableHeader>
-                {table.getHeaderGroups().map((headerGroup) => (
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow
+                  key={headerGroup.id}
+                  className="hover:bg-transparent"
+                  onMouseEnter={() => setHoveredHeader(true)}
+                  onMouseLeave={() => setHoveredHeader(false)}
+                >
+                  <SortableContext
+                    items={nonPhantomOrder}
+                    strategy={horizontalListSortingStrategy}
+                  >
+                    {headerGroup.headers.map((header) =>
+                      header.id === PHANTOM_COLUMN_ID ? (
+                        <TableHead key={header.id}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      ) : (
+                        <DraggableTableHeader
+                          key={header.id}
+                          header={header}
+                          onRenameColumn={handleRenameColumn}
+                          onDeleteColumn={handleDeleteColumn}
+                          setColumnOrder={setColumnOrder}
+                        />
+                      )
+                    )}
+                  </SortableContext>
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows.length ? (
+                table.getRowModel().rows.map((row, index) => (
                   <TableRow
-                    key={headerGroup.id}
+                    key={row.id}
+                    ref={(el) => {
+                      if (el) {
+                        rowRefs.current.set(index, el);
+                      } else {
+                        rowRefs.current.delete(index);
+                      }
+                    }}
+                    data-row-index={index}
+                    data-state={row.getIsSelected() && "selected"}
+                    onMouseEnter={() => setHoveredRowIndex(index)}
+                    onMouseLeave={() => setHoveredRowIndex(null)}
                     className="hover:bg-transparent"
-                    onMouseEnter={() => setHoveredHeader(true)}
-                    onMouseLeave={() => setHoveredHeader(false)}
                   >
                     <SortableContext
                       items={nonPhantomOrder}
                       strategy={horizontalListSortingStrategy}
                     >
-                      {headerGroup.headers.map((header) =>
-                        header.id === PHANTOM_COLUMN_ID ? (
-                          <TableHead key={header.id}>
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                                )}
-                          </TableHead>
-                        ) : (
-                          <DraggableTableHeader
-                            key={header.id}
-                            header={header}
-                            onRenameColumn={handleRenameColumn}
-                            onDeleteColumn={handleDeleteColumn}
-                            setColumnOrder={setColumnOrder}
-                          />
-                        )
-                      )}
+                      {row
+                        .getVisibleCells()
+                        .map((cell) =>
+                          cell.column.id === PHANTOM_COLUMN_ID ? (
+                            <TableCell key={cell.id}>
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext()
+                              )}
+                            </TableCell>
+                          ) : (
+                            <DragAlongCell key={cell.id} cell={cell} />
+                          )
+                        )}
                     </SortableContext>
                   </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {table.getRowModel().rows.length ? (
-                  table.getRowModel().rows.map((row, index) => (
-                    <TableRow
-                      key={row.id}
-                      ref={(el) => {
-                        if (el) {
-                          rowRefs.current.set(index, el);
-                        } else {
-                          rowRefs.current.delete(index);
-                        }
-                      }}
-                      data-row-index={index}
-                      data-state={row.getIsSelected() && "selected"}
-                      onMouseEnter={() => setHoveredRowIndex(index)}
-                      onMouseLeave={() => setHoveredRowIndex(null)}
-                      className="hover:bg-transparent"
-                    >
-                      <SortableContext
-                        items={nonPhantomOrder}
-                        strategy={horizontalListSortingStrategy}
-                      >
-                        {row
-                          .getVisibleCells()
-                          .map((cell) =>
-                            cell.column.id === PHANTOM_COLUMN_ID ? (
-                              <TableCell key={cell.id}>
-                                {flexRender(
-                                  cell.column.columnDef.cell,
-                                  cell.getContext()
-                                )}
-                              </TableCell>
-                            ) : (
-                              <DragAlongCell key={cell.id} cell={cell} />
-                            )
-                          )}
-                      </SortableContext>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-9 text-center"
-                    >
-                      Empty table, add a row to get started.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </CellStateProvider>
-        </DndContext>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-9 text-center"
+                  >
+                    Empty table, add a row to get started.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CellStateProvider>
       </div>
       <AddRow onAddRow={handleAddRow} title="Add row" variant="ghost" />
     </div>

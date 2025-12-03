@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { PageRegistryStoreProvider } from "@/providers/page-registry";
+import { GlobalDndProvider } from "@/providers/global-dnd-provider";
 import { useProjects } from "@/providers/projects-provider";
 import { extractTitle } from "@/lib/utils";
 import { useDebounceCallback } from "usehooks-ts";
@@ -179,21 +180,23 @@ export function Editor({
 
   return (
     <PageRegistryStoreProvider projectId={projectId}>
-      <EditorContext value={{ editor }}>
-        <div className="h-full flex flex-col">
-          <EditorContent
-            role="document-editor"
-            className="flex-1"
-            editor={editor}
-            style={{ cursor: isDragging ? "grabbing" : "auto" }}
-            data-onboarding="editor"
-          >
-            <DragContextMenu />
-            <SlashDropdownMenu />
-            <FloatingToolbar />
-          </EditorContent>
-        </div>
-      </EditorContext>
+      <GlobalDndProvider>
+        <EditorContext value={{ editor }}>
+          <div className="h-full flex flex-col">
+            <EditorContent
+              role="document-editor"
+              className="flex-1"
+              editor={editor}
+              style={{ cursor: isDragging ? "grabbing" : "auto" }}
+              data-onboarding="editor"
+            >
+              <DragContextMenu />
+              <SlashDropdownMenu />
+              <FloatingToolbar />
+            </EditorContent>
+          </div>
+        </EditorContext>
+      </GlobalDndProvider>
     </PageRegistryStoreProvider>
   );
 }
