@@ -21,10 +21,10 @@ importers:
   apps/cli:
     dependencies:
       '@davia/agent':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/agent
       '@davia/web':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../web
       '@inquirer/prompts':
         specifier: ^8.0.1
