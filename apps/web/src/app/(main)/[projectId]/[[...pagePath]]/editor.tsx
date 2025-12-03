@@ -125,6 +125,9 @@ export function Editor({
         dropcursor: {
           width: 2,
         },
+        trailingNode: {
+          node: "paragraph",
+        },
       }),
       ...baseExtensions,
       Selection,
