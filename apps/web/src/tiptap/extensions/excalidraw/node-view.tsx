@@ -21,6 +21,7 @@ import {
   EmptyTitle,
   EmptyDescription,
 } from "@/components/ui/empty";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Maximize2 } from "lucide-react";
 import { capitalCase } from "change-case";
 
@@ -100,12 +101,13 @@ function ExcalidrawView({
 
   return (
     <>
-      <div className="group relative w-full h-160 my-4 flex items-center justify-center bg-muted">
+      <div className="group relative w-full h-160 my-4 flex items-center justify-center">
         {!isFullscreen ? (
           <>
+            <Skeleton className="absolute inset-0 w-full h-full" />
             <iframe
               src={`/excalidraw-view/${currentProject?.id}/${excalidrawPath}`}
-              className="w-full h-full"
+              className="w-full h-full relative z-10"
               title="Excalidraw"
             />
             {/* Floating toolbar in top right corner */}
@@ -139,10 +141,11 @@ function ExcalidrawView({
             <DialogTitle className="sr-only">Excalidraw</DialogTitle>
             <DialogDescription>{excalidrawTitle}</DialogDescription>
           </DialogHeader>
-          <div className="flex-1 min-h-0">
+          <div className="flex-1 min-h-0 relative">
+            <Skeleton className="absolute inset-0 w-full h-full" />
             <iframe
               src={`/excalidraw-view/${currentProject?.id}/${excalidrawPath}`}
-              className="w-full h-full"
+              className="w-full h-full relative z-10"
               title="Excalidraw"
             />
           </div>
