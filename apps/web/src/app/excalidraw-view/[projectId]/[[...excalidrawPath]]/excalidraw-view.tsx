@@ -128,15 +128,24 @@ export function ExcalidrawView({
   if (!mounted) return null;
 
   return (
-    <div style={{ height: "40rem" }}>
-      <Excalidraw
-        initialData={{
-          appState: initialAppState,
-        }}
-        excalidrawAPI={(api) => setExcalidrawAPI(api)}
-        theme={excalidrawTheme}
-        onChange={handleChange}
-      />
-    </div>
+    <>
+      <style>{`
+      html, body, #__next {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    `}</style>
+      <div style={{ height: "100%", width: "100%" }}>
+        <Excalidraw
+          initialData={{
+            appState: initialAppState,
+          }}
+          excalidrawAPI={(api) => setExcalidrawAPI(api)}
+          theme={excalidrawTheme}
+          onChange={handleChange}
+        />
+      </div>
+    </>
   );
 }
