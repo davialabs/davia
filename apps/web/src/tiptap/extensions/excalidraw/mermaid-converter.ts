@@ -1,6 +1,102 @@
 "use client";
 
 /**
+ * Excalidraw font definitions for loading before mermaid conversion.
+ * These must be loaded so parseMermaidToExcalidraw can correctly measure text with getBBox().
+ */
+const EXCALIDRAW_FONTS = [
+  // Excalifont - hand-drawn style font (load all subsets for full character coverage)
+  {
+    family: "Excalifont",
+    source:
+      "url(/excalidraw-fonts/Excalifont/Excalifont-Regular-349fac6ca4700ffec595a7150a0d1e1d.woff2)",
+  },
+  {
+    family: "Excalifont",
+    source:
+      "url(/excalidraw-fonts/Excalifont/Excalifont-Regular-3f2c5db56cc93c5a6873b1361d730c16.woff2)",
+  },
+  {
+    family: "Excalifont",
+    source:
+      "url(/excalidraw-fonts/Excalifont/Excalifont-Regular-41b173a47b57366892116a575a43e2b6.woff2)",
+  },
+  {
+    family: "Excalifont",
+    source:
+      "url(/excalidraw-fonts/Excalifont/Excalifont-Regular-623ccf21b21ef6b3a0d87738f77eb071.woff2)",
+  },
+  {
+    family: "Excalifont",
+    source:
+      "url(/excalidraw-fonts/Excalifont/Excalifont-Regular-a88b72a24fb54c9f94e3b5fdaa7481c9.woff2)",
+  },
+  {
+    family: "Excalifont",
+    source:
+      "url(/excalidraw-fonts/Excalifont/Excalifont-Regular-b9dcf9d2e50a1eaf42fc664b50a3fd0d.woff2)",
+  },
+  {
+    family: "Excalifont",
+    source:
+      "url(/excalidraw-fonts/Excalifont/Excalifont-Regular-be310b9bcd4f1a43f571c46df7809174.woff2)",
+  },
+  // Assistant - normal text font
+  {
+    family: "Assistant",
+    source: "url(/excalidraw-fonts/Assistant/Assistant-Regular.woff2)",
+    descriptors: { weight: "400" },
+  },
+  {
+    family: "Assistant",
+    source: "url(/excalidraw-fonts/Assistant/Assistant-Medium.woff2)",
+    descriptors: { weight: "500" },
+  },
+  {
+    family: "Assistant",
+    source: "url(/excalidraw-fonts/Assistant/Assistant-SemiBold.woff2)",
+    descriptors: { weight: "600" },
+  },
+  {
+    family: "Assistant",
+    source: "url(/excalidraw-fonts/Assistant/Assistant-Bold.woff2)",
+    descriptors: { weight: "700" },
+  },
+] as const;
+
+let fontsLoaded = false;
+
+/**
+ * Ensures the Excalidraw fonts (Excalifont and Assistant) are loaded before mermaid conversion.
+ * This is necessary because parseMermaidToExcalidraw uses getBBox() to measure
+ * text dimensions, which must match the fonts Excalidraw will use for rendering.
+ */
+async function ensureExcalidrawFontsLoaded(): Promise<void> {
+  if (fontsLoaded) {
+    return;
+  }
+
+  const loadPromises = EXCALIDRAW_FONTS.map(async (fontDef) => {
+    try {
+      const font = new FontFace(
+        fontDef.family,
+        fontDef.source,
+        "descriptors" in fontDef ? fontDef.descriptors : undefined
+      );
+      await font.load();
+      document.fonts.add(font);
+    } catch {
+      // Some font subsets may fail to load, that's okay
+    }
+  });
+
+  await Promise.all(loadPromises);
+  await document.fonts.ready;
+
+  fontsLoaded = true;
+}
+
+/**
  * Check if mermaid content exists and convert it to excalidraw format
  * @param data - API response data containing content, mermaid, and mermaidAbsolutePath
  * @param projectId - Project ID
@@ -32,6 +128,9 @@ export async function checkAndConvertMermaid(
   let excalidrawElements: unknown[];
 
   try {
+    // Ensure Excalidraw fonts are loaded before parsing for correct text measurements
+    await ensureExcalidrawFontsLoaded();
+
     // Parse mermaid to excalidraw
     const parseResult = await parseMermaidToExcalidraw(data.mermaid);
     mermaidFiles = parseResult.files;

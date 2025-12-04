@@ -1,14 +1,14 @@
 "use client";
 
-import { Excalidraw, serializeAsJSON } from "@excalidraw/excalidraw";
-import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
-import type { AppState, BinaryFiles } from "@excalidraw/excalidraw/types";
-import "@excalidraw/excalidraw/index.css";
 import { useMemo, useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { useHasMounted } from "@/hooks/use-has-mounted";
 import { useDebounceCallback } from "usehooks-ts";
+import { Excalidraw, serializeAsJSON } from "@excalidraw/excalidraw";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
+import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
+import type { AppState, BinaryFiles } from "@excalidraw/excalidraw/types";
+import "@excalidraw/excalidraw/index.css";
 
 export function ExcalidrawView({
   projectId,
