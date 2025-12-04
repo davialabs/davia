@@ -27,8 +27,3 @@ export { windsurfConfig } from "./windsurf/index.js";
 export { githubCopilotConfig } from "./github-copilot/index.js";
 export { claudeCodeConfig } from "./claude-code/index.js";
 export { openCodeConfig } from "./open-code/index.js";
-
-// Re-export json-config utilities
-export { handleJsonConfigFile } from "./json-config/index.js";
-export type { JsonConfigFile } from "./json-config/index.js";
-

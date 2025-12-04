@@ -1,4 +1,4 @@
-import type { JsonConfigFile } from "./agents/json-config/types.js";
+import type { JsonConfigFile } from "./json-config/types.js";
 
 export interface AgentConfig {
   name: string;
@@ -7,4 +7,3 @@ export interface AgentConfig {
   frontmatter: string;
   jsonConfigs?: JsonConfigFile[];
 }
-

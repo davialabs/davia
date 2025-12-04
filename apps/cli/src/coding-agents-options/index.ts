@@ -5,8 +5,8 @@ import {
   SUPPORTED_AGENTS,
   isValidAgent,
   getSupportedAgentsList,
-  handleJsonConfigFile,
 } from "./agents/index.js";
+import { handleJsonConfigFile } from "./json-config/handler.js";
 import { getTemplateContent } from "./template.js";
 
 // Re-export for external consumers
@@ -17,7 +17,7 @@ export {
 } from "./agents/index.js";
 export { getTemplateContent } from "./template.js";
 export type { AgentConfig } from "./types.js";
-export type { JsonConfigFile } from "./agents/json-config/index.js";
+export type { JsonConfigFile } from "./json-config/index.js";
 
 /**
  * Writes agent-specific configuration file to the project root

@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import path from "node:path";
 import chalk from "chalk";
-import { getNestedValue, setNestedValue } from "../../utils.js";
+import { getNestedValue, setNestedValue } from "./utils.js";
 import type { JsonConfigFile } from "./types.js";
 
 /**
@@ -90,4 +90,3 @@ export async function handleJsonConfigFile(
     );
   }
 }
-
