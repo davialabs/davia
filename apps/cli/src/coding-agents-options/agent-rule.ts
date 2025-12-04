@@ -4,12 +4,21 @@ export interface AdditionalFile {
   content: string;
 }
 
+export interface JsonConfigFile {
+  folderPath: string;
+  fileName: string;
+  defaultContent: Record<string, unknown>;
+  instructionKey: string; // key in the JSON to append to (e.g., "instructions")
+  instructionPath: string; // path to add to the array
+}
+
 export interface AgentConfig {
   name: string;
   folderPath: string;
   fileName: string;
   frontmatter: string;
   additionalFiles?: AdditionalFile[];
+  jsonConfig?: JsonConfigFile; // for agents that need a JSON config file (like open-code)
 }
 
 export const SUPPORTED_AGENTS: Record<string, AgentConfig> = {
@@ -54,6 +63,27 @@ export const SUPPORTED_AGENTS: Record<string, AgentConfig> = {
         ),
       },
     ],
+  },
+  "open-code": {
+    name: "Open Code",
+    folderPath: ".davia",
+    fileName: "davia-documentation.md",
+    frontmatter: `<!--
+name: davia-documentation
+description: Use whenever the user asks you to create, update, or read documentation/Wiki (docs, specs, design notes, API docs, etc.).
+-->
+
+`,
+    jsonConfig: {
+      folderPath: "",
+      fileName: "opencode.json",
+      defaultContent: {
+        $schema: "https://opencode.ai/config.json",
+        instructions: [],
+      },
+      instructionKey: "instructions",
+      instructionPath: ".davia/davia-documentation.md",
+    },
   },
 };
 
