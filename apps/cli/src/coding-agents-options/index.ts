@@ -5,88 +5,24 @@ import {
   SUPPORTED_AGENTS,
   isValidAgent,
   getSupportedAgentsList,
-  getTemplateContent,
-  type JsonConfigFile,
-} from "./agent-rule.js";
+  handleJsonConfigFile,
+} from "./agents/index.js";
+import { getTemplateContent } from "./template.js";
 
-/**
- * Handles JSON config file creation/update with append logic
- * @param projectRoot - The root directory of the user's project
- * @param jsonConfig - The JSON config file configuration
- */
-async function handleJsonConfigFile(
-  projectRoot: string,
-  jsonConfig: JsonConfigFile
-): Promise<void> {
-  const configDir = path.join(projectRoot, jsonConfig.folderPath);
-  const configFile = path.join(configDir, jsonConfig.fileName);
-
-  try {
-    let configContent: Record<string, unknown>;
-
-    if (await fs.pathExists(configFile)) {
-      // File exists - read and append to instructions
-      const existingContent = await fs.readFile(configFile, "utf-8");
-      configContent = JSON.parse(existingContent);
-
-      // Get or initialize the instructions array
-      const instructions =
-        (configContent[jsonConfig.instructionKey] as string[]) || [];
-
-      // Check if the instruction path is already in the array
-      if (!instructions.includes(jsonConfig.instructionPath)) {
-        instructions.push(jsonConfig.instructionPath);
-        configContent[jsonConfig.instructionKey] = instructions;
-
-        await fs.writeFile(
-          configFile,
-          JSON.stringify(configContent, null, 2),
-          "utf-8"
-        );
-        console.log(
-          chalk.green(
-            `✓ Updated ${jsonConfig.fileName} - added "${jsonConfig.instructionPath}" to ${jsonConfig.instructionKey}`
-          )
-        );
-      } else {
-        console.log(
-          chalk.yellow(
-            `⚠️  ${jsonConfig.fileName} already contains "${jsonConfig.instructionPath}" in ${jsonConfig.instructionKey}`
-          )
-        );
-      }
-    } else {
-      // File doesn't exist - create with default content
-      configContent = {
-        ...jsonConfig.defaultContent,
-        [jsonConfig.instructionKey]: [jsonConfig.instructionPath],
-      };
-
-      await fs.ensureDir(configDir);
-      await fs.writeFile(
-        configFile,
-        JSON.stringify(configContent, null, 2),
-        "utf-8"
-      );
-      console.log(
-        chalk.green(
-          `✓ Created ${jsonConfig.fileName} at ${path.relative(projectRoot, configFile)}`
-        )
-      );
-    }
-  } catch (error) {
-    console.error(
-      chalk.red(
-        `❌ Failed to handle ${jsonConfig.fileName}: ${error instanceof Error ? error.message : String(error)}`
-      )
-    );
-  }
-}
+// Re-export for external consumers
+export {
+  SUPPORTED_AGENTS,
+  isValidAgent,
+  getSupportedAgentsList,
+} from "./agents/index.js";
+export { getTemplateContent } from "./template.js";
+export type { AgentConfig } from "./types.js";
+export type { JsonConfigFile } from "./agents/json-config/index.js";
 
 /**
  * Writes agent-specific configuration file to the project root
  * @param projectRoot - The root directory of the user's project
- * @param agentType - The type of agent (cursor, windsurf, github-copilot)
+ * @param agentType - The type of agent (cursor, windsurf, github-copilot, claude-code, open-code)
  */
 export async function writeAgentConfig(
   projectRoot: string,
@@ -116,10 +52,12 @@ export async function writeAgentConfig(
     );
     console.log(chalk.yellow("   Skipping agent configuration generation."));
 
-    // Still handle JSON config if specified (e.g., for open-code)
-    // This allows updating opencode.json even if davia-documentation.md exists
-    if (agentConfig.jsonConfig) {
-      await handleJsonConfigFile(projectRoot, agentConfig.jsonConfig);
+    // Still handle JSON configs if specified (e.g., for open-code, claude-code)
+    // This allows updating config files even if davia-documentation.md exists
+    if (agentConfig.jsonConfigs) {
+      for (const jsonConfig of agentConfig.jsonConfigs) {
+        await handleJsonConfigFile(projectRoot, jsonConfig);
+      }
     }
     return;
   }
@@ -143,39 +81,11 @@ export async function writeAgentConfig(
       )
     );
 
-    // Write additional files if any
-    if (agentConfig.additionalFiles) {
-      for (const additionalFile of agentConfig.additionalFiles) {
-        const additionalDir = path.join(projectRoot, additionalFile.folderPath);
-        const additionalFilePath = path.join(
-          additionalDir,
-          additionalFile.fileName
-        );
-
-        // Check if additional file already exists
-        if (await fs.pathExists(additionalFilePath)) {
-          console.log(
-            chalk.yellow(
-              `⚠️  ${additionalFile.fileName} already exists at ${path.relative(projectRoot, additionalFilePath)}`
-            )
-          );
-          continue;
-        }
-
-        await fs.ensureDir(additionalDir);
-        await fs.writeFile(additionalFilePath, additionalFile.content, "utf-8");
-
-        console.log(
-          chalk.green(
-            `✓ Created ${additionalFile.fileName} at ${path.relative(projectRoot, additionalFilePath)}`
-          )
-        );
+    // Handle JSON config files if specified (e.g., for open-code, claude-code)
+    if (agentConfig.jsonConfigs) {
+      for (const jsonConfig of agentConfig.jsonConfigs) {
+        await handleJsonConfigFile(projectRoot, jsonConfig);
       }
-    }
-
-    // Handle JSON config file if specified (e.g., for open-code)
-    if (agentConfig.jsonConfig) {
-      await handleJsonConfigFile(projectRoot, agentConfig.jsonConfig);
     }
   } catch (error) {
     console.error(
