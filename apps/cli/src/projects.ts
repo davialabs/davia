@@ -5,8 +5,8 @@ import chalk from "chalk";
 import { confirm } from "@inquirer/prompts";
 import { getProjectsPath } from "./paths.js";
 import { createAgentsMd } from "./ide-agent-instruction/index.js";
-import { writeAgentConfig } from "./agentic-ide-options/index.js";
-import { SUPPORTED_AGENTS } from "./agentic-ide-options/agent-rule.js";
+import { writeAgentConfig } from "./coding-agents-options/index.js";
+import { SUPPORTED_AGENTS } from "./coding-agents-options/agent-rule.js";
 
 export type Project = {
   id: string;
