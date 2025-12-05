@@ -4,15 +4,16 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ProjectsProvider } from "@/providers/projects-provider";
 import { Project } from "@/lib/types";
 import { buildAssetTrees } from "@/lib/tree/server";
-import { readProjects } from "@/lib/projects";
+import { readProjects, validateAndCleanProjects } from "@/lib/projects";
 
 export default async function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Read projects from env-paths
-  const projectsArray = await readProjects();
+  // Read projects from env-paths and validate (removes projects with missing assets folders)
+  const rawProjects = await readProjects();
+  const projectsArray = await validateAndCleanProjects(rawProjects);
 
   // Convert to Record<string, Project> keyed by project id
   const projects: Record<string, Project> = {};
