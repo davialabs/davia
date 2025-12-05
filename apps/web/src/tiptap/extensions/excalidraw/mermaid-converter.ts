@@ -137,6 +137,31 @@ export async function checkAndConvertMermaid(
 
     // Convert to excalidraw elements
     excalidrawElements = convertToExcalidrawElements(parseResult.elements);
+
+    // Process text elements to replace literal \\n and <br> with spaces
+    // while preserving actual newline characters (\n)
+    excalidrawElements = excalidrawElements.map((element) => {
+      if (typeof element !== "object" || element === null) {
+        return element;
+      }
+
+      const el = element as Record<string, unknown>;
+
+      // Process text and originalText properties if they exist
+      if (typeof el.text === "string") {
+        el.text = el.text
+          .replace(/\\n/g, " ") // Replace literal \n (backslash + n)
+          .replace(/<br\s*\/?>/gi, " "); // Replace <br>, <br/>, <br />
+      }
+
+      if (typeof el.originalText === "string") {
+        el.originalText = el.originalText
+          .replace(/\\n/g, " ") // Replace literal \n (backslash + n)
+          .replace(/<br\s*\/?>/gi, " "); // Replace <br>, <br/>, <br />
+      }
+
+      return el;
+    });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     const mermaidPath = data.mermaidAbsolutePath || path;
