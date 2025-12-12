@@ -42,7 +42,7 @@ Initialize Davia with your coding agent:
 davia init --agent=[name of your coding agent]
 ```
 
-Replace `[name of your coding agent]` with the name of your coding agent (e.g., `cursor`, `github-copilot`, `windsurf`).
+Replace `[name of your coding agent]` with the name of your coding agent (e.g., `cursor`, `github-copilot`, `windsurf`, `claude-code`, `augment`).
 
 ### 3. Generate Documentation
 
