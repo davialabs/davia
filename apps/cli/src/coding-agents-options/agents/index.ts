@@ -4,6 +4,7 @@ import { windsurfConfig } from "./windsurf/index.js";
 import { githubCopilotConfig } from "./github-copilot/index.js";
 import { claudeCodeConfig } from "./claude-code/index.js";
 import { openCodeConfig } from "./open-code/index.js";
+import { augmentConfig } from "./augment/index.js";
 
 export const SUPPORTED_AGENTS: Record<string, AgentConfig> = {
   cursor: cursorConfig,
@@ -11,6 +12,7 @@ export const SUPPORTED_AGENTS: Record<string, AgentConfig> = {
   "github-copilot": githubCopilotConfig,
   "claude-code": claudeCodeConfig,
   "open-code": openCodeConfig,
+  "augment": augmentConfig,
 };
 
 export function isValidAgent(agentType: string): boolean {
@@ -27,3 +29,4 @@ export { windsurfConfig } from "./windsurf/index.js";
 export { githubCopilotConfig } from "./github-copilot/index.js";
 export { claudeCodeConfig } from "./claude-code/index.js";
 export { openCodeConfig } from "./open-code/index.js";
+export { augmentConfig } from "./augment/index.js";
