@@ -5,6 +5,7 @@ import { githubCopilotConfig } from "./github-copilot/index.js";
 import { claudeCodeConfig } from "./claude-code/index.js";
 import { openCodeConfig } from "./open-code/index.js";
 import { augmentConfig } from "./augment/index.js";
+import { antigravityConfig } from "./antigravity/index.js";
 
 export const SUPPORTED_AGENTS: Record<string, AgentConfig> = {
   cursor: cursorConfig,
@@ -12,7 +13,8 @@ export const SUPPORTED_AGENTS: Record<string, AgentConfig> = {
   "github-copilot": githubCopilotConfig,
   "claude-code": claudeCodeConfig,
   "open-code": openCodeConfig,
-  "augment": augmentConfig,
+  augment: augmentConfig,
+  antigravity: antigravityConfig,
 };
 
 export function isValidAgent(agentType: string): boolean {
@@ -30,3 +32,4 @@ export { githubCopilotConfig } from "./github-copilot/index.js";
 export { claudeCodeConfig } from "./claude-code/index.js";
 export { openCodeConfig } from "./open-code/index.js";
 export { augmentConfig } from "./augment/index.js";
+export { antigravityConfig } from "./antigravity/index.js";
