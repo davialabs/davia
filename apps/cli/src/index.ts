@@ -82,6 +82,7 @@ program
         "  • ANTHROPIC_API_KEY (for Claude)",
         "  • OPENAI_API_KEY (for GPT models)",
         "  • GOOGLE_API_KEY (for Gemini models)",
+        "  • MINIMAX_API_KEY (for MiniMax models)",
         "",
         "Example .env file content:",
         "  ANTHROPIC_API_KEY=your_api_key_here",
