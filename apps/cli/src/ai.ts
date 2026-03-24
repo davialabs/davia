@@ -21,17 +21,21 @@ export async function createPromptMd(daviaPath: string): Promise<void> {
  */
 export function checkAndSetAiEnv(
   projectPath: string
-): "anthropic" | "openai" | "google" | null {
+): "anthropic" | "openai" | "google" | "minimax" | null {
   const apiKeys = [
     { key: "ANTHROPIC_API_KEY", model: "anthropic" as const },
     { key: "OPENAI_API_KEY", model: "openai" as const },
     { key: "GOOGLE_API_KEY", model: "google" as const },
+    { key: "MINIMAX_API_KEY", model: "minimax" as const },
   ] as const;
 
   // Helper to check and set env from a .env file path
   const checkEnvFile = (
     envPath: string
-  ): { found: boolean; model: "anthropic" | "openai" | "google" | null } => {
+  ): {
+    found: boolean;
+    model: "anthropic" | "openai" | "google" | "minimax" | null;
+  } => {
     if (!existsSync(envPath)) {
       return { found: false, model: null };
     }

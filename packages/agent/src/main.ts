@@ -6,7 +6,7 @@ export async function runAgent(
   projectId: string,
   projectPath: string,
   isUpdate: boolean,
-  model: "anthropic" | "openai" | "google",
+  model: "anthropic" | "openai" | "google" | "minimax",
   additionalInstructions?: string
 ): Promise<void> {
   console.log(chalk.blue.bold("\n🚀 Starting Davia Agent"));

@@ -34,7 +34,19 @@ Davia is an **open-source tool** designed for **AI coding agents** to generate *
 npm i -g davia
 ```
 
-### 2. Initialize Davia
+### 2. Configure an AI Provider
+
+Add your API key to a `.env` file in your project root or `.davia/` directory:
+
+```bash
+# Choose one:
+ANTHROPIC_API_KEY=your_key_here   # Claude
+OPENAI_API_KEY=your_key_here      # GPT models
+GOOGLE_API_KEY=your_key_here      # Gemini models
+MINIMAX_API_KEY=your_key_here     # MiniMax models
+```
+
+### 3. Initialize Davia
 
 Initialize Davia with your coding agent:
 
@@ -44,11 +56,11 @@ davia init --agent=[name of your coding agent]
 
 Replace `[name of your coding agent]` with the name of your coding agent (e.g., `cursor`, `github-copilot`, `windsurf`, `claude-code`, `augment`).
 
-### 3. Generate Documentation
+### 4. Generate Documentation
 
 Ask your AI coding agent to write the documentation for your project. Your agent will use Davia's tools to generate interactive documentation with visualizations and editable whiteboards.
 
-### 4. View Your Documentation
+### 5. View Your Documentation
 
 Once your agent has generated the documentation, open the Davia workspace:
 
@@ -58,7 +70,7 @@ davia open
 
 If the page doesn't load immediately, **refresh the page** in your browser.
 
-### 5. Collaborate with Your Team
+### 6. Collaborate with Your Team
 
 Sync your local documentation to a remote workspace where you can collaborate with your team in real-time:
 
